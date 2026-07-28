@@ -13,11 +13,13 @@ dependencies = [
 urls.homepage = "https://albus.sh"
 urls.repository = "https://github.com/albusgroup/albus-python"
 urls.documentation = "https://github.com/albusgroup/albus-python#readme"
+urls.issues = "https://github.com/albusgroup/albus-python/issues"
 license = "MIT"
 
 [dependency-groups]
 dev = [
     "mypy ==1.15.0",
+    "packaging ==26.2",
     "pylint ==3.2.3",
     "pyright ==1.1.398",
     "pytest ==8.4.1",

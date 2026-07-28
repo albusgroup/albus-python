@@ -5,6 +5,59 @@ Official, type-safe Python SDK for the Albus API.
 [![Built by Speakeasy](https://img.shields.io/badge/Built_by-SPEAKEASY-374151?style=for-the-badge&labelColor=f3f4f6)](https://www.speakeasy.com/?utm_source=albus-sdk&utm_campaign=python)
 [![License: MIT](https://img.shields.io/badge/LICENSE_//_MIT-3b5bdb?style=for-the-badge&labelColor=eff6ff)](https://opensource.org/licenses/MIT)
 
+## Quickstart
+
+Install the SDK from PyPI:
+
+```bash
+pip install albus-sdk
+```
+
+Session operations use an organization API key:
+
+```python
+import os
+
+from albus_sdk import Albus, models
+
+
+with Albus(
+    security=models.Security(
+        api_key_auth=os.environ["ALBUS_API_KEY_AUTH"],
+    ),
+) as albus:
+    response = albus.sessions.list_sessions()
+    print(response.sessions)
+```
+
+User and token operations use a user bearer token. Every synchronous operation
+also has an asynchronous method with an `_async` suffix:
+
+```python
+import asyncio
+import os
+
+from albus_sdk import Albus, models
+
+
+async def main() -> None:
+    async with Albus(
+        security=models.Security(
+            bearer_auth=os.environ["ALBUS_BEARER_AUTH"],
+        ),
+    ) as albus:
+        response = await albus.auth.whoami_async()
+        print(response)
+
+
+asyncio.run(main())
+```
+
+Secret operations accept either credential. The SDK also reads
+`ALBUS_API_KEY_AUTH` and `ALBUS_BEARER_AUTH` directly from the environment, so
+`Albus()` is sufficient when the appropriate variable is set. Production
+requests use `https://albus.sh/api` by default.
+
 <!-- Start Summary [summary] -->
 ## Summary
 
@@ -15,6 +68,7 @@ Albus API: Albus service REST API
 ## Table of Contents
 <!-- $toc-max-depth=2 -->
 * [albus-sdk](#albus-sdk)
+  * [Quickstart](#quickstart)
   * [SDK Installation](#sdk-installation)
   * [IDE Support](#ide-support)
   * [SDK Example Usage](#sdk-example-usage)
@@ -29,6 +83,7 @@ Albus API: Albus service REST API
 * [Development](#development)
   * [Regeneration](#regeneration)
   * [Checks](#checks)
+  * [Releases](#releases)
   * [Maturity](#maturity)
   * [Contributions](#contributions)
 
@@ -49,7 +104,7 @@ The SDK can be installed with *uv*, *pip*, or *poetry* package managers.
 *uv* is a fast Python package installer and resolver, designed as a drop-in replacement for pip and pip-tools. It's recommended for its speed and modern Python tooling capabilities.
 
 ```bash
-uv add git+https://github.com/albusgroup/albus-python.git
+uv add albus-sdk
 ```
 
 ### PIP
@@ -57,7 +112,7 @@ uv add git+https://github.com/albusgroup/albus-python.git
 *PIP* is the default package installer for Python, enabling easy installation and management of packages from PyPI via the command line.
 
 ```bash
-pip install git+https://github.com/albusgroup/albus-python.git
+pip install albus-sdk
 ```
 
 ### Poetry
@@ -65,7 +120,7 @@ pip install git+https://github.com/albusgroup/albus-python.git
 *Poetry* is a modern tool that simplifies dependency management and package publishing by using a single `pyproject.toml` file to handle project metadata and dependencies.
 
 ```bash
-poetry add git+https://github.com/albusgroup/albus-python.git
+poetry add albus-sdk
 ```
 
 ### Shell and script usage with `uv`
@@ -250,8 +305,13 @@ with Albus(
     ),
 ) as albus:
 
-    res = albus.secrets.list_secrets(,
-        RetryConfig("backoff", BackoffStrategy(1, 50, 1.1, 100), False))
+    res = albus.secrets.list_secrets(
+        retries=RetryConfig(
+            "backoff",
+            BackoffStrategy(1, 50, 1.1, 100),
+            False,
+        )
+    )
 
     # Handle response
     print(res)
@@ -575,6 +635,11 @@ Install `uv` and the pinned Speakeasy CLI, then run the complete local check:
 This lints the OpenAPI snapshot, checks the generated package with MyPy and
 Pyright, runs the handwritten tests, builds both package formats, validates
 their metadata, and installs the wheel on Python 3.10 and 3.14.
+
+## Releases
+
+Publishing is manual during the MVP. Follow [RELEASING.md](RELEASING.md) to
+validate and publish a generated version with the guarded local script.
 
 ## Maturity
 

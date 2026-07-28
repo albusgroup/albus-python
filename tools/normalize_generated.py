@@ -2,6 +2,7 @@
 
 from pathlib import Path
 import runpy
+import shutil
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 
@@ -9,6 +10,29 @@ PUBLISHING_PROMPT = """> [!TIP]
 > To finish publishing your SDK to PyPI you must [run your first generation action](https://www.speakeasy.com/docs/github-setup#step-by-step-guide).
 
 
+"""
+
+INSTALLATION_REPLACEMENTS = {
+    "uv add git+https://github.com/albusgroup/albus-python.git": ("uv add albus-sdk"),
+    "pip install git+https://github.com/albusgroup/albus-python.git": (
+        "pip install albus-sdk"
+    ),
+    "poetry add git+https://github.com/albusgroup/albus-python.git": (
+        "poetry add albus-sdk"
+    ),
+}
+
+INVALID_RETRY_EXAMPLE = """    res = albus.secrets.list_secrets(,
+        RetryConfig("backoff", BackoffStrategy(1, 50, 1.1, 100), False))
+"""
+
+VALID_RETRY_EXAMPLE = """    res = albus.secrets.list_secrets(
+        retries=RetryConfig(
+            "backoff",
+            BackoffStrategy(1, 50, 1.1, 100),
+            False,
+        )
+    )
 """
 
 
@@ -24,8 +48,18 @@ def normalize_readme() -> None:
     path = REPOSITORY_ROOT / "README.md"
     content = path.read_text()
     content = content.replace(PUBLISHING_PROMPT, "")
+
+    for generated, published in INSTALLATION_REPLACEMENTS.items():
+        content = content.replace(generated, published)
+
+    content = content.replace(INVALID_RETRY_EXAMPLE, VALID_RETRY_EXAMPLE)
+
     if "To finish publishing your SDK to PyPI" in content:
         raise RuntimeError("unexpected Speakeasy publishing prompt was generated")
+    if "git+https://github.com/albusgroup/albus-python.git" in content:
+        raise RuntimeError("unexpected Git installation command was generated")
+    if "list_secrets(," in content:
+        raise RuntimeError("invalid retry example was generated")
 
     path.write_text(content)
     normalize_lines(path)
@@ -42,6 +76,40 @@ def normalize_package_metadata() -> None:
     elif new_license not in content:
         raise RuntimeError("expected MIT license metadata was not generated")
 
+    issues_url = 'urls.issues = "https://github.com/albusgroup/albus-python/issues"'
+    if issues_url not in content:
+        documentation_url = (
+            'urls.documentation = "https://github.com/albusgroup/albus-python#readme"'
+        )
+        if documentation_url not in content:
+            raise RuntimeError("expected documentation URL was not generated")
+
+        content = content.replace(
+            documentation_url,
+            f"{documentation_url}\n{issues_url}",
+            1,
+        )
+
+    path.write_text(content)
+    normalize_lines(path)
+
+
+def normalize_contributing() -> None:
+    source = REPOSITORY_ROOT / "tools/templates/CONTRIBUTING.md"
+    destination = REPOSITORY_ROOT / "CONTRIBUTING.md"
+    shutil.copyfile(source, destination)
+    normalize_lines(destination)
+
+
+def remove_generated_publisher() -> None:
+    (REPOSITORY_ROOT / "scripts/publish.sh").unlink(missing_ok=True)
+
+
+def normalize_pypi_readme() -> None:
+    path = REPOSITORY_ROOT / "README-PYPI.md"
+    content = path.read_text()
+    absolute_anchor = "https://github.com/albusgroup/albus-python/blob/master/#"
+    content = content.replace(absolute_anchor, "#")
     path.write_text(content)
     normalize_lines(path)
 
@@ -49,10 +117,13 @@ def normalize_package_metadata() -> None:
 def main() -> None:
     normalize_readme()
     normalize_package_metadata()
+    normalize_contributing()
+    remove_generated_publisher()
     normalize_lines(REPOSITORY_ROOT / "src/albus_sdk/utils/datetimes.py")
 
     prepare_readme = REPOSITORY_ROOT / "scripts/prepare_readme.py"
     runpy.run_path(str(prepare_readme), run_name="__main__")
+    normalize_pypi_readme()
 
 
 if __name__ == "__main__":

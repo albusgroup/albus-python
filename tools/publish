@@ -1,0 +1,147 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="$(cd -- "$script_dir/.." && pwd)"
+
+usage() {
+    cat >&2 <<EOF
+usage: $0 [--dry-run] [--testpypi] <sdk-version>
+
+Build and publish the generated SDK from a clean, pushed commit.
+
+  --dry-run    Validate the complete release without uploading.
+  --testpypi   Target TestPyPI instead of production PyPI.
+EOF
+}
+
+dry_run=false
+repository="pypi"
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --dry-run)
+            dry_run=true
+            shift
+            ;;
+        --testpypi)
+            repository="testpypi"
+            shift
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        --*)
+            echo "error: unknown option: $1" >&2
+            usage
+            exit 2
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+
+if [[ $# -ne 1 ]]; then
+    usage
+    exit 2
+fi
+
+sdk_version="$1"
+
+for command in git uv; do
+    if ! command -v "$command" >/dev/null 2>&1; then
+        echo "error: required command not found: $command" >&2
+        exit 1
+    fi
+done
+
+cd "$repo_root"
+
+uv run --frozen python tools/release_metadata.py versions "$sdk_version"
+
+if [[ -n "$(git status --porcelain --untracked-files=normal)" ]]; then
+    echo "error: releases require a clean worktree" >&2
+    exit 1
+fi
+
+branch="$(git symbolic-ref --quiet --short HEAD || true)"
+if [[ -z "$branch" ]]; then
+    echo "error: releases cannot run from a detached HEAD" >&2
+    exit 1
+fi
+
+remote="$(git config --get "branch.$branch.remote" || true)"
+merge_ref="$(git config --get "branch.$branch.merge" || true)"
+if [[ -z "$remote" || -z "$merge_ref" ]]; then
+    echo "error: branch $branch does not have an upstream" >&2
+    exit 1
+fi
+
+if ! remote_output="$(git ls-remote --exit-code --refs "$remote" "$merge_ref")"
+then
+    echo "error: upstream ref $merge_ref does not exist on $remote" >&2
+    exit 1
+fi
+
+remote_sha="$(awk 'NR == 1 { print $1 }' <<<"$remote_output")"
+local_sha="$(git rev-parse HEAD)"
+if [[ "$remote_sha" != "$local_sha" ]]; then
+    upstream_branch="${merge_ref#refs/heads/}"
+    echo "error: HEAD is not the commit pushed to" \
+        "$remote/$upstream_branch" >&2
+    exit 1
+fi
+
+if [[ "$dry_run" == false && "$branch" != "master" ]]; then
+    echo "error: uploads must run from the master branch" >&2
+    exit 1
+fi
+
+./tools/check
+uv run --frozen python tools/release_metadata.py artifacts "$sdk_version"
+
+artifacts=(dist/*.whl dist/*.tar.gz)
+publish_url="https://upload.pypi.org/legacy/"
+check_url="https://pypi.org/simple/"
+repository_label="PyPI"
+
+if [[ "$repository" == "testpypi" ]]; then
+    publish_url="https://test.pypi.org/legacy/"
+    check_url="https://test.pypi.org/simple/"
+    repository_label="TestPyPI"
+fi
+
+publish_args=(
+    --publish-url "$publish_url"
+    --check-url "$check_url"
+    --trusted-publishing never
+)
+
+if [[ "$dry_run" == true ]]; then
+    uv publish --dry-run "${publish_args[@]}" "${artifacts[@]}"
+    echo "Dry run complete. No files were uploaded."
+    exit 0
+fi
+
+if [[ -z "${UV_PUBLISH_TOKEN:-}" ]]; then
+    echo "error: set UV_PUBLISH_TOKEN before publishing" >&2
+    exit 1
+fi
+
+if [[ ! -t 0 ]]; then
+    echo "error: publishing requires an interactive confirmation" >&2
+    exit 1
+fi
+
+confirmation_prompt="publish $sdk_version to $repository_label"
+read -r -p "Type '$confirmation_prompt' to continue: " confirmation
+if [[ "$confirmation" != "$confirmation_prompt" ]]; then
+    echo "Publication cancelled." >&2
+    exit 1
+fi
+
+uv publish "${publish_args[@]}" "${artifacts[@]}"
+echo "Published albus-sdk $sdk_version to $repository_label."
