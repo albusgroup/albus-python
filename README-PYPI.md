@@ -14,21 +14,21 @@ Albus API: Albus service REST API
 <!-- Start Table of Contents [toc] -->
 ## Table of Contents
 <!-- $toc-max-depth=2 -->
-* [albus-sdk](#albus-sdk)
-  * [SDK Installation](#sdk-installation)
-  * [IDE Support](#ide-support)
-  * [SDK Example Usage](#sdk-example-usage)
-  * [Authentication](#authentication)
-  * [Available Resources and Operations](#available-resources-and-operations)
-  * [Retries](#retries)
-  * [Error Handling](#error-handling)
-  * [Server Selection](#server-selection)
-  * [Custom HTTP Client](#custom-http-client)
-  * [Resource Management](#resource-management)
-  * [Debugging](#debugging)
-* [Development](#development)
-  * [Maturity](#maturity)
-  * [Contributions](#contributions)
+* [albus-sdk](https://github.com/albusgroup/albus-python/blob/master/#albus-sdk)
+  * [SDK Installation](https://github.com/albusgroup/albus-python/blob/master/#sdk-installation)
+  * [IDE Support](https://github.com/albusgroup/albus-python/blob/master/#ide-support)
+  * [SDK Example Usage](https://github.com/albusgroup/albus-python/blob/master/#sdk-example-usage)
+  * [Authentication](https://github.com/albusgroup/albus-python/blob/master/#authentication)
+  * [Available Resources and Operations](https://github.com/albusgroup/albus-python/blob/master/#available-resources-and-operations)
+  * [Retries](https://github.com/albusgroup/albus-python/blob/master/#retries)
+  * [Error Handling](https://github.com/albusgroup/albus-python/blob/master/#error-handling)
+  * [Server Selection](https://github.com/albusgroup/albus-python/blob/master/#server-selection)
+  * [Custom HTTP Client](https://github.com/albusgroup/albus-python/blob/master/#custom-http-client)
+  * [Resource Management](https://github.com/albusgroup/albus-python/blob/master/#resource-management)
+  * [Debugging](https://github.com/albusgroup/albus-python/blob/master/#debugging)
+* [Development](https://github.com/albusgroup/albus-python/blob/master/#development)
+  * [Maturity](https://github.com/albusgroup/albus-python/blob/master/#maturity)
+  * [Contributions](https://github.com/albusgroup/albus-python/blob/master/#contributions)
 
 <!-- End Table of Contents [toc] -->
 
@@ -196,36 +196,36 @@ with Albus(
 <details open>
 <summary>Available methods</summary>
 
-### [Auth](docs/sdks/auth/README.md)
+### [Auth](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/auth/README.md)
 
-* [whoami](docs/sdks/auth/README.md#whoami) - Get current user information
+* [whoami](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/auth/README.md#whoami) - Get current user information
 
-### [Health](docs/sdks/health/README.md)
+### [Health](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/health/README.md)
 
-* [health](docs/sdks/health/README.md#health) - Health check endpoint
+* [health](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/health/README.md#health) - Health check endpoint
 
-### [Secrets](docs/sdks/secrets/README.md)
+### [Secrets](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/secrets/README.md)
 
-* [list_secrets](docs/sdks/secrets/README.md#list_secrets) - List all secrets
-* [create_secret](docs/sdks/secrets/README.md#create_secret) - Create a secret
-* [get_secret](docs/sdks/secrets/README.md#get_secret) - Get a secret by name
-* [update_secret](docs/sdks/secrets/README.md#update_secret) - Update a secret by name
-* [delete_secret](docs/sdks/secrets/README.md#delete_secret) - Delete a secret by name
+* [list_secrets](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/secrets/README.md#list_secrets) - List all secrets
+* [create_secret](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/secrets/README.md#create_secret) - Create a secret
+* [get_secret](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/secrets/README.md#get_secret) - Get a secret by name
+* [update_secret](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/secrets/README.md#update_secret) - Update a secret by name
+* [delete_secret](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/secrets/README.md#delete_secret) - Delete a secret by name
 
-### [Sessions](docs/sdks/sessions/README.md)
+### [Sessions](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/sessions/README.md)
 
-* [list_sessions](docs/sdks/sessions/README.md#list_sessions) - List all sessions
-* [get_session](docs/sdks/sessions/README.md#get_session) - Get a session with its messages
-* [run_session](docs/sdks/sessions/README.md#run_session) - Run or resume a session
-* [delete_session](docs/sdks/sessions/README.md#delete_session) - Delete a session
-* [get_session_audit](docs/sdks/sessions/README.md#get_session_audit) - List a session's audit log
+* [list_sessions](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/sessions/README.md#list_sessions) - List all sessions
+* [get_session](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/sessions/README.md#get_session) - Get a session with its messages
+* [run_session](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/sessions/README.md#run_session) - Run or resume a session
+* [delete_session](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/sessions/README.md#delete_session) - Delete a session
+* [get_session_audit](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/sessions/README.md#get_session_audit) - List a session's audit log
 
-### [Tokens](docs/sdks/tokens/README.md)
+### [Tokens](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/tokens/README.md)
 
-* [list_tokens](docs/sdks/tokens/README.md#list_tokens) - List all API tokens. Never returns token values, only metadata.
-* [create_token](docs/sdks/tokens/README.md#create_token) - Create an API token. The token value is returned only in this response.
-* [get_token](docs/sdks/tokens/README.md#get_token) - Get token metadata by ID. Never returns the token value.
-* [delete_token](docs/sdks/tokens/README.md#delete_token) - Revoke an API token by ID
+* [list_tokens](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/tokens/README.md#list_tokens) - List all API tokens. Never returns token values, only metadata.
+* [create_token](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/tokens/README.md#create_token) - Create an API token. The token value is returned only in this response.
+* [get_token](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/tokens/README.md#get_token) - Get token metadata by ID. Never returns the token value.
+* [delete_token](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/tokens/README.md#delete_token) - Revoke an API token by ID
 
 </details>
 <!-- End Available Resources and Operations [operations] -->
@@ -281,7 +281,7 @@ with Albus(
 <!-- Start Error Handling [errors] -->
 ## Error Handling
 
-[`AlbusError`](./src/albus_sdk/errors/albuserror.py) is the base class for all HTTP error responses. It has the following properties:
+[`AlbusError`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/albuserror.py) is the base class for all HTTP error responses. It has the following properties:
 
 | Property           | Type             | Description                                                                             |
 | ------------------ | ---------------- | --------------------------------------------------------------------------------------- |
@@ -290,7 +290,7 @@ with Albus(
 | `err.headers`      | `httpx.Headers`  | HTTP response headers                                                                   |
 | `err.body`         | `str`            | HTTP body. Can be empty string if no body is returned.                                  |
 | `err.raw_response` | `httpx.Response` | Raw HTTP response                                                                       |
-| `err.data`         |                  | Optional. Some errors may contain structured data. [See Error Classes](#error-classes). |
+| `err.data`         |                  | Optional. Some errors may contain structured data. [See Error Classes](https://github.com/albusgroup/albus-python/blob/master/#error-classes). |
 
 ### Example
 ```python
@@ -327,8 +327,8 @@ with Albus(
 
 ### Error Classes
 **Primary errors:**
-* [`AlbusError`](./src/albus_sdk/errors/albuserror.py): The base class for HTTP error responses.
-  * [`ErrUnauthorized`](./src/albus_sdk/errors/errunauthorized.py): Status code `401`. *
+* [`AlbusError`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/albuserror.py): The base class for HTTP error responses.
+  * [`ErrUnauthorized`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errunauthorized.py): Status code `401`. *
 
 <details><summary>Less common errors (12)</summary>
 
@@ -340,19 +340,19 @@ with Albus(
     * [`httpx.TimeoutException`](https://www.python-httpx.org/exceptions/#httpx.TimeoutException): HTTP request timed out.
 
 
-**Inherit from [`AlbusError`](./src/albus_sdk/errors/albuserror.py)**:
-* [`ErrNotFound`](./src/albus_sdk/errors/errnotfound.py): Not found. Status code `404`. Applicable to 8 of 16 methods.*
-* [`ErrBadRequest`](./src/albus_sdk/errors/errbadrequest.py): Status code `400`. Applicable to 5 of 16 methods.*
-* [`ErrConflict`](./src/albus_sdk/errors/errconflict.py): Idempotency key reused with a different request body. Status code `409`. Applicable to 1 of 16 methods.*
-* [`ErrLocked`](./src/albus_sdk/errors/errlocked.py): Another invocation is currently running for this session. Status code `423`. Applicable to 1 of 16 methods.*
-* [`ErrRunFailed`](./src/albus_sdk/errors/errrunfailed.py): The harness run failed instead of producing a response (only possible with wait=true, or when replaying a failed invocation). The body carries the failure kind and detail. Status code `502`. Applicable to 1 of 16 methods.*
-* [`HealthResponseError`](./src/albus_sdk/errors/healthresponseerror.py): Service is healthy. Status code `503`. Applicable to 1 of 16 methods.*
-* [`ErrTimeout`](./src/albus_sdk/errors/errtimeout.py): Timed out waiting for the assistant response. Status code `504`. Applicable to 1 of 16 methods.*
-* [`ResponseValidationError`](./src/albus_sdk/errors/responsevalidationerror.py): Type mismatch between the response data and the expected Pydantic model. Provides access to the Pydantic validation error via the `cause` attribute.
+**Inherit from [`AlbusError`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/albuserror.py)**:
+* [`ErrNotFound`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errnotfound.py): Not found. Status code `404`. Applicable to 8 of 16 methods.*
+* [`ErrBadRequest`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errbadrequest.py): Status code `400`. Applicable to 5 of 16 methods.*
+* [`ErrConflict`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errconflict.py): Idempotency key reused with a different request body. Status code `409`. Applicable to 1 of 16 methods.*
+* [`ErrLocked`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errlocked.py): Another invocation is currently running for this session. Status code `423`. Applicable to 1 of 16 methods.*
+* [`ErrRunFailed`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errrunfailed.py): The harness run failed instead of producing a response (only possible with wait=true, or when replaying a failed invocation). The body carries the failure kind and detail. Status code `502`. Applicable to 1 of 16 methods.*
+* [`HealthResponseError`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/healthresponseerror.py): Service is healthy. Status code `503`. Applicable to 1 of 16 methods.*
+* [`ErrTimeout`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errtimeout.py): Timed out waiting for the assistant response. Status code `504`. Applicable to 1 of 16 methods.*
+* [`ResponseValidationError`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/responsevalidationerror.py): Type mismatch between the response data and the expected Pydantic model. Provides access to the Pydantic validation error via the `cause` attribute.
 
 </details>
 
-\* Check [the method documentation](#available-resources-and-operations) to see if the error is applicable.
+\* Check [the method documentation](https://github.com/albusgroup/albus-python/blob/master/#available-resources-and-operations) to see if the error is applicable.
 <!-- End Error Handling [errors] -->
 
 <!-- Start Server Selection [server] -->
