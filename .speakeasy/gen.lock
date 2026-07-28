@@ -8,9 +8,9 @@ management:
   repoURL: https://github.com/albusgroup/albus-python
   installationURL: https://github.com/albusgroup/albus-python.git
 persistentEdits:
-  generation_id: a8286c5c-7f1e-4a21-b4be-9b084d814210
-  pristine_commit_hash: a9598012b5493086b01ccaaf1fca5f28351999d5
-  pristine_tree_hash: 0260da64d6a8121ad33f24574d1690b3d24bab14
+  generation_id: 832d9791-56de-4684-b30b-3f3bf8afd697
+  pristine_commit_hash: 882de03a51ff67a3787c944fbc329cff292501fc
+  pristine_tree_hash: 76d978af56b1b752fbf37171f9aebf1457ac140b
 features:
   python:
     additionalDependencies: 1.1.0
@@ -244,8 +244,8 @@ trackedFiles:
     pristine_git_object: c00200cfd072e9febac5d6be783da1925d11dac0
   pyproject.toml:
     id: 5d07e7d72637
-    last_write_checksum: sha1:ca4b7e1bef808683b4c7893ac527749f03726375
-    pristine_git_object: cee8aa119be91fd833ab7ca196422cfc3e8f8fbd
+    last_write_checksum: sha1:6f1708ad349909881a9d516ba2322358b904271e
+    pristine_git_object: 23e937cb551f0323fc287438ccc59bbccca52518
   scripts/prepare_readme.py:
     id: e0c5957a6035
     last_write_checksum: sha1:87ae869992e135551fddfe7224d27c36a6e6f6a1
