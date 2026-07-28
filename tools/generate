@@ -1,0 +1,135 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="$(cd -- "$script_dir/.." && pwd)"
+workflow_file="$repo_root/.speakeasy/workflow.yaml"
+snapshot_path="$repo_root/openapi/openapi.yaml"
+
+usage() {
+    echo "usage: $0 /path/to/openapi.yaml <sdk-version>" >&2
+}
+
+sha256_file() {
+    uv run --frozen python - "$1" <<'PY'
+from hashlib import sha256
+from pathlib import Path
+import sys
+
+print(sha256(Path(sys.argv[1]).read_bytes()).hexdigest())
+PY
+}
+
+if [[ $# -ne 2 ]]; then
+    usage
+    exit 2
+fi
+
+source_argument="$1"
+sdk_version="$2"
+
+for command in speakeasy uv; do
+    if ! command -v "$command" >/dev/null 2>&1; then
+        echo "error: required command not found: $command" >&2
+        exit 1
+    fi
+done
+
+if [[ ! -f "$source_argument" || ! -r "$source_argument" ]]; then
+    echo "error: OpenAPI source is not a readable file: $source_argument" >&2
+    exit 1
+fi
+
+source_dir="$(cd -- "$(dirname -- "$source_argument")" && pwd -P)"
+source_path="$source_dir/$(basename -- "$source_argument")"
+
+required_cli_version="$(
+    awk '$1 == "speakeasyVersion:" { print $2; exit }' "$workflow_file"
+)"
+installed_cli_output="$(speakeasy --version)"
+installed_cli_version="$(
+    awk 'NR == 1 && $1 == "speakeasy" && $2 == "version" { print $3 }' \
+        <<<"$installed_cli_output"
+)"
+
+if [[ -z "$required_cli_version" ]]; then
+    echo "error: no Speakeasy version is pinned in $workflow_file" >&2
+    exit 1
+fi
+
+if [[ "$installed_cli_version" != "$required_cli_version" ]]; then
+    echo "error: Speakeasy CLI $required_cli_version is required;" \
+        "found ${installed_cli_version:-unknown}" >&2
+    exit 1
+fi
+
+if ! speakeasy auth status >/dev/null 2>&1; then
+    echo "error: Speakeasy authentication is required" >&2
+    exit 1
+fi
+
+if ! uv run --frozen python - "$sdk_version" <<'PY'
+import sys
+
+from packaging.version import InvalidVersion, Version
+
+try:
+    parsed = Version(sys.argv[1])
+except InvalidVersion:
+    raise SystemExit(1)
+
+if str(parsed) != sys.argv[1]:
+    raise SystemExit(1)
+PY
+then
+    echo "error: SDK version must be a normalized PEP 440 version: $sdk_version" >&2
+    exit 1
+fi
+
+cd "$repo_root"
+
+if [[ "$source_path" != "$snapshot_path" ]]; then
+    cp "$source_path" "$snapshot_path"
+fi
+
+speakeasy openapi lint \
+    --schema "$snapshot_path" \
+    --non-interactive
+
+speakeasy bump \
+    --target python \
+    --version "$sdk_version"
+
+speakeasy run \
+    --target albus \
+    --minimal \
+    --skip-upload-spec \
+    --skip-versioning \
+    --auto-yes \
+    --output console
+
+uv run --frozen python tools/normalize_generated.py
+./tools/check
+
+generator_version="$(
+    sed -n 's/^__gen_version__: str = "\(.*\)"/\1/p' \
+        src/albus_sdk/_version.py
+)"
+generated_sdk_version="$(
+    sed -n 's/^__version__: str = "\(.*\)"/\1/p' \
+        src/albus_sdk/_version.py
+)"
+openapi_checksum="$(sha256_file "$snapshot_path")"
+
+if [[ "$generated_sdk_version" != "$sdk_version" ]]; then
+    echo "error: generated SDK version is $generated_sdk_version, expected $sdk_version" >&2
+    exit 1
+fi
+
+echo
+echo "Generation complete."
+echo "OpenAPI SHA-256: $openapi_checksum"
+echo "Speakeasy CLI: $installed_cli_version"
+echo "Speakeasy generator: $generator_version"
+echo "SDK version: $generated_sdk_version"

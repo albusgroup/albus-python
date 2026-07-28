@@ -27,6 +27,7 @@ Albus API: Albus service REST API
   * [Resource Management](https://github.com/albusgroup/albus-python/blob/master/#resource-management)
   * [Debugging](https://github.com/albusgroup/albus-python/blob/master/#debugging)
 * [Development](https://github.com/albusgroup/albus-python/blob/master/#development)
+  * [Regeneration](https://github.com/albusgroup/albus-python/blob/master/#regeneration)
   * [Checks](https://github.com/albusgroup/albus-python/blob/master/#checks)
   * [Maturity](https://github.com/albusgroup/albus-python/blob/master/#maturity)
   * [Contributions](https://github.com/albusgroup/albus-python/blob/master/#contributions)
@@ -545,6 +546,23 @@ You can also enable a default debug logger by setting an environment variable `A
 <!-- Placeholder for Future Speakeasy SDK Sections -->
 
 # Development
+
+## Regeneration
+
+Regeneration requires `uv`, Speakeasy authentication, and the Speakeasy CLI
+version pinned in `.speakeasy/workflow.yaml`.
+
+Run the generator with the authoritative private OpenAPI specification and the
+SDK version to produce:
+
+```bash
+./tools/generate /path/to/albus/api/openapi.yaml 0.1.0
+```
+
+The command copies the exact specification snapshot into this repository,
+generates the SDK without uploading the specification, normalizes known
+generator metadata, and runs the complete local check. Review and commit the
+specification, generated code, documentation, and lock files together.
 
 ## Checks
 

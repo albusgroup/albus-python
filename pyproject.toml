@@ -13,7 +13,7 @@ dependencies = [
 urls.homepage = "https://albus.sh"
 urls.repository = "https://github.com/albusgroup/albus-python"
 urls.documentation = "https://github.com/albusgroup/albus-python#readme"
-license = { text = "MIT" }
+license = "MIT"
 
 [dependency-groups]
 dev = [

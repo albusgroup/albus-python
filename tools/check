@@ -20,8 +20,8 @@ speakeasy openapi lint \
     --non-interactive
 
 uv sync --all-groups --frozen
-uv run ruff format --check tests
-uv run ruff check tests
+uv run ruff format --check tests tools/normalize_generated.py
+uv run ruff check tests tools/normalize_generated.py
 uv run mypy src/albus_sdk
 uv run pyright src/albus_sdk
 uv run pytest
