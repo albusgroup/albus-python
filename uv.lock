@@ -20,6 +20,7 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "mypy" },
+    { name = "packaging" },
     { name = "pylint" },
     { name = "pyright" },
     { name = "pytest" },
@@ -38,6 +39,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "mypy", specifier = "==1.15.0" },
+    { name = "packaging", specifier = "==26.2" },
     { name = "pylint", specifier = "==3.2.3" },
     { name = "pyright", specifier = "==1.1.398" },
     { name = "pytest", specifier = "==8.4.1" },

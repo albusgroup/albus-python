@@ -20,8 +20,8 @@ speakeasy openapi lint \
     --non-interactive
 
 uv sync --all-groups --frozen
-uv run ruff format --check tests tools/normalize_generated.py
-uv run ruff check tests tools/normalize_generated.py
+uv run ruff format --check tests tools/*.py
+uv run ruff check tests tools/*.py
 uv run mypy src/albus_sdk
 uv run pyright src/albus_sdk
 uv run pytest
@@ -29,6 +29,13 @@ uv run pytest
 rm -rf "$dist_dir"
 uv build
 uv run twine check dist/*
+
+sdk_version="$(
+    sed -n 's/^__version__: str = "\(.*\)"/\1/p' \
+        src/albus_sdk/_version.py
+)"
+uv run --frozen python tools/release_metadata.py \
+    artifacts "$sdk_version"
 
 wheel_files=("$dist_dir"/*.whl)
 if [[ ${#wheel_files[@]} -ne 1 || ! -f "${wheel_files[0]}" ]]; then
