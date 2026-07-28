@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="$(cd -- "$script_dir/.." && pwd)"
+dist_dir="$repo_root/dist"
+
+cd "$repo_root"
+
+for command in speakeasy uv; do
+    if ! command -v "$command" >/dev/null 2>&1; then
+        echo "error: required command not found: $command" >&2
+        exit 1
+    fi
+done
+
+speakeasy openapi lint \
+    --schema openapi/openapi.yaml \
+    --non-interactive
+
+uv sync --all-groups --frozen
+uv run ruff format --check tests
+uv run ruff check tests
+uv run mypy src/albus_sdk
+uv run pyright src/albus_sdk
+uv run pytest
+
+rm -rf "$dist_dir"
+uv build
+uv run twine check dist/*
+
+wheel_files=("$dist_dir"/*.whl)
+if [[ ${#wheel_files[@]} -ne 1 || ! -f "${wheel_files[0]}" ]]; then
+    echo "error: expected exactly one wheel in $dist_dir" >&2
+    exit 1
+fi
+
+for python_version in 3.10 3.14; do
+    uv run \
+        --isolated \
+        --no-project \
+        --python "$python_version" \
+        --with "${wheel_files[0]}" \
+        python -c \
+        'import albus_sdk; from albus_sdk import Albus; assert Albus; print(albus_sdk.VERSION)'
+done
+
+echo "All checks passed."

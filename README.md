@@ -27,6 +27,7 @@ Albus API: Albus service REST API
   * [Resource Management](#resource-management)
   * [Debugging](#debugging)
 * [Development](#development)
+  * [Checks](#checks)
   * [Maturity](#maturity)
   * [Contributions](#contributions)
 
@@ -544,6 +545,18 @@ You can also enable a default debug logger by setting an environment variable `A
 <!-- Placeholder for Future Speakeasy SDK Sections -->
 
 # Development
+
+## Checks
+
+Install `uv` and the pinned Speakeasy CLI, then run the complete local check:
+
+```bash
+./tools/check
+```
+
+This lints the OpenAPI snapshot, checks the generated package with MyPy and
+Pyright, runs the handwritten tests, builds both package formats, validates
+their metadata, and installs the wheel on Python 3.10 and 3.14.
 
 ## Maturity
 
