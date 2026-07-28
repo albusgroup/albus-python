@@ -1,0 +1,27 @@
+speakeasyVersion: 1.791.0
+sources:
+    Albus API:
+        sourceNamespace: albus-api
+        sourceRevisionDigest: sha256:9a6deec712d36ebf500b49713d913e1f96b61ed8c7bd25c443afb1fbfd89ba89
+        sourceBlobDigest: sha256:5479b2b592677a74e698e810064407c5778dc83731a777c70ac4094f15351c40
+        tags:
+            - latest
+            - 1.0.0
+targets:
+    albus:
+        source: Albus API
+        sourceNamespace: albus-api
+        sourceRevisionDigest: sha256:9a6deec712d36ebf500b49713d913e1f96b61ed8c7bd25c443afb1fbfd89ba89
+        sourceBlobDigest: sha256:5479b2b592677a74e698e810064407c5778dc83731a777c70ac4094f15351c40
+workflow:
+    workflowVersion: 1.0.0
+    speakeasyVersion: 1.791.0
+    sources:
+        Albus API:
+            inputs:
+                - location: openapi/openapi.yaml
+            output: .speakeasy/out.openapi.yaml
+    targets:
+        albus:
+            target: python
+            source: Albus API

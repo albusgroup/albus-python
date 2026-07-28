@@ -1,0 +1,1101 @@
+openapi: 3.0.3
+info:
+  title: Albus API
+  description: Albus service REST API
+  version: 1.0.0
+
+servers:
+  - url: https://albus.sh/api
+    description: Production server
+  - url: http://localhost:8080
+    description: Local development server
+
+tags:
+  - name: Auth
+    description: Identify the authenticated user.
+  - name: Health
+    description: Check service availability.
+  - name: Secrets
+    description: Manage secrets available to agent sessions.
+  - name: Sessions
+    description: Run and inspect agent sessions.
+  - name: Tokens
+    description: Manage organization API keys.
+
+security:
+  - bearerAuth: []
+  - apiKeyAuth: []
+
+paths:
+  /secrets:
+    get:
+      operationId: listSecrets
+      summary: List all secrets
+      tags:
+        - Secrets
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListSecretsResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+    post:
+      operationId: createSecret
+      summary: Create a secret
+      tags:
+        - Secrets
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSecretRequest"
+      responses:
+        "200":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Secret"
+        "400":
+          description: Bad request (invalid name or value)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrBadRequest"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+
+  /secrets/{name}:
+    get:
+      operationId: getSecret
+      summary: Get a secret by name
+      tags:
+        - Secrets
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Secret"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrNotFound"
+    put:
+      operationId: updateSecret
+      summary: Update a secret by name
+      tags:
+        - Secrets
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSecretRequest"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Secret"
+        "400":
+          description: Bad request (invalid value)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrBadRequest"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrNotFound"
+    delete:
+      operationId: deleteSecret
+      summary: Delete a secret by name
+      tags:
+        - Secrets
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrNotFound"
+
+  /sessions:
+    get:
+      operationId: listSessions
+      summary: List all sessions
+      tags:
+        - Sessions
+      security:
+        - apiKeyAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListSessionsResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+
+  /sessions/{id}:
+    parameters:
+      - $ref: "#/components/parameters/SessionID"
+    get:
+      operationId: getSession
+      summary: Get a session with its messages
+      description: >
+        Returns the session's metadata and a page of its messages ordered by
+        cursor ascending. Use `after` and `limit` to page through messages.
+      tags:
+        - Sessions
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - $ref: "#/components/parameters/AfterCursor"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionResponse"
+        "400":
+          description: Invalid cursor
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrBadRequest"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrNotFound"
+    post:
+      operationId: runSession
+      summary: Run or resume a session
+      description: >
+        Runs the session with the given ID, creating it if it does not exist and
+        resuming it otherwise. Each call is a single invocation, optionally
+        identified by the Idempotency-Key header. Supplying a key makes the call
+        safe to retry: retrying with the same key and an identical body
+        re-attaches to the in-flight invocation and returns its current state; a
+        differing body for the same key returns 409; a new key while another
+        invocation is still running returns 423. Omitting the header starts a
+        fresh, non-idempotent invocation each time; the server generates a key
+        and returns it in the Idempotency-Key response header.
+
+
+        With `wait=true` the request long-polls: it blocks until the
+        invocation's assistant response is available and returns it in
+        `messages`. `wait_timeout` bounds the wait in seconds; when omitted the
+        request waits indefinitely (until the response arrives or the client
+        disconnects). If the timeout elapses first, the request fails with 504
+        and a JSON body, letting the client distinguish an expected server-side
+        timeout from a transport error; the client may retry.
+      tags:
+        - Sessions
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Wait"
+        - $ref: "#/components/parameters/WaitTimeout"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RunSessionRequest"
+      responses:
+        "200":
+          description: Session run or resumed
+          headers:
+            Idempotency-Key:
+              description: >
+                The effective idempotency key for this invocation — the value
+                sent in the request header, or a server-generated one when the
+                header was omitted. Use it to reference or safely retry this
+                invocation.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionResponse"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrBadRequest"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+        "409":
+          description: Idempotency key reused with a different request body
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrConflict"
+        "423":
+          description: Another invocation is currently running for this session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrLocked"
+        "502":
+          description: >
+            The harness run failed instead of producing a response (only
+            possible with wait=true, or when replaying a failed invocation).
+            The body carries the failure kind and detail.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrRunFailed"
+        "504":
+          description: Timed out waiting for the assistant response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrTimeout"
+    delete:
+      operationId: deleteSession
+      summary: Delete a session
+      tags:
+        - Sessions
+      security:
+        - apiKeyAuth: []
+      responses:
+        "204":
+          description: Deleted
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrNotFound"
+
+  /sessions/{id}/audit:
+    parameters:
+      - $ref: "#/components/parameters/SessionID"
+    get:
+      operationId: getSessionAudit
+      summary: List a session's audit log
+      description: >
+        Returns the session's audit log — an immutable, time-ordered record of
+        what happened during its agent runs (LLM calls, tool results, and run
+        outcomes). Events are ordered by the time they occurred. Use `after` and
+        `limit` to page through them; pass the response's `next_cursor` as the
+        next request's `after` to fetch the following page.
+      tags:
+        - Sessions
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - $ref: "#/components/parameters/AfterCursor"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListAuditEventsResponse"
+        "400":
+          description: Invalid cursor
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrBadRequest"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrNotFound"
+
+  /tokens:
+    get:
+      operationId: listTokens
+      summary: List all API tokens. Never returns token values, only metadata.
+      tags:
+        - Tokens
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListTokensResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+    post:
+      operationId: createToken
+      summary: Create an API token. The token value is returned only in this response.
+      tags:
+        - Tokens
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTokenRequest"
+      responses:
+        "200":
+          description: Created — token value is returned only at creation time
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateTokenResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+
+  /tokens/{id}:
+    get:
+      operationId: getToken
+      summary: Get token metadata by ID. Never returns the token value.
+      tags:
+        - Tokens
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The token's lookup ID (the identifier portion of the token string).
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrNotFound"
+    delete:
+      operationId: deleteToken
+      summary: Revoke an API token by ID
+      tags:
+        - Tokens
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The token's lookup ID.
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Revoked
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrNotFound"
+
+  /health:
+    get:
+      operationId: health
+      summary: Health check endpoint
+      description: Returns 200 OK if the service is healthy
+      tags:
+        - Health
+      security: []
+      responses:
+        "200":
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+        "503":
+          description: Service is unavailable (shutting down)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+
+  /whoami:
+    get:
+      operationId: whoami
+      summary: Get current user information
+      description: Decodes the JWT bearer token and returns user information
+      tags:
+        - Auth
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: User information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WhoamiResponse"
+        "401":
+          description: Unauthorized - invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    apiKeyAuth:
+      type: http
+      scheme: bearer
+      description: Org-scoped API key issued via POST /tokens
+
+  parameters:
+    SessionID:
+      name: id
+      in: path
+      required: true
+      description: Client-provided session identifier. Use the same value across requests to continue the same agent session.
+      schema:
+        type: string
+        minLength: 2
+        maxLength: 100
+        pattern: "^[0-9a-zA-Z._:-]+$"
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      description: >
+        Optional but strongly encouraged. Uniquely identifies this invocation of
+        the session; reuse the same value to safely retry a request, and a new
+        value starts a new invocation. When omitted, the server generates a key
+        for the invocation and returns it in the Idempotency-Key response header,
+        but the request is not retry-safe.
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 255
+    AfterCursor:
+      name: after
+      in: query
+      required: false
+      description: >
+        Opaque pagination cursor. Return only items positioned after it; pass a
+        value obtained from a previous page to fetch the next one.
+      schema:
+        type: string
+    Limit:
+      name: limit
+      in: query
+      required: false
+      description: Maximum number of items to return.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 1000
+        default: 100
+    Wait:
+      name: wait
+      in: query
+      required: false
+      description: >
+        When true, long-poll: block until the invocation's assistant response
+        is available before returning.
+      schema:
+        type: boolean
+        default: false
+    WaitTimeout:
+      name: wait_timeout
+      in: query
+      required: false
+      description: >
+        Maximum time in seconds to block when wait=true. Omit to wait
+        indefinitely. Ignored when wait is false.
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          example: "ok"
+
+    WhoamiResponse:
+      type: object
+      required:
+        - user_id
+        - email
+      properties:
+        user_id:
+          type: string
+          description: Unique user identifier
+          example: "user_123"
+        email:
+          type: string
+          format: email
+          description: User's email address
+          example: "user@example.com"
+        name:
+          type: string
+          description: User's display name
+          example: "John Doe"
+        roles:
+          type: array
+          items:
+            type: string
+          description: User's roles
+          example: ["admin", "user"]
+        issued_at:
+          type: integer
+          format: int64
+          description: Token issue timestamp (Unix epoch)
+        expires_at:
+          type: integer
+          format: int64
+          description: Token expiration timestamp (Unix epoch)
+
+    ErrUnauthorized:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Invalid or expired token"
+
+    ErrNotFound:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Resource not found"
+
+    ErrBadRequest:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Invalid request parameters"
+
+    ErrConflict:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Idempotency key reused with a different request body"
+
+    ErrLocked:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Another invocation is currently running for this session"
+
+    ErrRunFailed:
+      type: object
+      required:
+        - message
+        - kind
+      properties:
+        message:
+          type: string
+          description: Human-readable failure detail
+          example: "harness run failed (crash): signal 9"
+        kind:
+          type: string
+          description: >
+            Failure classification: "crash" (unexpected exit or signal),
+            "no_progress" (the harness stalled and was force-killed), or
+            "interrupted" (the run could not continue), or "internal" (the run
+            could not start).
+          example: "crash"
+
+    ErrTimeout:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Timed out waiting for the assistant response"
+
+    # Resource schemas
+
+    Secret:
+      type: object
+      required:
+        - name
+        - masked_value
+      properties:
+        name:
+          type: string
+        masked_value:
+          type: string
+          description: The secret value with all but the last 3 characters masked.
+
+    # Sessions API (top-level /sessions)
+
+    Provider:
+      type: object
+      required:
+        - name
+        - credential
+      properties:
+        name:
+          type: string
+          description: Provider name (e.g. "openai", "gemini", "vertex").
+        url:
+          type: string
+          description: Optional base URL override for the provider endpoint.
+        credential:
+          type: string
+          description: >
+            Secret reference the provider authenticates with
+            (e.g. "albus.sh/secrets/my-key"), not a raw secret value.
+
+    Model:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Model identifier (e.g. "gemini-2.5-flash", "claude-opus-4").
+        provider:
+          $ref: "#/components/schemas/Provider"
+
+    RunSessionRequest:
+      type: object
+      required:
+        - user_prompt
+        - model
+      properties:
+        user_prompt:
+          type: string
+          description: The user prompt driving this invocation.
+        model:
+          $ref: "#/components/schemas/Model"
+        tools:
+          type: array
+          items:
+            type: string
+          description: Names of the tools the model may call (e.g. "WEB_SEARCH").
+        system_prompt:
+          type: string
+          description: System instructions for the model. Uses a default if omitted.
+        max_steps:
+          type: integer
+          minimum: 1
+          description: Max model steps before the run stops. Uses a default if omitted.
+        mcp_servers:
+          type: array
+          items:
+            $ref: "#/components/schemas/MCPServer"
+          description: MCP servers whose tools are offered to the model.
+
+    MCPServer:
+      type: object
+      required:
+        - name
+        - url
+      properties:
+        name:
+          type: string
+          description: >
+            Unique alias for the server. It prefixes the server's tool names
+            (e.g. "github" exposes its search tool as "github__search").
+        url:
+          type: string
+          description: The server's Streamable HTTP endpoint.
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+          description: >
+            HTTP headers sent to the server. Values are secret references
+            (e.g. "albus.sh/secrets/github-mcp"), not raw secret values.
+        allowed_tools:
+          type: array
+          items:
+            type: string
+          description: >
+            The server tools the model may call. Omit to allow all of them.
+
+    Session:
+      type: object
+      required:
+        - id
+        - state
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          minLength: 2
+          maxLength: 100
+          pattern: "^[0-9a-zA-Z._:-]+$"
+          description: Client-provided session identifier.
+        state:
+          type: string
+          enum: [RUNNING, DONE, FAILED, CANCELED]
+          description: Lifecycle state of the session.
+        current_invocation_id:
+          type: string
+          description: >
+            The invocation currently running, if any. Omitted when the session
+            is idle.
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    SessionMessage:
+      type: object
+      required:
+        - cursor
+        - invocation_id
+        - role
+        - content
+        - created_at
+      properties:
+        cursor:
+          type: integer
+          format: int64
+          description: Monotonic per-session position of this message.
+        invocation_id:
+          type: string
+          description: The invocation that produced this message.
+        role:
+          type: string
+          enum: [user, assistant]
+        content:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    SessionResponse:
+      type: object
+      required:
+        - session
+        - messages
+      properties:
+        session:
+          $ref: "#/components/schemas/Session"
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/SessionMessage"
+
+    AuditEvent:
+      type: object
+      required:
+        - id
+        - session_id
+        - invocation_id
+        - type
+        - payload
+        - event_time
+      properties:
+        id:
+          type: string
+          description: Stable identifier of this audit event within the session.
+        session_id:
+          type: string
+          description: The session this event belongs to.
+        invocation_id:
+          type: string
+          description: The invocation (run) during which this event occurred.
+        type:
+          type: string
+          enum: [llm_call, tool_result, run_finished, run_failed]
+          description: >
+            The kind of event (e.g. "llm_call" for a model call and the tool
+            calls it requested, "tool_result" for a tool's output).
+        payload:
+          type: object
+          additionalProperties: true
+          description: >
+            The event's details, whose shape depends on `type` (e.g. the model
+            content and requested tool calls for "llm_call").
+        event_time:
+          type: string
+          format: date-time
+          description: When the event occurred.
+
+    ListAuditEventsResponse:
+      type: object
+      required:
+        - events
+      properties:
+        events:
+          type: array
+          items:
+            $ref: "#/components/schemas/AuditEvent"
+        next_cursor:
+          type: string
+          description: >
+            Cursor for the next page. Pass it as `after` to fetch the following
+            events. Omitted when there are no more events.
+
+    ListSessionsResponse:
+      type: object
+      required:
+        - sessions
+      properties:
+        sessions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Session"
+
+    Token:
+      type: object
+      description: API token metadata. Never includes the token value.
+      required:
+        - id
+        - name
+        - created_at
+      properties:
+        id:
+          type: string
+          description: Globally unique lookup identifier (the first segment of the token string).
+        name:
+          type: string
+          description: Human-readable display name for the token.
+        created_at:
+          type: string
+          format: date-time
+        last_used_at:
+          type: string
+          format: date-time
+          description: Timestamp of the last time this token was used for authentication.
+
+    # Request/response envelopes
+
+    ListSecretsResponse:
+      type: object
+      required:
+        - secrets
+      properties:
+        secrets:
+          type: array
+          items:
+            $ref: "#/components/schemas/Secret"
+
+    CreateSecretRequest:
+      type: object
+      required:
+        - name
+        - value
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+          description: The secret value.
+
+    UpdateSecretRequest:
+      type: object
+      required:
+        - value
+      properties:
+        value:
+          type: string
+          description: The new secret value.
+
+    ListTokensResponse:
+      type: object
+      required:
+        - tokens
+      properties:
+        tokens:
+          type: array
+          items:
+            $ref: "#/components/schemas/Token"
+
+    CreateTokenRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+
+    # View-once response for POST /tokens — includes the full token value.
+    # All other token responses use Token (which omits the value).
+    CreateTokenResponse:
+      type: object
+      required:
+        - id
+        - name
+        - token
+        - created_at
+      properties:
+        id:
+          type: string
+          description: Globally unique lookup identifier.
+        name:
+          type: string
+          description: Human-readable display name.
+        token:
+          type: string
+          description: |
+            The full API token value (format: alb-<id>-<secret>).
+            Returned only at creation time — it cannot be retrieved again.
+        created_at:
+          type: string
+          format: date-time

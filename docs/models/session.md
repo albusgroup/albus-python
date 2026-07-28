@@ -1,0 +1,12 @@
+# Session
+
+
+## Fields
+
+| Field                                                                        | Type                                                                         | Required                                                                     | Description                                                                  |
+| ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `id`                                                                         | *str*                                                                        | :heavy_check_mark:                                                           | Client-provided session identifier.                                          |
+| `state`                                                                      | [models.State](../models/state.md)                                           | :heavy_check_mark:                                                           | Lifecycle state of the session.                                              |
+| `current_invocation_id`                                                      | *Optional[str]*                                                              | :heavy_minus_sign:                                                           | The invocation currently running, if any. Omitted when the session is idle.<br/> |
+| `created_at`                                                                 | [date](https://docs.python.org/3/library/datetime.html#date-objects)         | :heavy_check_mark:                                                           | N/A                                                                          |
+| `updated_at`                                                                 | [date](https://docs.python.org/3/library/datetime.html#date-objects)         | :heavy_check_mark:                                                           | N/A                                                                          |

@@ -1,0 +1,759 @@
+lockVersion: 2.0.0
+id: a976f0f1-b6f2-4c40-96d3-b9839371f64e
+management:
+  docVersion: 1.0.0
+  speakeasyVersion: 1.791.0
+  generationVersion: 2.924.0
+  releaseVersion: 0.1.0
+  repoURL: https://github.com/albusgroup/albus-python
+  installationURL: https://github.com/albusgroup/albus-python.git
+persistentEdits:
+  generation_id: a8286c5c-7f1e-4a21-b4be-9b084d814210
+  pristine_commit_hash: a9598012b5493086b01ccaaf1fca5f28351999d5
+  pristine_tree_hash: 0260da64d6a8121ad33f24574d1690b3d24bab14
+features:
+  python:
+    additionalDependencies: 1.1.0
+    configurableModuleName: 0.2.0
+    constsAndDefaults: 1.0.7
+    core: 6.0.34
+    defaultEnabledRetries: 0.2.0
+    enumUnions: 0.1.1
+    envVarSecurityUsage: 0.3.3
+    flatRequests: 1.0.1
+    flattening: 3.1.1
+    globalSecurity: 3.0.7
+    globalSecurityCallbacks: 1.0.0
+    globalServerURLs: 3.2.1
+    methodArguments: 1.1.1
+    responseFormat: 1.1.0
+    retries: 3.0.7
+    sdkHooks: 1.3.0
+trackedFiles:
+  .gitattributes:
+    id: 24139dae6567
+    last_write_checksum: sha1:53134de3ada576f37c22276901e1b5b6d85cd2da
+    pristine_git_object: 4d75d59008e4d8609876d263419a9dc56c8d6f3a
+  .vscode/settings.json:
+    id: 89aa447020cd
+    last_write_checksum: sha1:f84632c81029fcdda8c3b0c768d02b836fc80526
+    pristine_git_object: 8d79f0abb72526f1fb34a4c03e5bba612c6ba2ae
+  USAGE.md:
+    id: 3aed33ce6e6f
+    last_write_checksum: sha1:7c6099213ecae17e103e5d94aebf9246dc82b57d
+    pristine_git_object: 25ed1c92e72425b5cd88207da97ba6b7108c8694
+  docs/errors/errbadrequest.md:
+    id: f782381469e2
+    last_write_checksum: sha1:39219110d5d369ebebe1540e7ef32ba9b8cdfd91
+    pristine_git_object: 925dcc857be16e4bff75bb9d6213932d0e8445a8
+  docs/errors/errconflict.md:
+    id: f5be740952e6
+    last_write_checksum: sha1:995155331c0524ba692884ce2c64531e638494f5
+    pristine_git_object: 51a55eea2f39f4098515c78ad3b3208b08b734f0
+  docs/errors/errlocked.md:
+    id: 88e24f98889a
+    last_write_checksum: sha1:579daa76af2e0d327f60e03df5242c8a2555fc75
+    pristine_git_object: 3f3a79ea4543a61cd42748f02d63ed088d2bb2d5
+  docs/errors/errnotfound.md:
+    id: a84c4ed6529a
+    last_write_checksum: sha1:39ac54ec7a260c8059fccc48386672acaa6d3563
+    pristine_git_object: 5bf69cddbc37cd989b531d6888eae2c97dfc2e59
+  docs/errors/errrunfailed.md:
+    id: af3d0ec21af3
+    last_write_checksum: sha1:d4ed2a6b55317799793923c73c9224eef71cf09f
+    pristine_git_object: f3fc1a4e784e66f523043bd6bb0fc0521271fbe6
+  docs/errors/errtimeout.md:
+    id: 7ba2227f5a32
+    last_write_checksum: sha1:e3e98e0ece9d31e9f3ba8221b08c75a1f2a83c95
+    pristine_git_object: b7224fbadf0c9b9eb6d94aad63f555a6b86c2ab7
+  docs/errors/errunauthorized.md:
+    id: 642d4d037541
+    last_write_checksum: sha1:d91d1ee2acb0b4e22ee1505ef21c48790cda07df
+    pristine_git_object: eece610d52829c457187598ada5c6cb58ee5fdee
+  docs/errors/healthresponseerror.md:
+    id: bc7b6382c85c
+    last_write_checksum: sha1:ca1ea32654f5fa8b9b0f09c5ba101208610a2a8a
+    pristine_git_object: 34837b844241ec601179afa7f2255f8c8b357fd1
+  docs/models/auditevent.md:
+    id: 4220cbb2c225
+    last_write_checksum: sha1:64c4c9a97c64b30eb6f9ff2d66e369748054ccb4
+    pristine_git_object: f6048c709fbf046aea69128c67979b8c4628c1f3
+  docs/models/createsecretrequest.md:
+    id: f0c36fa5a37f
+    last_write_checksum: sha1:f30071dfc1486fad89e73e9985b56352db99d7ed
+    pristine_git_object: db4d222a72418d00013dc7dafc3589eeef8b03a9
+  docs/models/createtokenrequest.md:
+    id: a9ce4aebec0c
+    last_write_checksum: sha1:d7d13436d3e6538b732f7eb1a9f090392d229fa4
+    pristine_git_object: 1c9352414567a657622c44e962aee5df615ab773
+  docs/models/createtokenresponse.md:
+    id: 7d396decc825
+    last_write_checksum: sha1:f681fb784a1e938ef1492ae9734e915022fae6d7
+    pristine_git_object: 2f8105c38e18e9423728f5f9c8ea467bb110bf78
+  docs/models/deletesecretrequest.md:
+    id: 18d68ae836e5
+    last_write_checksum: sha1:cd3a496d7bce69f4a619b5452063fe0652e262cf
+    pristine_git_object: 6b757e95ee536a6d4140d074ba6b3edf08643b3c
+  docs/models/deletesessionrequest.md:
+    id: e7877488850c
+    last_write_checksum: sha1:908f9a9e36534c00c7d26acc41bae0429d55fc3e
+    pristine_git_object: 73fbf95ff76cd8e638bb67830d80474115927ca5
+  docs/models/deletetokenrequest.md:
+    id: f2b0cce9ec99
+    last_write_checksum: sha1:a73749083de7661c260729acc92539552bebbe99
+    pristine_git_object: fbba0655fcdf25b55e6361501c7af39fabb325b6
+  docs/models/getsecretrequest.md:
+    id: 30160b5ac860
+    last_write_checksum: sha1:a3e3caba04653e540f1de0e7081f810df8118f73
+    pristine_git_object: e0b8f54701f99477656f18ee0ca53ebd549449c9
+  docs/models/getsessionauditrequest.md:
+    id: f100be4fe82c
+    last_write_checksum: sha1:402168b1cf48ccf3a90e11356e984a0b764b6b98
+    pristine_git_object: 32f4cad13ede58318610b92b2783010cfbb4b12f
+  docs/models/getsessionrequest.md:
+    id: 1533087690ea
+    last_write_checksum: sha1:3fbf327cd5dd4a671169d2acd67a2feaa8003b77
+    pristine_git_object: b53a893015dd5ec4ac3e108c1a7655e881574bb0
+  docs/models/gettokenrequest.md:
+    id: 5d1b6622b3bc
+    last_write_checksum: sha1:25f6c151edc0f063f6b9b4eef3bc69af1d174d64
+    pristine_git_object: 0ed1df7ae23a914150693fd13b0a495c1b622e28
+  docs/models/healthresponse.md:
+    id: bb500e6ba0cc
+    last_write_checksum: sha1:c54ee5688a4225e071e142ab430aa27a39fac872
+    pristine_git_object: e5f50acab5c05a73cc6c14f4ec171258f6833169
+  docs/models/listauditeventsresponse.md:
+    id: 9ab97b008a0a
+    last_write_checksum: sha1:00ed611f7442618e7d9290e8425766e5b63383db
+    pristine_git_object: a52cb16fcce43c1f70f60b63375f45f92f8bf446
+  docs/models/listsecretsresponse.md:
+    id: 033def0610fb
+    last_write_checksum: sha1:f827395460f0a04660e90650f3cc36ef9d904f81
+    pristine_git_object: a3f2cdbd12addbbd0e29292b5a953f1e10b983a7
+  docs/models/listsessionsresponse.md:
+    id: 28f214c47f70
+    last_write_checksum: sha1:a9e45a1bc61784724971918cc8a0866526607673
+    pristine_git_object: 757d72007aa93fc68065e99dbe3de1fe6c3dc01c
+  docs/models/listtokensresponse.md:
+    id: a15de3b674b6
+    last_write_checksum: sha1:8a775e3c81b21ef6b578e8eca09c0a657cab0c6b
+    pristine_git_object: 2205a67a6528070a0d673f555bf5989acbbf1b8f
+  docs/models/mcpserver.md:
+    id: ff3e5d6d6fef
+    last_write_checksum: sha1:2ef8604b1539d1e83d905db51a41e80e9b352d07
+    pristine_git_object: 1c463c0f94fa4336d7a24960f86b46bcb3170b35
+  docs/models/model.md:
+    id: 66e0236ac289
+    last_write_checksum: sha1:29d12aa0ba58ab92ccd41399faad509de92808e2
+    pristine_git_object: 992cad5093680fbfda9a22b464f38c00c72537e6
+  docs/models/provider.md:
+    id: cedb2a98f8e3
+    last_write_checksum: sha1:cd2c13ebb554067e6b611432bece1182ce19d909
+    pristine_git_object: 568085c7091c4bac9e226f03ce30aafcfb35037f
+  docs/models/role.md:
+    id: b694540a5b1e
+    last_write_checksum: sha1:3b0236c23f8e5d0dac559ef69a5c83f8835f79ae
+    pristine_git_object: a9b33e819fb6054f882f39361808640c331a6082
+  docs/models/runsessionrequest.md:
+    id: 8c80efcb2986
+    last_write_checksum: sha1:654b65a533308e22e43f4418f0c64381cf0acf46
+    pristine_git_object: 10a6caffd031c077a4d78a33e89040b5e2d83d38
+  docs/models/runsessionrequestrequest.md:
+    id: 2e92186ddcba
+    last_write_checksum: sha1:7c30fd12aab7cf20a1ac90a38f19ecda0d81d216
+    pristine_git_object: f550bf35ee75e03e241b77c6fbeefd29a2597a34
+  docs/models/runsessionresponse.md:
+    id: 2e36b1a49813
+    last_write_checksum: sha1:9008daa52b5f5047a260721dd286f6e0cf66ff7e
+    pristine_git_object: 0ad38797992c0b7ae3be1c6432ab6588805a7372
+  docs/models/secret.md:
+    id: a45b09642c40
+    last_write_checksum: sha1:bebf4f010f42615bf42fe40423c9cbe6cb419e62
+    pristine_git_object: 8765923295c835c337fea26247487bc238b58561
+  docs/models/security.md:
+    id: 452e4d4eb67a
+    last_write_checksum: sha1:1493c3f06aef3b1b5c0c7ce8139fbbaa203b8628
+    pristine_git_object: 2264fa88511223ab8f9d45badca1a89505e51640
+  docs/models/session.md:
+    id: c7fb8cd2ec64
+    last_write_checksum: sha1:9056e0e6f5be215ddcdc284e7e0b8c4af16793cd
+    pristine_git_object: 73260a12e2aabe250a080a23b2a8be6eb44e0e31
+  docs/models/sessionmessage.md:
+    id: d2cf49455be2
+    last_write_checksum: sha1:adac3e2765917b3e1425bf93639fd4aa15ddab18
+    pristine_git_object: 65bd58fde07a778c5ed62909936eabf2542c6286
+  docs/models/sessionresponse.md:
+    id: 6ef4cd3d1a91
+    last_write_checksum: sha1:afc4438e01ac423ab7dc5c70e1651fa865be8085
+    pristine_git_object: f0faad09ff95fafb33d3526fdffdbe2249442144
+  docs/models/state.md:
+    id: e560b4e72643
+    last_write_checksum: sha1:548626eb9d4249fbee771beae392347a4313d0c4
+    pristine_git_object: c364433e74623137c0ce78a527852b5b7a79a192
+  docs/models/token.md:
+    id: 46126814fa13
+    last_write_checksum: sha1:206d6129d50921b2ec9d4486b3d4822c33fe0ccb
+    pristine_git_object: a78018683f2d16689b582c2c6044d1b3ccba73da
+  docs/models/type.md:
+    id: 98c32f09b2c8
+    last_write_checksum: sha1:2f198a2f0539e53373eb689b8d6053446d76fb8f
+    pristine_git_object: 2003353fe4c53d4d3e5ce330982f29b4e8a5d83a
+  docs/models/updatesecretrequest.md:
+    id: d660f2be74be
+    last_write_checksum: sha1:b52a4f3cc869ef3579905b9961b7427bc2e526c9
+    pristine_git_object: bb04551f41fbb0b59edc9cbec428046120191717
+  docs/models/updatesecretrequestrequest.md:
+    id: b37450630f86
+    last_write_checksum: sha1:a8cc8e814b095275ffc6bc954c8078a28de59045
+    pristine_git_object: 5bfb8094cfc858d0a2c59835e83465af7934d349
+  docs/models/utils/retryconfig.md:
+    id: 4343ac43161c
+    last_write_checksum: sha1:562c0f21e308ad10c27f85f75704c15592c6929d
+    pristine_git_object: 69dd549ec7f5f885101d08dd502e25748183aebf
+  docs/models/whoamiresponse.md:
+    id: 10707b1b5e9a
+    last_write_checksum: sha1:572970b734b52fa1bb2c8f5431297c13a6ba58e0
+    pristine_git_object: c428494eac1fd1a11593702b38830d3704eed275
+  docs/sdks/auth/README.md:
+    id: e9724f17945f
+    last_write_checksum: sha1:31e0be566fe2fc40c78f779ccf86f65259e9c5d5
+    pristine_git_object: daac677a19d6076b1458f3b1faac99da0edb7fa5
+  docs/sdks/health/README.md:
+    id: 5082c50d5e82
+    last_write_checksum: sha1:08a078a85f44095e07c35df757229515e24e27e3
+    pristine_git_object: 5925af61f83e0f840993fc1a3401c0d52ef89c74
+  docs/sdks/secrets/README.md:
+    id: 856a082980a1
+    last_write_checksum: sha1:9a638b64def947ce8c181915498bdd77f874ff12
+    pristine_git_object: 33461cd4face63febe83960318053fe0a29f6cad
+  docs/sdks/sessions/README.md:
+    id: 57ad62844f79
+    last_write_checksum: sha1:4f8d8e11052040d82a2342c3372347198d7c7ff7
+    pristine_git_object: cd066463a850be97ec7a7958a7aea60a238f6822
+  docs/sdks/tokens/README.md:
+    id: ca61030eb3e5
+    last_write_checksum: sha1:8a05ef240c33892d6b90cb8cdfcbce8f309dad06
+    pristine_git_object: 9d0973acd86d686e3b57fcf61a0186abfa110657
+  py.typed:
+    id: 258c3ed47ae4
+    last_write_checksum: sha1:8efc425ffe830805ffcc0f3055871bdcdc542c60
+    pristine_git_object: 3e38f1a929f7d6b1d6de74604aa87e3d8f010544
+  pylintrc:
+    id: 7ce8b9f946e6
+    last_write_checksum: sha1:cb40e5fd2885dcf20f7c572a590b2656efe282a0
+    pristine_git_object: c00200cfd072e9febac5d6be783da1925d11dac0
+  pyproject.toml:
+    id: 5d07e7d72637
+    last_write_checksum: sha1:ca4b7e1bef808683b4c7893ac527749f03726375
+    pristine_git_object: cee8aa119be91fd833ab7ca196422cfc3e8f8fbd
+  scripts/prepare_readme.py:
+    id: e0c5957a6035
+    last_write_checksum: sha1:87ae869992e135551fddfe7224d27c36a6e6f6a1
+    pristine_git_object: b3475199b5f30d2859017c36ca9aeafd94cabb5c
+  scripts/publish.sh:
+    id: fe273b08f514
+    last_write_checksum: sha1:b290b25b36dca3d5eb1a2e66a2e1bcf2e7326cf3
+    pristine_git_object: c35748f360329c2bc370e9b189f49b1a360b2c48
+  src/albus_sdk/__init__.py:
+    id: b7b2cda7426f
+    last_write_checksum: sha1:da077c0bdfcef64a4a5aea91a17292f72fa2b088
+    pristine_git_object: 833c68cd526fe34aab2b7e7c45f974f7f4b9e120
+  src/albus_sdk/_hooks/__init__.py:
+    id: 3e8a1bb7b0e4
+    last_write_checksum: sha1:45a380490e968d8d95994dd97554ac60eeb6ae60
+    pristine_git_object: e763be4b171bbcf9c16caeaf381f8c92ce8d8e6e
+  src/albus_sdk/_hooks/sdkhooks.py:
+    id: 6648c2c10a06
+    last_write_checksum: sha1:f8ac8e0739c650cfeb3087166c70899ab446e7bf
+    pristine_git_object: 07a1d62d8060fc0a21fbe77fb0a740a63c69bb13
+  src/albus_sdk/_hooks/types.py:
+    id: 89a0a8ba9af3
+    last_write_checksum: sha1:63e9cee2bb66b83d8d4525968d5fe6e3f2290252
+    pristine_git_object: cbf6440ec13211554ee2cecd1ae5c961400cb297
+  src/albus_sdk/_version.py:
+    id: ce551781b317
+    last_write_checksum: sha1:89fc9fddf2204bcf0e3ba436fc77586a6e5eb3df
+    pristine_git_object: f6fdb6049ef7db6d5f8c62c8ee791f0b19398741
+  src/albus_sdk/auth.py:
+    id: 6d245c3ab7ee
+    last_write_checksum: sha1:59e47f3bcc0ea5938744757618e99b321d8d8d95
+    pristine_git_object: f2f88c128f630f81e0cac6a3a314bdcd71b363eb
+  src/albus_sdk/basesdk.py:
+    id: a5c3376e067f
+    last_write_checksum: sha1:311ffbf4d3fed3754328c3c8a6a07dbb298c9709
+    pristine_git_object: dd79fb40d37c84395df8a973fb06e32e085f514d
+  src/albus_sdk/errors/__init__.py:
+    id: e65263ffdae7
+    last_write_checksum: sha1:c4daad186c85faff4813ba343ce5dc883631cebe
+    pristine_git_object: cc22f4dd49eb74d90bc664aaff41457b66412638
+  src/albus_sdk/errors/albusdefaulterror.py:
+    id: 32188509defa
+    last_write_checksum: sha1:3a132e976380dc2134717a5f0e34ea696a471c54
+    pristine_git_object: c2c9574bf97ac3ce660964815a24b5f23009be9a
+  src/albus_sdk/errors/albuserror.py:
+    id: f51a45e14565
+    last_write_checksum: sha1:8b7ea6499cc0a36d1924d3011209a4f587e5ef99
+    pristine_git_object: 7cea15ce13b6e864cd4df86a6d0cda249cec9ec9
+  src/albus_sdk/errors/errbadrequest.py:
+    id: 15f0f5c9a160
+    last_write_checksum: sha1:fc1774c8b57570a2e4c8ddb7bf73ccdb88312277
+    pristine_git_object: 0d88802081c3686cdcb33f9a1b569b721ea3514f
+  src/albus_sdk/errors/errconflict.py:
+    id: 59a695ab73ed
+    last_write_checksum: sha1:bad82567718f674b1d74bfe99251639c1b5d9529
+    pristine_git_object: 3873d3a7523efd1644bca2c7b672d4c89f59a4c9
+  src/albus_sdk/errors/errlocked.py:
+    id: c80f8e229c8a
+    last_write_checksum: sha1:e3d6c0d4afa11eaff698fae9103476c162c58bd1
+    pristine_git_object: 11efc9c857747727688cbdcf54408462fb53d423
+  src/albus_sdk/errors/errnotfound.py:
+    id: 064e3fb43330
+    last_write_checksum: sha1:7e48519f4071d0e9fb83946fcd7bfcd4fa0388f5
+    pristine_git_object: 530381b01b558d5b3e30c29ebd4dd972107e60c3
+  src/albus_sdk/errors/errrunfailed.py:
+    id: e51e8b922111
+    last_write_checksum: sha1:a8d66433d83ef5fa0f44ff0dc2434bc790ca49e0
+    pristine_git_object: 69d4c9fe8f48ef3dc52306881f8b46ad4bc0b5eb
+  src/albus_sdk/errors/errtimeout.py:
+    id: ed8937b2a6ba
+    last_write_checksum: sha1:7adb15d6877ca81a2f3edea9db39845366f7a950
+    pristine_git_object: 19547afd51b905f0563beedd603cfaeb22f0711b
+  src/albus_sdk/errors/errunauthorized.py:
+    id: 26c438a4251c
+    last_write_checksum: sha1:54c226ca91d9b3f84057a164cd191acf0ae8b9d0
+    pristine_git_object: edfca4ca838c14dae8226e5f0ee6c16c4006a20c
+  src/albus_sdk/errors/healthresponse_error.py:
+    id: 7a7881cdec5d
+    last_write_checksum: sha1:239e163069062dfb79812de9c4aaf371bd87bbc3
+    pristine_git_object: 442b35857b87f1c43c19ab01e65e8dabd218f0c0
+  src/albus_sdk/errors/no_response_error.py:
+    id: b4fbd5957c4e
+    last_write_checksum: sha1:7f326424a7d5ae1bcd5c89a0d6b3dbda9138942f
+    pristine_git_object: 1deab64bc43e1e65bf3c412d326a4032ce342366
+  src/albus_sdk/errors/responsevalidationerror.py:
+    id: f24eeaa0d3a0
+    last_write_checksum: sha1:5c93db44ca6aaa4940a68d996426106d0a47574a
+    pristine_git_object: 3b348c0d4c6540d73fd5afde133888c575cd1369
+  src/albus_sdk/health.py:
+    id: 5460f04cd7c9
+    last_write_checksum: sha1:10d7b97880876d5dc2a45c3d6fe45959e69f84bf
+    pristine_git_object: 06ba2917b627b1e92594b437a012e8e479b74e9a
+  src/albus_sdk/httpclient.py:
+    id: 93ad8461824c
+    last_write_checksum: sha1:5e55338d6ee9f01ab648cad4380201a8a3da7dd7
+    pristine_git_object: 89560b566073785535643e694c112bedbd3db13d
+  src/albus_sdk/models/__init__.py:
+    id: d67e35945bd3
+    last_write_checksum: sha1:2a93eac067d1485ef56f5c56b5fb8fa7385ae863
+    pristine_git_object: a7eb025e9557ac62dd3e2a25e1dd044917de7d3a
+  src/albus_sdk/models/auditevent.py:
+    id: b079f1d038bf
+    last_write_checksum: sha1:59a916eeca6f1d93f36f6f22149a7a9ecde56575
+    pristine_git_object: e1d3bf4bca674e5f2a03b7f1fe5b746655335c3c
+  src/albus_sdk/models/createsecretrequest.py:
+    id: 4791a54bef5e
+    last_write_checksum: sha1:ebae86bfe9cc2fa6e31c4327dbb1d16b737d51a1
+    pristine_git_object: 27f4b56c2f855c61cfa5a9f355efec3f7fb6c617
+  src/albus_sdk/models/createtokenrequest.py:
+    id: e671313d0168
+    last_write_checksum: sha1:51ed09e0d1e264548173d4095be81078512a461a
+    pristine_git_object: 8adfd579a370179055751a21c7c5aacdf282ea48
+  src/albus_sdk/models/createtokenresponse.py:
+    id: b7c6fea03b4d
+    last_write_checksum: sha1:71df6059eeb55c5790d5e82610394ab299b42768
+    pristine_git_object: a3305098ccf8e94bae5adbb7a18dffe5c0aef86c
+  src/albus_sdk/models/deletesecretop.py:
+    id: bd8d7720cab6
+    last_write_checksum: sha1:267cd88da306c3b9bf2f971fe2516594935b8385
+    pristine_git_object: d95d3499b2522636b99df9890892e095261955d4
+  src/albus_sdk/models/deletesessionop.py:
+    id: 87804095dbf6
+    last_write_checksum: sha1:6275a5be5cb222490c292be969dc740adf206c08
+    pristine_git_object: 004f5eeac75a0304748e8bdbf2c97962e8877887
+  src/albus_sdk/models/deletetokenop.py:
+    id: 9a2269e07cff
+    last_write_checksum: sha1:03f65f9afa31af0a6ccebb22948b5e151bab5689
+    pristine_git_object: e51dfed5df9dde545d50fcb406de09094c132101
+  src/albus_sdk/models/getsecretop.py:
+    id: af2e5c340098
+    last_write_checksum: sha1:4b76a6e6b21fdabecd7008b05a2f2f5224e6f196
+    pristine_git_object: 65b35596103637b8cc02404f97823df9cc385cc6
+  src/albus_sdk/models/getsessionauditop.py:
+    id: 5a681777182b
+    last_write_checksum: sha1:9c2c5f0d30f9e20f1817d5ededea1c87ffdf04b8
+    pristine_git_object: aeb7813595ab9ef40d13f1ab1e38a5df3b707aec
+  src/albus_sdk/models/getsessionop.py:
+    id: 5380e045ed93
+    last_write_checksum: sha1:530fea17effe05ce52ff7e961f522d4dd88a46de
+    pristine_git_object: 9341b0099345c9299f9a6c8727c87867ef761029
+  src/albus_sdk/models/gettokenop.py:
+    id: 69e35b409710
+    last_write_checksum: sha1:03aaa7830ee0484a753147fa1ad93e77952e8651
+    pristine_git_object: c5fe8eb29e589344bef5d6dd2f26f653c69faf69
+  src/albus_sdk/models/healthresponse.py:
+    id: b4024a7f6cca
+    last_write_checksum: sha1:8cd13bd47fffd0f234e0b1aabde0020e1bf060fb
+    pristine_git_object: 974ce299655e3f1fe1b3f6f2aaaf36288405f5b7
+  src/albus_sdk/models/listauditeventsresponse.py:
+    id: d1515a490682
+    last_write_checksum: sha1:99ce30072ad2e2776b0ac48e3ebaa31cb843f11d
+    pristine_git_object: 45cb00ef2999154af88df68aa3e2d36470e059d1
+  src/albus_sdk/models/listsecretsresponse.py:
+    id: a90198f6e8d5
+    last_write_checksum: sha1:0899551143df07e948c84a20fd4d0ddfe0b96a39
+    pristine_git_object: f412106b3164c9a0043c18778c9636e33a1731df
+  src/albus_sdk/models/listsessionsresponse.py:
+    id: cee05b275282
+    last_write_checksum: sha1:d1ff9363bab44848d19efe4be1762f75acf8f583
+    pristine_git_object: 2efd06108af47c7466ae0980ad1f80a0e874389a
+  src/albus_sdk/models/listtokensresponse.py:
+    id: 737e9ee24f50
+    last_write_checksum: sha1:544925c38710be6311c98b7ab7a9ef6398b027e6
+    pristine_git_object: 7530d52a725e5609c7b40057895168ff25a68bc6
+  src/albus_sdk/models/mcpserver.py:
+    id: cea41d629ca5
+    last_write_checksum: sha1:29bdbd7dbd434b6ce70f9d9fe367a8df64be846a
+    pristine_git_object: 3e530e2a82244f767e35cd41ba2b9b5a909cbaf9
+  src/albus_sdk/models/model.py:
+    id: 95ef892c5d3a
+    last_write_checksum: sha1:9257d9fbed243e74469552708194b5c1d8c17aeb
+    pristine_git_object: e91d7b27a336b0e63262124e049ad77929381e12
+  src/albus_sdk/models/provider.py:
+    id: 6ab0dc2ca94a
+    last_write_checksum: sha1:3dbc3b4df9390d6cc1ece88a237e034cdbb9c36e
+    pristine_git_object: f729d08aeeeb4c6ae6c85aa67c3cbbe6eb2b43f6
+  src/albus_sdk/models/runsessionop.py:
+    id: 7c7bcfadf0d7
+    last_write_checksum: sha1:47a142a909603c85d95e93bb9363a9caa5a567bf
+    pristine_git_object: 3f7f73fe566449a4e651869115ed337d008e3dd2
+  src/albus_sdk/models/runsessionrequest.py:
+    id: 92e7f88ddd39
+    last_write_checksum: sha1:d31c10b248871d1480f525facff82adadc2b3af4
+    pristine_git_object: b451c1a2f7be420d99017fce51dc01dd2f99b82b
+  src/albus_sdk/models/secret.py:
+    id: 86a77fcff44a
+    last_write_checksum: sha1:09b52cd5d38ef0eb6c4d954ba891b373dc931693
+    pristine_git_object: 1762255a82e275df7d348f073cd52e66217367d2
+  src/albus_sdk/models/security.py:
+    id: 08ef9ae8cf6f
+    last_write_checksum: sha1:3d18651e00e67f3f1e475544e0140f3693935aab
+    pristine_git_object: d5e3a775486d194b88a187633e64870a2eaff229
+  src/albus_sdk/models/session.py:
+    id: 07b56f31f8af
+    last_write_checksum: sha1:cdad305c2ebf266e23ecedb4f81751826e8a907b
+    pristine_git_object: c849777228a2d61d063475ec61d4f16d021e8c53
+  src/albus_sdk/models/sessionmessage.py:
+    id: 139fdcb0db78
+    last_write_checksum: sha1:69bc172a390788c6ef0552bf54d9dd72fe99a5b6
+    pristine_git_object: c316c4cfcb243763c806999336b5200c829881a9
+  src/albus_sdk/models/sessionresponse.py:
+    id: db5fbf26af18
+    last_write_checksum: sha1:82ad874d80c28a211d1eda3ab11edc6b5a589572
+    pristine_git_object: ab067c657a6c6cc2c9e91c89e3a790815c360f86
+  src/albus_sdk/models/token.py:
+    id: 901b53c1a9f4
+    last_write_checksum: sha1:42fb09c60821d86c8fe0c6f0e01778ef0bb22046
+    pristine_git_object: 41112f4a4fad0fd8fd0a4d7f2374dc91d64f5502
+  src/albus_sdk/models/updatesecretop.py:
+    id: 616a12c52e44
+    last_write_checksum: sha1:d7f5e629752b92bfee8fb690aa51e539601ef943
+    pristine_git_object: 8dd29b3d3c7d9c2cd172dfe1a39ebd747e6ccfff
+  src/albus_sdk/models/updatesecretrequest.py:
+    id: ac19bdcded62
+    last_write_checksum: sha1:1b8ffa4f9062663b24fb32a817742925afc104ac
+    pristine_git_object: f85acda6a7438edcd47d4f756b1797544cb38dcd
+  src/albus_sdk/models/whoamiresponse.py:
+    id: 141444cfe35f
+    last_write_checksum: sha1:c100ccc82611983df94c4a0f43879ea80999dfc0
+    pristine_git_object: 85a6cd755ba6bf19fd354541413d91906cf7d32d
+  src/albus_sdk/py.typed:
+    id: 7bc41fb6f114
+    last_write_checksum: sha1:8efc425ffe830805ffcc0f3055871bdcdc542c60
+    pristine_git_object: 3e38f1a929f7d6b1d6de74604aa87e3d8f010544
+  src/albus_sdk/sdk.py:
+    id: 95b22bb2f208
+    last_write_checksum: sha1:2c9b8f62aca323c7dd46147af6f4208383375636
+    pristine_git_object: 0eb3d6c6ccc1e7334f3f12de4c66de7e2d534b83
+  src/albus_sdk/sdkconfiguration.py:
+    id: 854b2ba3c254
+    last_write_checksum: sha1:57eb88e4c56c5cd764f2f2e5a26ef67e93e7e9f1
+    pristine_git_object: b049dfd96aab5c4692a2a40b4550070c82dbc750
+  src/albus_sdk/secrets.py:
+    id: a8240869ed44
+    last_write_checksum: sha1:f81739785314106aeacec8d9208c9c39ddc27370
+    pristine_git_object: c25e1d3f1f690717bba1b421dd13660693712d27
+  src/albus_sdk/sessions.py:
+    id: f4174c15a28a
+    last_write_checksum: sha1:6c6e82e756194efcd67182a75dea39db4055508f
+    pristine_git_object: a58d92d7926d518579f8eb8fbf8e76c9439929f4
+  src/albus_sdk/tokens.py:
+    id: 149cc9082e7e
+    last_write_checksum: sha1:9ae957ce5d0038cf263345377157fc83582e0642
+    pristine_git_object: 1d2bb1801c03cb3b96c151787671c3c5897f8787
+  src/albus_sdk/types/__init__.py:
+    id: 1c38b37eb3a2
+    last_write_checksum: sha1:f9ad14217f832e74f594285960125add50324be9
+    pristine_git_object: faa268137bc01c9d08cfadc4797017db48747a96
+  src/albus_sdk/types/base64fileinput.py:
+    id: bd1db83bb3ae
+    last_write_checksum: sha1:1522687ae3398374c35710cad993a6e82b5ab99d
+    pristine_git_object: 862566fe2b1db830276b390e136e65090e5963d2
+  src/albus_sdk/types/basemodel.py:
+    id: c77cee23551b
+    last_write_checksum: sha1:10d84aedeb9d35edfdadf2c3020caa1d24d8b584
+    pristine_git_object: a9a640a1a7048736383f96c67c6290c86bf536ee
+  src/albus_sdk/utils/__init__.py:
+    id: 51942b65e3ab
+    last_write_checksum: sha1:527db7a6c93948ecdec6a33f56b6551ae44f0180
+    pristine_git_object: c48a36ca3d6e47e384b133bc0bcb482c6d8589b9
+  src/albus_sdk/utils/annotations.py:
+    id: 1f501a298837
+    last_write_checksum: sha1:a4824ad65f730303e4e1e3ec1febf87b4eb46dbc
+    pristine_git_object: 12e0aa4f1151bb52474cc02e88397329b90703f6
+  src/albus_sdk/utils/datetimes.py:
+    id: 14e3b5131aaf
+    last_write_checksum: sha1:fa47d54c549ff9b95496ce91930fadfb04a36be9
+    pristine_git_object: adad24762cf452d137abe94fda0fd26224cef593
+  src/albus_sdk/utils/dynamic_imports.py:
+    id: 72dc7d0abc2a
+    last_write_checksum: sha1:a1940c63feb8eddfd8026de53384baf5056d5dcc
+    pristine_git_object: 673edf82a97d0fea7295625d3e092ea369a36b79
+  src/albus_sdk/utils/enums.py:
+    id: b14e5694ab8a
+    last_write_checksum: sha1:bc8c3c1285ae09ba8a094ee5c3d9c7f41fa1284d
+    pristine_git_object: 3324e1bc2668c54c4d5f5a1a845675319757a828
+  src/albus_sdk/utils/eventstreaming.py:
+    id: be02c0cf863c
+    last_write_checksum: sha1:7d1dc68f8b48486ab646653aa05cc38752e1f912
+    pristine_git_object: a8d4fe5cc88d3c7337339e1b36a61bbf7ca8c4eb
+  src/albus_sdk/utils/forms.py:
+    id: 6714fef25f5b
+    last_write_checksum: sha1:dcf527960992b8baef3b21937c7e6c4e652630c0
+    pristine_git_object: 193f264960f3014c81d41543b9023c14c44c12e6
+  src/albus_sdk/utils/headers.py:
+    id: edf0d101fd07
+    last_write_checksum: sha1:7c6df233ee006332b566a8afa9ce9a245941d935
+    pristine_git_object: 37864cbbbc40d1a47112bbfdd3ba79568fc8818a
+  src/albus_sdk/utils/logger.py:
+    id: 748ff5e9ba27
+    last_write_checksum: sha1:8c3c102c81950e559939840f813bba64dd93a904
+    pristine_git_object: 655c1bea23d9fe0cadbf7888d1ab943c89dfde3b
+  src/albus_sdk/utils/metadata.py:
+    id: 64ba1ae700a1
+    last_write_checksum: sha1:e703e5cbb5255144aacf86898d1420529afaaff8
+    pristine_git_object: 5abddd588837ac297050ca3b543627faadb350a9
+  src/albus_sdk/utils/queryparams.py:
+    id: 139cea82106f
+    last_write_checksum: sha1:b94c3f314fd3da0d1d215afc2731f48748e2aa59
+    pristine_git_object: c04e0db82b68eca041f2cb2614d748fbac80fd41
+  src/albus_sdk/utils/requestbodies.py:
+    id: d94afcaf6b74
+    last_write_checksum: sha1:e1fef575283b7fe7fe2ad392dbbb3fb105309124
+    pristine_git_object: 591415af8e64baa410627b507d2740afb5387d13
+  src/albus_sdk/utils/retries.py:
+    id: 516ef8e9440c
+    last_write_checksum: sha1:3585b891142f30a597fbf7a2f0340700babef8e4
+    pristine_git_object: ca7b59efebbbd9545744d0207ef42725c4cc5143
+  src/albus_sdk/utils/security.py:
+    id: 193766c15a31
+    last_write_checksum: sha1:9405cbc695b84817ff38420b8798a1119ff02d80
+    pristine_git_object: f8a370fed74d8637bef776967c79c848721967f8
+  src/albus_sdk/utils/serializers.py:
+    id: 303339a3b9d8
+    last_write_checksum: sha1:7485f1425b0661fd84836186570df90207eec6af
+    pristine_git_object: 1031ed930bad5ece220cf7416a56c29f40f0588b
+  src/albus_sdk/utils/unmarshal_json_response.py:
+    id: 07c89fb2719c
+    last_write_checksum: sha1:22d93d769fb85ea0583bbd6817778520eaa85ab0
+    pristine_git_object: c9fe469cddc40897c1dbcdc225b18d92ee874845
+  src/albus_sdk/utils/url.py:
+    id: eaaf99eb4707
+    last_write_checksum: sha1:6479961baa90432ca25626f8e40a7bbc32e73b41
+    pristine_git_object: c78ccbae426ce6d385709d97ce0b1c2813ea2418
+  src/albus_sdk/utils/values.py:
+    id: 6896a8388645
+    last_write_checksum: sha1:acaa178a7c41ddd000f58cc691e4632d925b2553
+    pristine_git_object: dae01a44384ac3bc13ae07453a053bf6c898ebe3
+examples:
+  createSecret:
+    speakeasy-default-create-secret:
+      requestBody:
+        application/json: {"name": "<value>", "value": "<value>"}
+      responses:
+        "200":
+          application/json: {"name": "<value>", "masked_value": "<value>"}
+        "400":
+          application/json: {"message": "Invalid request parameters"}
+        "401":
+          application/json: {"message": "Invalid or expired token"}
+  createToken:
+    speakeasy-default-create-token:
+      requestBody:
+        application/json: {"name": "<value>"}
+      responses:
+        "200":
+          application/json: {"id": "<id>", "name": "<value>", "token": "<value>", "created_at": "2026-03-08T22:40:46.047Z"}
+        "401":
+          application/json: {"message": "Invalid or expired token"}
+  deleteSecret:
+    speakeasy-default-delete-secret:
+      parameters:
+        path:
+          name: "<value>"
+      responses:
+        "401":
+          application/json: {"message": "Invalid or expired token"}
+        "404":
+          application/json: {"message": "Resource not found"}
+  deleteSession:
+    speakeasy-default-delete-session:
+      parameters:
+        path:
+          id: "<id>"
+      responses:
+        "401":
+          application/json: {"message": "Invalid or expired token"}
+        "404":
+          application/json: {"message": "Resource not found"}
+  deleteToken:
+    speakeasy-default-delete-token:
+      parameters:
+        path:
+          id: "<id>"
+      responses:
+        "401":
+          application/json: {"message": "Invalid or expired token"}
+        "404":
+          application/json: {"message": "Resource not found"}
+  getSecret:
+    speakeasy-default-get-secret:
+      parameters:
+        path:
+          name: "<value>"
+      responses:
+        "200":
+          application/json: {"name": "<value>", "masked_value": "<value>"}
+        "401":
+          application/json: {"message": "Invalid or expired token"}
+        "404":
+          application/json: {"message": "Resource not found"}
+  getSession:
+    speakeasy-default-get-session:
+      parameters:
+        path:
+          id: "<id>"
+        query:
+          limit: 100
+      responses:
+        "200":
+          application/json: {"session": {"id": "<id>", "state": "DONE", "created_at": "2025-03-23T00:23:31.920Z", "updated_at": "2024-03-05T12:05:29.064Z"}, "messages": [{"cursor": 306630, "invocation_id": "<id>", "role": "assistant", "content": "<value>", "created_at": "2026-07-14T01:36:37.320Z"}]}
+        "400":
+          application/json: {"message": "Invalid request parameters"}
+        "401":
+          application/json: {"message": "Invalid or expired token"}
+        "404":
+          application/json: {"message": "Resource not found"}
+  getSessionAudit:
+    speakeasy-default-get-session-audit:
+      parameters:
+        path:
+          id: "<id>"
+        query:
+          limit: 100
+      responses:
+        "200":
+          application/json: {"events": []}
+        "400":
+          application/json: {"message": "Invalid request parameters"}
+        "401":
+          application/json: {"message": "Invalid or expired token"}
+        "404":
+          application/json: {"message": "Resource not found"}
+  getToken:
+    speakeasy-default-get-token:
+      parameters:
+        path:
+          id: "<id>"
+      responses:
+        "200":
+          application/json: {"id": "<id>", "name": "<value>", "created_at": "2026-02-08T05:00:37.308Z"}
+        "401":
+          application/json: {"message": "Invalid or expired token"}
+        "404":
+          application/json: {"message": "Resource not found"}
+  health:
+    speakeasy-default-health:
+      responses:
+        "200":
+          application/json: {"status": "ok"}
+        "503":
+          application/json: {"status": "ok"}
+  listSecrets:
+    speakeasy-default-list-secrets:
+      responses:
+        "200":
+          application/json: {"secrets": []}
+        "401":
+          application/json: {"message": "Invalid or expired token"}
+  listSessions:
+    speakeasy-default-list-sessions:
+      responses:
+        "200":
+          application/json: {"sessions": []}
+        "401":
+          application/json: {"message": "Invalid or expired token"}
+  listTokens:
+    speakeasy-default-list-tokens:
+      responses:
+        "200":
+          application/json: {"tokens": []}
+        "401":
+          application/json: {"message": "Invalid or expired token"}
+  runSession:
+    speakeasy-default-run-session:
+      parameters:
+        path:
+          id: "<id>"
+        query:
+          wait: false
+      requestBody:
+        application/json: {"user_prompt": "<value>", "model": {"name": "<value>"}}
+      responses:
+        "200":
+          application/json: {"session": {"id": "<id>", "state": "DONE", "created_at": "2025-01-26T10:25:56.842Z", "updated_at": "2024-02-20T21:57:26.154Z"}, "messages": [{"cursor": 799275, "invocation_id": "<id>", "role": "assistant", "content": "<value>", "created_at": "2026-11-12T05:42:31.250Z"}]}
+        "400":
+          application/json: {"message": "Invalid request parameters"}
+        "401":
+          application/json: {"message": "Invalid or expired token"}
+        "409":
+          application/json: {"message": "Idempotency key reused with a different request body"}
+        "423":
+          application/json: {"message": "Another invocation is currently running for this session"}
+        "502":
+          application/json: {"message": "harness run failed (crash): signal 9", "kind": "crash"}
+        "504":
+          application/json: {"message": "Timed out waiting for the assistant response"}
+  updateSecret:
+    speakeasy-default-update-secret:
+      parameters:
+        path:
+          name: "<value>"
+      requestBody:
+        application/json: {"value": "<value>"}
+      responses:
+        "200":
+          application/json: {"name": "<value>", "masked_value": "<value>"}
+        "400":
+          application/json: {"message": "Invalid request parameters"}
+        "401":
+          application/json: {"message": "Invalid or expired token"}
+        "404":
+          application/json: {"message": "Resource not found"}
+  whoami:
+    speakeasy-default-whoami:
+      responses:
+        "200":
+          application/json: {"user_id": "user_123", "email": "user@example.com", "name": "John Doe", "roles": ["admin", "user"]}
+        "401":
+          application/json: {"message": "Invalid or expired token"}
+examplesVersion: 1.0.2
