@@ -8,16 +8,28 @@ PyPI credentials.
 
 1. Create a PyPI account, verify its email address, enable two-factor
    authentication, and save the recovery codes.
-2. Create an account-scoped API token for the first release. A project-scoped
-   token cannot be created until `albus-sdk` exists on PyPI.
-3. After the first release, invite another Albus maintainer as an owner and
-   replace the account-scoped token with a token limited to `albus-sdk`.
+2. Ask an existing owner to add the maintainer to the `albus-sdk` project.
+3. Create an API token limited to the `albus-sdk` project and store it in a
+   password manager. Revoke any account-scoped token used to bootstrap the
+   first release.
 
 TestPyPI has separate accounts and API tokens. It is useful for proving the
 upload path, but its package and dependency data are independent from PyPI.
 
 Never put an API token in this repository, a command-line argument, a shell
 history entry, or a pull request.
+
+## Choose a version
+
+Use a normalized PEP 440 version. During the pre-1.0 MVP:
+
+- Increment the patch version for compatible SDK fixes, documentation-only
+  regeneration, and other compatible changes.
+- Increment the minor version for additive API changes.
+- Increment the minor version for intentional breaking API changes and call
+  out the breakage in the pull request.
+
+Confirm the version before generation. Published versions cannot be reused.
 
 ## Prepare a release
 
@@ -68,15 +80,18 @@ the confirmation prompt. Unset the credential immediately afterward:
 unset UV_PUBLISH_TOKEN
 ```
 
-Finally, verify that the exact release installs from PyPI:
+Finally, verify that the exact release installs from PyPI in a clean
+environment:
 
 ```bash
-uv run \
-  --isolated \
-  --no-project \
-  --with albus-sdk==0.1.0 \
-  python -c 'import albus_sdk; print(albus_sdk.VERSION)'
+python3 -m venv .tmp/albus-sdk-verify
+.tmp/albus-sdk-verify/bin/python -m pip install albus-sdk==0.1.0
+.tmp/albus-sdk-verify/bin/python -c \
+  'import albus_sdk; print(albus_sdk.VERSION)'
 ```
+
+If another package manager does not see a release that is visible on PyPI,
+refresh its package-index cache before retrying.
 
 Published PyPI versions and files are immutable. Fix a bad release with a new
 version rather than trying to replace its artifacts.
