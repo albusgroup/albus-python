@@ -26,7 +26,7 @@ import os
 
 with Albus(
     security=models.Security(
-        api_key_auth=os.getenv("ALBUS_API_KEY_AUTH", ""),
+        bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
     ),
 ) as albus:
 
@@ -69,7 +69,7 @@ import os
 
 with Albus(
     security=models.Security(
-        api_key_auth=os.getenv("ALBUS_API_KEY_AUTH", ""),
+        bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
     ),
 ) as albus:
 
@@ -119,7 +119,7 @@ import os
 
 with Albus(
     security=models.Security(
-        api_key_auth=os.getenv("ALBUS_API_KEY_AUTH", ""),
+        bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
     ),
 ) as albus:
 
@@ -160,6 +160,7 @@ with Albus(
 | errors.ErrUnauthorized   | 401                      | application/json         |
 | errors.ErrConflict       | 409                      | application/json         |
 | errors.ErrLocked         | 423                      | application/json         |
+| errors.ErrQuotaExceeded  | 429                      | application/json         |
 | errors.ErrRunFailed      | 502                      | application/json         |
 | errors.ErrTimeout        | 504                      | application/json         |
 | errors.AlbusDefaultError | 4XX, 5XX                 | \*/\*                    |
@@ -178,7 +179,7 @@ import os
 
 with Albus(
     security=models.Security(
-        api_key_auth=os.getenv("ALBUS_API_KEY_AUTH", ""),
+        bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
     ),
 ) as albus:
 
@@ -218,7 +219,7 @@ import os
 
 with Albus(
     security=models.Security(
-        api_key_auth=os.getenv("ALBUS_API_KEY_AUTH", ""),
+        bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
     ),
 ) as albus:
 

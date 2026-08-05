@@ -17,6 +17,7 @@ import weakref
 if TYPE_CHECKING:
     from albus_sdk.auth import Auth
     from albus_sdk.health import Health
+    from albus_sdk.invites import Invites
     from albus_sdk.secrets import Secrets
     from albus_sdk.sessions import Sessions
     from albus_sdk.tokens import Tokens
@@ -35,12 +36,14 @@ class Albus(BaseSDK):
     r"""Check service availability."""
     auth: "Auth"
     r"""Identify the authenticated user."""
+    invites: "Invites"
     _sub_sdk_map = {
         "secrets": ("albus_sdk.secrets", "Secrets"),
         "sessions": ("albus_sdk.sessions", "Sessions"),
         "tokens": ("albus_sdk.tokens", "Tokens"),
         "health": ("albus_sdk.health", "Health"),
         "auth": ("albus_sdk.auth", "Auth"),
+        "invites": ("albus_sdk.invites", "Invites"),
     }
 
     def __init__(

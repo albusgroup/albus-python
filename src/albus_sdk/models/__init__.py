@@ -6,6 +6,11 @@ from albus_sdk.utils.dynamic_imports import lazy_getattr, lazy_dir
 
 if TYPE_CHECKING:
     from .auditevent import AuditEvent, AuditEventTypedDict, Type
+    from .createinviterequest import (
+        CreateInviteRequest,
+        CreateInviteRequestRole,
+        CreateInviteRequestTypedDict,
+    )
     from .createsecretrequest import CreateSecretRequest, CreateSecretRequestTypedDict
     from .createtokenrequest import CreateTokenRequest, CreateTokenRequestTypedDict
     from .createtokenresponse import CreateTokenResponse, CreateTokenResponseTypedDict
@@ -20,6 +25,7 @@ if TYPE_CHECKING:
     from .getsessionop import GetSessionRequest, GetSessionRequestTypedDict
     from .gettokenop import GetTokenRequest, GetTokenRequestTypedDict
     from .healthresponse import HealthResponse, HealthResponseTypedDict
+    from .invite import Invite, InviteTypedDict
     from .listauditeventsresponse import (
         ListAuditEventsResponse,
         ListAuditEventsResponseTypedDict,
@@ -32,6 +38,10 @@ if TYPE_CHECKING:
     from .listtokensresponse import ListTokensResponse, ListTokensResponseTypedDict
     from .mcpserver import MCPServer, MCPServerTypedDict
     from .model import Model, ModelTypedDict
+    from .organizationmembership import (
+        OrganizationMembership,
+        OrganizationMembershipTypedDict,
+    )
     from .provider import Provider, ProviderTypedDict
     from .runsessionop import (
         RunSessionRequestRequest,
@@ -43,7 +53,11 @@ if TYPE_CHECKING:
     from .secret import Secret, SecretTypedDict
     from .security import Security, SecurityTypedDict
     from .session import Session, SessionTypedDict, State
-    from .sessionmessage import Role, SessionMessage, SessionMessageTypedDict
+    from .sessionmessage import (
+        SessionMessage,
+        SessionMessageRole,
+        SessionMessageTypedDict,
+    )
     from .sessionresponse import SessionResponse, SessionResponseTypedDict
     from .token import Token, TokenTypedDict
     from .updatesecretop import (
@@ -56,6 +70,9 @@ if TYPE_CHECKING:
 __all__ = [
     "AuditEvent",
     "AuditEventTypedDict",
+    "CreateInviteRequest",
+    "CreateInviteRequestRole",
+    "CreateInviteRequestTypedDict",
     "CreateSecretRequest",
     "CreateSecretRequestTypedDict",
     "CreateTokenRequest",
@@ -78,6 +95,8 @@ __all__ = [
     "GetTokenRequestTypedDict",
     "HealthResponse",
     "HealthResponseTypedDict",
+    "Invite",
+    "InviteTypedDict",
     "ListAuditEventsResponse",
     "ListAuditEventsResponseTypedDict",
     "ListSecretsResponse",
@@ -90,9 +109,10 @@ __all__ = [
     "MCPServerTypedDict",
     "Model",
     "ModelTypedDict",
+    "OrganizationMembership",
+    "OrganizationMembershipTypedDict",
     "Provider",
     "ProviderTypedDict",
-    "Role",
     "RunSessionRequest",
     "RunSessionRequestRequest",
     "RunSessionRequestRequestTypedDict",
@@ -105,6 +125,7 @@ __all__ = [
     "SecurityTypedDict",
     "Session",
     "SessionMessage",
+    "SessionMessageRole",
     "SessionMessageTypedDict",
     "SessionResponse",
     "SessionResponseTypedDict",
@@ -125,6 +146,9 @@ _dynamic_imports: dict[str, str] = {
     "AuditEvent": ".auditevent",
     "AuditEventTypedDict": ".auditevent",
     "Type": ".auditevent",
+    "CreateInviteRequest": ".createinviterequest",
+    "CreateInviteRequestRole": ".createinviterequest",
+    "CreateInviteRequestTypedDict": ".createinviterequest",
     "CreateSecretRequest": ".createsecretrequest",
     "CreateSecretRequestTypedDict": ".createsecretrequest",
     "CreateTokenRequest": ".createtokenrequest",
@@ -147,6 +171,8 @@ _dynamic_imports: dict[str, str] = {
     "GetTokenRequestTypedDict": ".gettokenop",
     "HealthResponse": ".healthresponse",
     "HealthResponseTypedDict": ".healthresponse",
+    "Invite": ".invite",
+    "InviteTypedDict": ".invite",
     "ListAuditEventsResponse": ".listauditeventsresponse",
     "ListAuditEventsResponseTypedDict": ".listauditeventsresponse",
     "ListSecretsResponse": ".listsecretsresponse",
@@ -159,6 +185,8 @@ _dynamic_imports: dict[str, str] = {
     "MCPServerTypedDict": ".mcpserver",
     "Model": ".model",
     "ModelTypedDict": ".model",
+    "OrganizationMembership": ".organizationmembership",
+    "OrganizationMembershipTypedDict": ".organizationmembership",
     "Provider": ".provider",
     "ProviderTypedDict": ".provider",
     "RunSessionRequestRequest": ".runsessionop",
@@ -174,8 +202,8 @@ _dynamic_imports: dict[str, str] = {
     "Session": ".session",
     "SessionTypedDict": ".session",
     "State": ".session",
-    "Role": ".sessionmessage",
     "SessionMessage": ".sessionmessage",
+    "SessionMessageRole": ".sessionmessage",
     "SessionMessageTypedDict": ".sessionmessage",
     "SessionResponse": ".sessionresponse",
     "SessionResponseTypedDict": ".sessionresponse",

@@ -9,23 +9,29 @@ from albus_sdk.utils.unmarshal_json_response import unmarshal_json_response
 from typing import Any, Mapping, Optional
 
 
-class Auth(BaseSDK):
-    r"""Identify the authenticated user."""
-
-    def whoami(
+class Invites(BaseSDK):
+    def create_invite(
         self,
         *,
+        email: str,
+        role: Optional[models.CreateInviteRequestRole] = None,
+        organization_id: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
-    ) -> models.WhoamiResponse:
-        r"""Get current user information
+    ) -> models.Invite:
+        r"""Invite a user by email
 
-        Returns the authenticated user along with every organization they belong to and their roles in each.
+        Creates a pending invitation for an email address. Omit organization_id to invite the user as the founder of a new organization that is created on their first sign-in; provide it to invite them into an existing organization. The invitation is redeemed automatically the first time the invitee signs in with that email.
 
 
         If set, this operation will use `bearer_auth` from the global security.
+
+        :param email: Email address of the person to invite.
+        :param role: Role to grant the invitee. Defaults to admin when inviting to a new organization and member when inviting into an existing one.
+
+        :param organization_id: Organization to invite the user into (e.g. \"42\"). Omit to create a new organization for the user on their first sign-in.
 
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -41,19 +47,29 @@ class Auth(BaseSDK):
             base_url = server_url
         else:
             base_url = self._get_url(base_url, url_variables)
+
+        request = models.CreateInviteRequest(
+            email=email,
+            role=role,
+            organization_id=organization_id,
+        )
+
         req = self._build_request(
-            method="GET",
-            path="/whoami",
+            method="POST",
+            path="/invites",
             base_url=base_url,
             url_variables=url_variables,
-            request=None,
-            request_body_required=False,
+            request=request,
+            request_body_required=True,
             request_has_path_params=False,
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
             http_headers=http_headers,
             security=self.sdk_configuration.security,
+            get_serialized_body=lambda: utils.serialize_request_body(
+                request, False, False, "json", models.CreateInviteRequest
+            ),
             allow_empty_value=None,
             allowed_fields=["bearer_auth"],
             timeout_ms=timeout_ms,
@@ -71,12 +87,12 @@ class Auth(BaseSDK):
             hook_ctx=HookContext(
                 config=self.sdk_configuration,
                 base_url=base_url or "",
-                operation_id="whoami",
+                operation_id="createInvite",
                 oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
-                tags=["Auth"],
+                tags=["Invites"],
                 extensions=None,
             ),
             request=req,
@@ -86,12 +102,18 @@ class Auth(BaseSDK):
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return unmarshal_json_response(models.WhoamiResponse, http_res)
+            return unmarshal_json_response(models.Invite, http_res)
+        if utils.match_response(http_res, "400", "application/json"):
+            response_data = unmarshal_json_response(errors.ErrBadRequestData, http_res)
+            raise errors.ErrBadRequest(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
             response_data = unmarshal_json_response(
                 errors.ErrUnauthorizedData, http_res
             )
             raise errors.ErrUnauthorized(response_data, http_res)
+        if utils.match_response(http_res, "409", "application/json"):
+            response_data = unmarshal_json_response(errors.ErrConflictData, http_res)
+            raise errors.ErrConflict(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
             raise errors.AlbusDefaultError(
@@ -105,20 +127,28 @@ class Auth(BaseSDK):
 
         raise errors.AlbusDefaultError("Unexpected response received", http_res)
 
-    async def whoami_async(
+    async def create_invite_async(
         self,
         *,
+        email: str,
+        role: Optional[models.CreateInviteRequestRole] = None,
+        organization_id: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
         http_headers: Optional[Mapping[str, str]] = None,
-    ) -> models.WhoamiResponse:
-        r"""Get current user information
+    ) -> models.Invite:
+        r"""Invite a user by email
 
-        Returns the authenticated user along with every organization they belong to and their roles in each.
+        Creates a pending invitation for an email address. Omit organization_id to invite the user as the founder of a new organization that is created on their first sign-in; provide it to invite them into an existing organization. The invitation is redeemed automatically the first time the invitee signs in with that email.
 
 
         If set, this operation will use `bearer_auth` from the global security.
+
+        :param email: Email address of the person to invite.
+        :param role: Role to grant the invitee. Defaults to admin when inviting to a new organization and member when inviting into an existing one.
+
+        :param organization_id: Organization to invite the user into (e.g. \"42\"). Omit to create a new organization for the user on their first sign-in.
 
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -134,19 +164,29 @@ class Auth(BaseSDK):
             base_url = server_url
         else:
             base_url = self._get_url(base_url, url_variables)
+
+        request = models.CreateInviteRequest(
+            email=email,
+            role=role,
+            organization_id=organization_id,
+        )
+
         req = self._build_request_async(
-            method="GET",
-            path="/whoami",
+            method="POST",
+            path="/invites",
             base_url=base_url,
             url_variables=url_variables,
-            request=None,
-            request_body_required=False,
+            request=request,
+            request_body_required=True,
             request_has_path_params=False,
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
             http_headers=http_headers,
             security=self.sdk_configuration.security,
+            get_serialized_body=lambda: utils.serialize_request_body(
+                request, False, False, "json", models.CreateInviteRequest
+            ),
             allow_empty_value=None,
             allowed_fields=["bearer_auth"],
             timeout_ms=timeout_ms,
@@ -164,12 +204,12 @@ class Auth(BaseSDK):
             hook_ctx=HookContext(
                 config=self.sdk_configuration,
                 base_url=base_url or "",
-                operation_id="whoami",
+                operation_id="createInvite",
                 oauth2_scopes=None,
                 security_source=get_security_from_env(
                     self.sdk_configuration.security, models.Security
                 ),
-                tags=["Auth"],
+                tags=["Invites"],
                 extensions=None,
             ),
             request=req,
@@ -179,12 +219,18 @@ class Auth(BaseSDK):
 
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
-            return unmarshal_json_response(models.WhoamiResponse, http_res)
+            return unmarshal_json_response(models.Invite, http_res)
+        if utils.match_response(http_res, "400", "application/json"):
+            response_data = unmarshal_json_response(errors.ErrBadRequestData, http_res)
+            raise errors.ErrBadRequest(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
             response_data = unmarshal_json_response(
                 errors.ErrUnauthorizedData, http_res
             )
             raise errors.ErrUnauthorized(response_data, http_res)
+        if utils.match_response(http_res, "409", "application/json"):
+            response_data = unmarshal_json_response(errors.ErrConflictData, http_res)
+            raise errors.ErrConflict(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
             raise errors.AlbusDefaultError(

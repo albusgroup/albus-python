@@ -199,6 +199,7 @@ paths:
       tags:
         - Sessions
       security:
+        - bearerAuth: []
         - apiKeyAuth: []
       responses:
         "200":
@@ -226,6 +227,7 @@ paths:
       tags:
         - Sessions
       security:
+        - bearerAuth: []
         - apiKeyAuth: []
       parameters:
         - $ref: "#/components/parameters/AfterCursor"
@@ -280,6 +282,7 @@ paths:
       tags:
         - Sessions
       security:
+        - bearerAuth: []
         - apiKeyAuth: []
       parameters:
         - $ref: "#/components/parameters/IdempotencyKey"
@@ -331,6 +334,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrLocked"
+        "429":
+          description: The organization has reached its invocation quota
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrQuotaExceeded"
         "502":
           description: >
             The harness run failed instead of producing a response (only
@@ -352,6 +361,7 @@ paths:
       tags:
         - Sessions
       security:
+        - bearerAuth: []
         - apiKeyAuth: []
       responses:
         "204":
@@ -384,6 +394,7 @@ paths:
       tags:
         - Sessions
       security:
+        - bearerAuth: []
         - apiKeyAuth: []
       parameters:
         - $ref: "#/components/parameters/AfterCursor"
@@ -552,7 +563,9 @@ paths:
     get:
       operationId: whoami
       summary: Get current user information
-      description: Decodes the JWT bearer token and returns user information
+      description: >
+        Returns the authenticated user along with every organization they
+        belong to and their roles in each.
       tags:
         - Auth
       security:
@@ -570,6 +583,52 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrUnauthorized"
+
+  /invites:
+    post:
+      operationId: createInvite
+      summary: Invite a user by email
+      description: >
+        Creates a pending invitation for an email address. Omit
+        organization_id to invite the user as the founder of a new
+        organization that is created on their first sign-in; provide it to
+        invite them into an existing organization. The invitation is redeemed
+        automatically the first time the invitee signs in with that email.
+      tags:
+        - Invites
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateInviteRequest"
+      responses:
+        "200":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invite"
+        "400":
+          description: Bad request (invalid email or role)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrBadRequest"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+        "409":
+          description: An invitation for this email already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrConflict"
 
 components:
   securitySchemes:
@@ -663,6 +722,7 @@ components:
       required:
         - user_id
         - email
+        - organizations
       properties:
         user_id:
           type: string
@@ -681,8 +741,22 @@ components:
           type: array
           items:
             type: string
-          description: User's roles
-          example: ["admin", "user"]
+          description: >
+            Roles in the active organization (present only when a single
+            organization is in scope).
+          example: ["admin"]
+        active_organization:
+          allOf:
+            - $ref: "#/components/schemas/OrganizationMembership"
+          description: >
+            The organization this session is scoped to. Present when the user
+            belongs to exactly one organization; absent when they belong to
+            several and none is selected yet.
+        organizations:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrganizationMembership"
+          description: Every organization the user belongs to, with their roles.
         issued_at:
           type: integer
           format: int64
@@ -691,6 +765,73 @@ components:
           type: integer
           format: int64
           description: Token expiration timestamp (Unix epoch)
+
+    OrganizationMembership:
+      type: object
+      required:
+        - id
+        - name
+        - roles
+      properties:
+        id:
+          type: string
+          description: Organization identifier
+          example: "42"
+        name:
+          type: string
+          description: Organization display name
+          example: "Acme Corp"
+        roles:
+          type: array
+          items:
+            type: string
+          description: Roles the user holds in this organization
+          example: ["admin"]
+
+    CreateInviteRequest:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+          description: Email address of the person to invite.
+        role:
+          type: string
+          enum:
+            - admin
+            - member
+          description: >
+            Role to grant the invitee. Defaults to admin when inviting to a new
+            organization and member when inviting into an existing one.
+        organization_id:
+          type: string
+          description: >
+            Organization to invite the user into (e.g. "42"). Omit to create a
+            new organization for the user on their first sign-in.
+
+    Invite:
+      type: object
+      required:
+        - id
+        - email
+        - role
+      properties:
+        id:
+          type: string
+          description: Invitation identifier
+        email:
+          type: string
+          description: Invited email address
+        role:
+          type: string
+          description: Role the invitee will be granted
+        organization_id:
+          type: string
+          description: >
+            Organization the invitee will join. Absent when the invitation
+            creates a new organization on first sign-in.
 
     ErrUnauthorized:
       type: object
@@ -741,6 +882,16 @@ components:
           type: string
           description: Human-readable error message
           example: "Another invocation is currently running for this session"
+
+    ErrQuotaExceeded:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Human-readable error message
+          example: "organization invocation quota exceeded"
 
     ErrRunFailed:
       type: object
@@ -878,6 +1029,7 @@ components:
       required:
         - id
         - state
+        - invocation_count
         - created_at
         - updated_at
       properties:
@@ -896,6 +1048,10 @@ components:
           description: >
             The invocation currently running, if any. Omitted when the session
             is idle.
+        invocation_count:
+          type: integer
+          format: int64
+          description: Number of times this session has been run.
         created_at:
           type: string
           format: date-time

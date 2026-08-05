@@ -22,7 +22,7 @@ class Sessions(BaseSDK):
     ) -> models.ListSessionsResponse:
         r"""List all sessions
 
-        If set, this operation will use `api_key_auth` from the global security.
+        If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
 
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -52,7 +52,7 @@ class Sessions(BaseSDK):
             http_headers=http_headers,
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["api_key_auth"],
+            allowed_fields=["bearer_auth", "api_key_auth"],
             timeout_ms=timeout_ms,
         )
 
@@ -112,7 +112,7 @@ class Sessions(BaseSDK):
     ) -> models.ListSessionsResponse:
         r"""List all sessions
 
-        If set, this operation will use `api_key_auth` from the global security.
+        If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
 
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
@@ -142,7 +142,7 @@ class Sessions(BaseSDK):
             http_headers=http_headers,
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["api_key_auth"],
+            allowed_fields=["bearer_auth", "api_key_auth"],
             timeout_ms=timeout_ms,
         )
 
@@ -208,7 +208,7 @@ class Sessions(BaseSDK):
         Returns the session's metadata and a page of its messages ordered by cursor ascending. Use `after` and `limit` to page through messages.
 
 
-        If set, this operation will use `api_key_auth` from the global security.
+        If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
 
         :param id: Client-provided session identifier. Use the same value across requests to continue the same agent session.
         :param after: Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
@@ -249,7 +249,7 @@ class Sessions(BaseSDK):
             http_headers=http_headers,
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["api_key_auth"],
+            allowed_fields=["bearer_auth", "api_key_auth"],
             timeout_ms=timeout_ms,
         )
 
@@ -321,7 +321,7 @@ class Sessions(BaseSDK):
         Returns the session's metadata and a page of its messages ordered by cursor ascending. Use `after` and `limit` to page through messages.
 
 
-        If set, this operation will use `api_key_auth` from the global security.
+        If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
 
         :param id: Client-provided session identifier. Use the same value across requests to continue the same agent session.
         :param after: Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
@@ -362,7 +362,7 @@ class Sessions(BaseSDK):
             http_headers=http_headers,
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["api_key_auth"],
+            allowed_fields=["bearer_auth", "api_key_auth"],
             timeout_ms=timeout_ms,
         )
 
@@ -445,7 +445,7 @@ class Sessions(BaseSDK):
         With `wait=true` the request long-polls: it blocks until the invocation's assistant response is available and returns it in `messages`. `wait_timeout` bounds the wait in seconds; when omitted the request waits indefinitely (until the response arrives or the client disconnects). If the timeout elapses first, the request fails with 504 and a JSON body, letting the client distinguish an expected server-side timeout from a transport error; the client may retry.
 
 
-        If set, this operation will use `api_key_auth` from the global security.
+        If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
 
         :param id: Client-provided session identifier. Use the same value across requests to continue the same agent session.
         :param user_prompt: The user prompt driving this invocation.
@@ -509,7 +509,7 @@ class Sessions(BaseSDK):
                 request.body, False, False, "json", models.RunSessionRequest
             ),
             allow_empty_value=None,
-            allowed_fields=["api_key_auth"],
+            allowed_fields=["bearer_auth", "api_key_auth"],
             timeout_ms=timeout_ms,
         )
 
@@ -558,6 +558,11 @@ class Sessions(BaseSDK):
         if utils.match_response(http_res, "423", "application/json"):
             response_data = unmarshal_json_response(errors.ErrLockedData, http_res)
             raise errors.ErrLocked(response_data, http_res)
+        if utils.match_response(http_res, "429", "application/json"):
+            response_data = unmarshal_json_response(
+                errors.ErrQuotaExceededData, http_res
+            )
+            raise errors.ErrQuotaExceeded(response_data, http_res)
         if utils.match_response(http_res, "502", "application/json"):
             response_data = unmarshal_json_response(errors.ErrRunFailedData, http_res)
             raise errors.ErrRunFailed(response_data, http_res)
@@ -604,7 +609,7 @@ class Sessions(BaseSDK):
         With `wait=true` the request long-polls: it blocks until the invocation's assistant response is available and returns it in `messages`. `wait_timeout` bounds the wait in seconds; when omitted the request waits indefinitely (until the response arrives or the client disconnects). If the timeout elapses first, the request fails with 504 and a JSON body, letting the client distinguish an expected server-side timeout from a transport error; the client may retry.
 
 
-        If set, this operation will use `api_key_auth` from the global security.
+        If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
 
         :param id: Client-provided session identifier. Use the same value across requests to continue the same agent session.
         :param user_prompt: The user prompt driving this invocation.
@@ -668,7 +673,7 @@ class Sessions(BaseSDK):
                 request.body, False, False, "json", models.RunSessionRequest
             ),
             allow_empty_value=None,
-            allowed_fields=["api_key_auth"],
+            allowed_fields=["bearer_auth", "api_key_auth"],
             timeout_ms=timeout_ms,
         )
 
@@ -717,6 +722,11 @@ class Sessions(BaseSDK):
         if utils.match_response(http_res, "423", "application/json"):
             response_data = unmarshal_json_response(errors.ErrLockedData, http_res)
             raise errors.ErrLocked(response_data, http_res)
+        if utils.match_response(http_res, "429", "application/json"):
+            response_data = unmarshal_json_response(
+                errors.ErrQuotaExceededData, http_res
+            )
+            raise errors.ErrQuotaExceeded(response_data, http_res)
         if utils.match_response(http_res, "502", "application/json"):
             response_data = unmarshal_json_response(errors.ErrRunFailedData, http_res)
             raise errors.ErrRunFailed(response_data, http_res)
@@ -747,7 +757,7 @@ class Sessions(BaseSDK):
     ):
         r"""Delete a session
 
-        If set, this operation will use `api_key_auth` from the global security.
+        If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
 
         :param id: Client-provided session identifier. Use the same value across requests to continue the same agent session.
         :param retries: Override the default retry configuration for this method
@@ -783,7 +793,7 @@ class Sessions(BaseSDK):
             http_headers=http_headers,
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["api_key_auth"],
+            allowed_fields=["bearer_auth", "api_key_auth"],
             timeout_ms=timeout_ms,
         )
 
@@ -847,7 +857,7 @@ class Sessions(BaseSDK):
     ):
         r"""Delete a session
 
-        If set, this operation will use `api_key_auth` from the global security.
+        If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
 
         :param id: Client-provided session identifier. Use the same value across requests to continue the same agent session.
         :param retries: Override the default retry configuration for this method
@@ -883,7 +893,7 @@ class Sessions(BaseSDK):
             http_headers=http_headers,
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["api_key_auth"],
+            allowed_fields=["bearer_auth", "api_key_auth"],
             timeout_ms=timeout_ms,
         )
 
@@ -952,7 +962,7 @@ class Sessions(BaseSDK):
         Returns the session's audit log — an immutable, time-ordered record of what happened during its agent runs (LLM calls, tool results, and run outcomes). Events are ordered by the time they occurred. Use `after` and `limit` to page through them; pass the response's `next_cursor` as the next request's `after` to fetch the following page.
 
 
-        If set, this operation will use `api_key_auth` from the global security.
+        If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
 
         :param id: Client-provided session identifier. Use the same value across requests to continue the same agent session.
         :param after: Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
@@ -993,7 +1003,7 @@ class Sessions(BaseSDK):
             http_headers=http_headers,
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["api_key_auth"],
+            allowed_fields=["bearer_auth", "api_key_auth"],
             timeout_ms=timeout_ms,
         )
 
@@ -1065,7 +1075,7 @@ class Sessions(BaseSDK):
         Returns the session's audit log — an immutable, time-ordered record of what happened during its agent runs (LLM calls, tool results, and run outcomes). Events are ordered by the time they occurred. Use `after` and `limit` to page through them; pass the response's `next_cursor` as the next request's `after` to fetch the following page.
 
 
-        If set, this operation will use `api_key_auth` from the global security.
+        If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
 
         :param id: Client-provided session identifier. Use the same value across requests to continue the same agent session.
         :param after: Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
@@ -1106,7 +1116,7 @@ class Sessions(BaseSDK):
             http_headers=http_headers,
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["api_key_auth"],
+            allowed_fields=["bearer_auth", "api_key_auth"],
             timeout_ms=timeout_ms,
         )
 

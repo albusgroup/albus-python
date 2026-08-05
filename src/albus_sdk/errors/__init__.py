@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from .errconflict import ErrConflict, ErrConflictData
     from .errlocked import ErrLocked, ErrLockedData
     from .errnotfound import ErrNotFound, ErrNotFoundData
+    from .errquotaexceeded import ErrQuotaExceeded, ErrQuotaExceededData
     from .errrunfailed import ErrRunFailed, ErrRunFailedData
     from .errtimeout import ErrTimeout, ErrTimeoutData
     from .errunauthorized import ErrUnauthorized, ErrUnauthorizedData
@@ -29,6 +30,8 @@ __all__ = [
     "ErrLockedData",
     "ErrNotFound",
     "ErrNotFoundData",
+    "ErrQuotaExceeded",
+    "ErrQuotaExceededData",
     "ErrRunFailed",
     "ErrRunFailedData",
     "ErrTimeout",
@@ -51,6 +54,8 @@ _dynamic_imports: dict[str, str] = {
     "ErrLockedData": ".errlocked",
     "ErrNotFound": ".errnotfound",
     "ErrNotFoundData": ".errnotfound",
+    "ErrQuotaExceeded": ".errquotaexceeded",
+    "ErrQuotaExceededData": ".errquotaexceeded",
     "ErrRunFailed": ".errrunfailed",
     "ErrRunFailedData": ".errrunfailed",
     "ErrTimeout": ".errtimeout",

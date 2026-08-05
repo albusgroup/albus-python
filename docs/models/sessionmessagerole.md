@@ -1,12 +1,12 @@
-# Role
+# SessionMessageRole
 
 ## Example Usage
 
 ```python
-from albus_sdk.models import Role
+from albus_sdk.models import SessionMessageRole
 
 # Open enum: unrecognized values are captured as UnrecognizedStr
-value: Role = "user"
+value: SessionMessageRole = "user"
 ```
 
 

@@ -7,7 +7,7 @@ from typing import Literal, Union
 from typing_extensions import TypedDict
 
 
-Role = Union[
+SessionMessageRole = Union[
     Literal[
         "user",
         "assistant",
@@ -21,7 +21,7 @@ class SessionMessageTypedDict(TypedDict):
     r"""Monotonic per-session position of this message."""
     invocation_id: str
     r"""The invocation that produced this message."""
-    role: Role
+    role: SessionMessageRole
     content: str
     created_at: datetime
 
@@ -33,7 +33,7 @@ class SessionMessage(BaseModel):
     invocation_id: str
     r"""The invocation that produced this message."""
 
-    role: Role
+    role: SessionMessageRole
 
     content: str
 

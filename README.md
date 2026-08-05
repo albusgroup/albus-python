@@ -261,6 +261,10 @@ with Albus(
 
 * [health](docs/sdks/health/README.md#health) - Health check endpoint
 
+### [Invites](docs/sdks/invites/README.md)
+
+* [create_invite](docs/sdks/invites/README.md#create_invite) - Invite a user by email
+
 ### [Secrets](docs/sdks/secrets/README.md)
 
 * [list_secrets](docs/sdks/secrets/README.md#list_secrets) - List all secrets
@@ -392,7 +396,7 @@ with Albus(
 * [`AlbusError`](./src/albus_sdk/errors/albuserror.py): The base class for HTTP error responses.
   * [`ErrUnauthorized`](./src/albus_sdk/errors/errunauthorized.py): Status code `401`. *
 
-<details><summary>Less common errors (12)</summary>
+<details><summary>Less common errors (13)</summary>
 
 <br />
 
@@ -403,13 +407,14 @@ with Albus(
 
 
 **Inherit from [`AlbusError`](./src/albus_sdk/errors/albuserror.py)**:
-* [`ErrNotFound`](./src/albus_sdk/errors/errnotfound.py): Not found. Status code `404`. Applicable to 8 of 16 methods.*
-* [`ErrBadRequest`](./src/albus_sdk/errors/errbadrequest.py): Status code `400`. Applicable to 5 of 16 methods.*
-* [`ErrConflict`](./src/albus_sdk/errors/errconflict.py): Idempotency key reused with a different request body. Status code `409`. Applicable to 1 of 16 methods.*
-* [`ErrLocked`](./src/albus_sdk/errors/errlocked.py): Another invocation is currently running for this session. Status code `423`. Applicable to 1 of 16 methods.*
-* [`ErrRunFailed`](./src/albus_sdk/errors/errrunfailed.py): The harness run failed instead of producing a response (only possible with wait=true, or when replaying a failed invocation). The body carries the failure kind and detail. Status code `502`. Applicable to 1 of 16 methods.*
-* [`HealthResponseError`](./src/albus_sdk/errors/healthresponseerror.py): Service is healthy. Status code `503`. Applicable to 1 of 16 methods.*
-* [`ErrTimeout`](./src/albus_sdk/errors/errtimeout.py): Timed out waiting for the assistant response. Status code `504`. Applicable to 1 of 16 methods.*
+* [`ErrNotFound`](./src/albus_sdk/errors/errnotfound.py): Not found. Status code `404`. Applicable to 8 of 17 methods.*
+* [`ErrBadRequest`](./src/albus_sdk/errors/errbadrequest.py): Status code `400`. Applicable to 6 of 17 methods.*
+* [`ErrConflict`](./src/albus_sdk/errors/errconflict.py): Status code `409`. Applicable to 2 of 17 methods.*
+* [`ErrLocked`](./src/albus_sdk/errors/errlocked.py): Another invocation is currently running for this session. Status code `423`. Applicable to 1 of 17 methods.*
+* [`ErrQuotaExceeded`](./src/albus_sdk/errors/errquotaexceeded.py): The organization has reached its invocation quota. Status code `429`. Applicable to 1 of 17 methods.*
+* [`ErrRunFailed`](./src/albus_sdk/errors/errrunfailed.py): The harness run failed instead of producing a response (only possible with wait=true, or when replaying a failed invocation). The body carries the failure kind and detail. Status code `502`. Applicable to 1 of 17 methods.*
+* [`HealthResponseError`](./src/albus_sdk/errors/healthresponseerror.py): Service is healthy. Status code `503`. Applicable to 1 of 17 methods.*
+* [`ErrTimeout`](./src/albus_sdk/errors/errtimeout.py): Timed out waiting for the assistant response. Status code `504`. Applicable to 1 of 17 methods.*
 * [`ResponseValidationError`](./src/albus_sdk/errors/responsevalidationerror.py): Type mismatch between the response data and the expected Pydantic model. Provides access to the Pydantic validation error via the `cause` attribute.
 
 </details>
