@@ -25,6 +25,8 @@ class SessionTypedDict(TypedDict):
     r"""Client-provided session identifier."""
     state: State
     r"""Lifecycle state of the session."""
+    invocation_count: int
+    r"""Number of times this session has been run."""
     created_at: datetime
     updated_at: datetime
     current_invocation_id: NotRequired[str]
@@ -39,6 +41,9 @@ class Session(BaseModel):
 
     state: State
     r"""Lifecycle state of the session."""
+
+    invocation_count: int
+    r"""Number of times this session has been run."""
 
     created_at: datetime
 

@@ -10,7 +10,8 @@ Identify the authenticated user.
 
 ## whoami
 
-Decodes the JWT bearer token and returns user information
+Returns the authenticated user along with every organization they belong to and their roles in each.
+
 
 ### Example Usage
 
