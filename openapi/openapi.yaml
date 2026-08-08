@@ -11,6 +11,8 @@ servers:
     description: Local development server
 
 tags:
+  - name: Agents
+    description: Inspect the agents that have run in your organization.
   - name: Auth
     description: Identify the authenticated user.
   - name: Health
@@ -537,6 +539,123 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrNotFound"
 
+  /agents:
+    get:
+      operationId: listAgents
+      summary: List agents
+      description: >
+        Lists the agents that have run in your organization, each with its
+        latest revision. Use `name` to look up a single agent by name.
+      tags:
+        - Agents
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      parameters:
+        - name: name
+          in: query
+          required: false
+          description: Return only the agent with this exact name.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListAgentsResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+
+  /agents/{name}:
+    parameters:
+      - name: name
+        in: path
+        required: true
+        description: The agent's name.
+        schema:
+          type: string
+    get:
+      operationId: getAgent
+      summary: Get an agent by name
+      description: >
+        Returns the agent with the given name, its current revision, and the
+        list of all its revisions newest first.
+      tags:
+        - Agents
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Agent"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrNotFound"
+
+  /agents/{name}/revisions/{revision}:
+    parameters:
+      - name: name
+        in: path
+        required: true
+        description: The agent's name.
+        schema:
+          type: string
+      - name: revision
+        in: path
+        required: true
+        description: The agent revision to fetch.
+        schema:
+          type: string
+    get:
+      operationId: getAgentRevision
+      summary: Get a specific revision of an agent
+      description: >
+        Returns the full configuration of one revision of an agent — its model,
+        tools, instructions, and MCP servers.
+      tags:
+        - Agents
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgentRevision"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrNotFound"
+
   /health:
     get:
       operationId: health
@@ -963,7 +1082,7 @@ components:
       properties:
         name:
           type: string
-          description: Model identifier (e.g. "gemini-2.5-flash", "claude-opus-4").
+          description: Model identifier (e.g. "gemini-3.6-flash", "claude-opus-4").
         provider:
           $ref: "#/components/schemas/Provider"
 
@@ -971,11 +1090,30 @@ components:
       type: object
       required:
         - user_prompt
-        - model
+        - agent_name
+        - agent
       properties:
         user_prompt:
           type: string
           description: The user prompt driving this invocation.
+        agent_name:
+          type: string
+          description: >
+            Human-readable name identifying the agent (e.g. "support-triage").
+            Runs sharing a name are grouped as one agent; each distinct
+            configuration under it becomes a revision.
+        agent:
+          $ref: "#/components/schemas/AgentConfig"
+
+    AgentConfig:
+      type: object
+      required:
+        - model
+      description: >
+        The agent configuration for a run: the model, tools, instructions, and
+        MCP servers that define its behavior. Runs with the same configuration
+        share a revision.
+      properties:
         model:
           $ref: "#/components/schemas/Model"
         tools:
@@ -995,6 +1133,95 @@ components:
           items:
             $ref: "#/components/schemas/MCPServer"
           description: MCP servers whose tools are offered to the model.
+
+    AgentMeta:
+      type: object
+      description: A row in the agent list — an agent's identity and activity.
+      required:
+        - name
+        - revision_count
+        - created_at
+        - updated_at
+      properties:
+        name:
+          type: string
+          description: The agent's name.
+        revision_count:
+          type: integer
+          format: int64
+          description: Number of distinct revisions of this agent.
+        created_at:
+          type: string
+          format: date-time
+          description: When the agent first ran.
+        updated_at:
+          type: string
+          format: date-time
+          description: When the agent last ran.
+
+    ListAgentsResponse:
+      type: object
+      required:
+        - agents
+      properties:
+        agents:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgentMeta"
+
+    AgentRevisionMeta:
+      type: object
+      description: A reference to one agent revision, without its configuration.
+      required:
+        - revision
+        - created_at
+      properties:
+        revision:
+          type: string
+          description: Identifier of this agent revision.
+        created_at:
+          type: string
+          format: date-time
+          description: When this revision first ran.
+
+    AgentRevision:
+      type: object
+      description: One revision of an agent, with its full configuration.
+      required:
+        - revision
+        - created_at
+        - config
+      properties:
+        revision:
+          type: string
+          description: Identifier of this agent revision.
+        created_at:
+          type: string
+          format: date-time
+          description: When this revision first ran.
+        config:
+          $ref: "#/components/schemas/AgentConfig"
+
+    Agent:
+      type: object
+      description: >
+        An agent identified by name, with its current revision's full
+        configuration and the list of all its revisions newest first.
+      required:
+        - name
+        - current
+        - revisions
+      properties:
+        name:
+          type: string
+          description: The agent's name.
+        current:
+          $ref: "#/components/schemas/AgentRevision"
+        revisions:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgentRevisionMeta"
+          description: All revisions of the agent, newest first.
 
     MCPServer:
       type: object
@@ -1052,6 +1279,14 @@ components:
           type: integer
           format: int64
           description: Number of times this session has been run.
+        agent_name:
+          type: string
+          description: Name of the agent that last ran this session.
+        agent_revision:
+          type: string
+          description: >
+            Revision of the agent that last ran this session. Runs with the
+            same configuration share this value.
         created_at:
           type: string
           format: date-time
@@ -1118,7 +1353,7 @@ components:
           description: The invocation (run) during which this event occurred.
         type:
           type: string
-          enum: [llm_call, tool_result, run_finished, run_failed]
+          enum: [llm_call, tool_result, harness_exit, run_failed, run_succeeded]
           description: >
             The kind of event (e.g. "llm_call" for a model call and the tool
             calls it requested, "tool_result" for a tool's output).

@@ -37,7 +37,7 @@ def sdk_with_handler(
 
 def test_package_exposes_version() -> None:
     assert albus_sdk.VERSION == albus_sdk.__version__
-    assert albus_sdk.VERSION == "0.2.0"
+    assert albus_sdk.VERSION == "0.3.0"
 
 
 def test_default_production_url_and_sync_operation() -> None:

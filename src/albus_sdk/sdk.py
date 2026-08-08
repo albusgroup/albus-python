@@ -15,6 +15,7 @@ from typing import Callable, Dict, Optional, TYPE_CHECKING, Union, cast
 import weakref
 
 if TYPE_CHECKING:
+    from albus_sdk.agents import Agents
     from albus_sdk.auth import Auth
     from albus_sdk.health import Health
     from albus_sdk.invites import Invites
@@ -32,6 +33,8 @@ class Albus(BaseSDK):
     r"""Run and inspect agent sessions."""
     tokens: "Tokens"
     r"""Manage organization API keys."""
+    agents: "Agents"
+    r"""Inspect the agents that have run in your organization."""
     health: "Health"
     r"""Check service availability."""
     auth: "Auth"
@@ -41,6 +44,7 @@ class Albus(BaseSDK):
         "secrets": ("albus_sdk.secrets", "Secrets"),
         "sessions": ("albus_sdk.sessions", "Sessions"),
         "tokens": ("albus_sdk.tokens", "Tokens"),
+        "agents": ("albus_sdk.agents", "Agents"),
         "health": ("albus_sdk.health", "Health"),
         "auth": ("albus_sdk.auth", "Auth"),
         "invites": ("albus_sdk.invites", "Invites"),

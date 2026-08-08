@@ -11,8 +11,9 @@ Type = Union[
     Literal[
         "llm_call",
         "tool_result",
-        "run_finished",
+        "harness_exit",
         "run_failed",
+        "run_succeeded",
     ],
     UnrecognizedStr,
 ]
