@@ -5,6 +5,11 @@ from typing import Any, TYPE_CHECKING
 from albus_sdk.utils.dynamic_imports import lazy_getattr, lazy_dir
 
 if TYPE_CHECKING:
+    from .agent import Agent, AgentTypedDict
+    from .agentconfig import AgentConfig, AgentConfigTypedDict
+    from .agentmeta import AgentMeta, AgentMetaTypedDict
+    from .agentrevision import AgentRevision, AgentRevisionTypedDict
+    from .agentrevisionmeta import AgentRevisionMeta, AgentRevisionMetaTypedDict
     from .auditevent import AuditEvent, AuditEventTypedDict, Type
     from .createinviterequest import (
         CreateInviteRequest,
@@ -17,6 +22,11 @@ if TYPE_CHECKING:
     from .deletesecretop import DeleteSecretRequest, DeleteSecretRequestTypedDict
     from .deletesessionop import DeleteSessionRequest, DeleteSessionRequestTypedDict
     from .deletetokenop import DeleteTokenRequest, DeleteTokenRequestTypedDict
+    from .getagentop import GetAgentRequest, GetAgentRequestTypedDict
+    from .getagentrevisionop import (
+        GetAgentRevisionRequest,
+        GetAgentRevisionRequestTypedDict,
+    )
     from .getsecretop import GetSecretRequest, GetSecretRequestTypedDict
     from .getsessionauditop import (
         GetSessionAuditRequest,
@@ -26,6 +36,8 @@ if TYPE_CHECKING:
     from .gettokenop import GetTokenRequest, GetTokenRequestTypedDict
     from .healthresponse import HealthResponse, HealthResponseTypedDict
     from .invite import Invite, InviteTypedDict
+    from .listagentsop import ListAgentsRequest, ListAgentsRequestTypedDict
+    from .listagentsresponse import ListAgentsResponse, ListAgentsResponseTypedDict
     from .listauditeventsresponse import (
         ListAuditEventsResponse,
         ListAuditEventsResponseTypedDict,
@@ -68,6 +80,16 @@ if TYPE_CHECKING:
     from .whoamiresponse import WhoamiResponse, WhoamiResponseTypedDict
 
 __all__ = [
+    "Agent",
+    "AgentConfig",
+    "AgentConfigTypedDict",
+    "AgentMeta",
+    "AgentMetaTypedDict",
+    "AgentRevision",
+    "AgentRevisionMeta",
+    "AgentRevisionMetaTypedDict",
+    "AgentRevisionTypedDict",
+    "AgentTypedDict",
     "AuditEvent",
     "AuditEventTypedDict",
     "CreateInviteRequest",
@@ -85,6 +107,10 @@ __all__ = [
     "DeleteSessionRequestTypedDict",
     "DeleteTokenRequest",
     "DeleteTokenRequestTypedDict",
+    "GetAgentRequest",
+    "GetAgentRequestTypedDict",
+    "GetAgentRevisionRequest",
+    "GetAgentRevisionRequestTypedDict",
     "GetSecretRequest",
     "GetSecretRequestTypedDict",
     "GetSessionAuditRequest",
@@ -97,6 +123,10 @@ __all__ = [
     "HealthResponseTypedDict",
     "Invite",
     "InviteTypedDict",
+    "ListAgentsRequest",
+    "ListAgentsRequestTypedDict",
+    "ListAgentsResponse",
+    "ListAgentsResponseTypedDict",
     "ListAuditEventsResponse",
     "ListAuditEventsResponseTypedDict",
     "ListSecretsResponse",
@@ -143,6 +173,16 @@ __all__ = [
 ]
 
 _dynamic_imports: dict[str, str] = {
+    "Agent": ".agent",
+    "AgentTypedDict": ".agent",
+    "AgentConfig": ".agentconfig",
+    "AgentConfigTypedDict": ".agentconfig",
+    "AgentMeta": ".agentmeta",
+    "AgentMetaTypedDict": ".agentmeta",
+    "AgentRevision": ".agentrevision",
+    "AgentRevisionTypedDict": ".agentrevision",
+    "AgentRevisionMeta": ".agentrevisionmeta",
+    "AgentRevisionMetaTypedDict": ".agentrevisionmeta",
     "AuditEvent": ".auditevent",
     "AuditEventTypedDict": ".auditevent",
     "Type": ".auditevent",
@@ -161,6 +201,10 @@ _dynamic_imports: dict[str, str] = {
     "DeleteSessionRequestTypedDict": ".deletesessionop",
     "DeleteTokenRequest": ".deletetokenop",
     "DeleteTokenRequestTypedDict": ".deletetokenop",
+    "GetAgentRequest": ".getagentop",
+    "GetAgentRequestTypedDict": ".getagentop",
+    "GetAgentRevisionRequest": ".getagentrevisionop",
+    "GetAgentRevisionRequestTypedDict": ".getagentrevisionop",
     "GetSecretRequest": ".getsecretop",
     "GetSecretRequestTypedDict": ".getsecretop",
     "GetSessionAuditRequest": ".getsessionauditop",
@@ -173,6 +217,10 @@ _dynamic_imports: dict[str, str] = {
     "HealthResponseTypedDict": ".healthresponse",
     "Invite": ".invite",
     "InviteTypedDict": ".invite",
+    "ListAgentsRequest": ".listagentsop",
+    "ListAgentsRequestTypedDict": ".listagentsop",
+    "ListAgentsResponse": ".listagentsresponse",
+    "ListAgentsResponseTypedDict": ".listagentsresponse",
     "ListAuditEventsResponse": ".listauditeventsresponse",
     "ListAuditEventsResponseTypedDict": ".listauditeventsresponse",
     "ListSecretsResponse": ".listsecretsresponse",

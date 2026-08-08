@@ -6,7 +6,7 @@ from albus_sdk._hooks import HookContext
 from albus_sdk.types import OptionalNullable, UNSET
 from albus_sdk.utils import get_security_from_env
 from albus_sdk.utils.unmarshal_json_response import unmarshal_json_response
-from typing import Any, Iterable, List, Mapping, Optional, Union
+from typing import Any, Mapping, Optional, Union
 
 
 class Sessions(BaseSDK):
@@ -423,16 +423,11 @@ class Sessions(BaseSDK):
         *,
         id: str,
         user_prompt: str,
-        model: Union[models.Model, models.ModelTypedDict],
+        agent_name: str,
+        agent: Union[models.AgentConfig, models.AgentConfigTypedDict],
         idempotency_key: Optional[str] = None,
         wait: Optional[bool] = False,
         wait_timeout: Optional[int] = None,
-        tools: Optional[Iterable[str]] = None,
-        system_prompt: Optional[str] = None,
-        max_steps: Optional[int] = None,
-        mcp_servers: Optional[
-            Union[Iterable[models.MCPServer], Iterable[models.MCPServerTypedDict]]
-        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -449,17 +444,16 @@ class Sessions(BaseSDK):
 
         :param id: Client-provided session identifier. Use the same value across requests to continue the same agent session.
         :param user_prompt: The user prompt driving this invocation.
-        :param model:
+        :param agent_name: Human-readable name identifying the agent (e.g. \"support-triage\"). Runs sharing a name are grouped as one agent; each distinct configuration under it becomes a revision.
+
+        :param agent: The agent configuration for a run: the model, tools, instructions, and MCP servers that define its behavior. Runs with the same configuration share a revision.
+
         :param idempotency_key: Optional but strongly encouraged. Uniquely identifies this invocation of the session; reuse the same value to safely retry a request, and a new value starts a new invocation. When omitted, the server generates a key for the invocation and returns it in the Idempotency-Key response header, but the request is not retry-safe.
 
         :param wait: When true, long-poll: block until the invocation's assistant response is available before returning.
 
         :param wait_timeout: Maximum time in seconds to block when wait=true. Omit to wait indefinitely. Ignored when wait is false.
 
-        :param tools: Names of the tools the model may call (e.g. \"WEB_SEARCH\").
-        :param system_prompt: System instructions for the model. Uses a default if omitted.
-        :param max_steps: Max model steps before the run stops. Uses a default if omitted.
-        :param mcp_servers: MCP servers whose tools are offered to the model.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -482,13 +476,8 @@ class Sessions(BaseSDK):
             wait_timeout=wait_timeout,
             body=models.RunSessionRequest(
                 user_prompt=user_prompt,
-                model=utils.get_pydantic_model(model, models.Model),
-                tools=utils.unmarshal(tools, Optional[List[str]]),
-                system_prompt=system_prompt,
-                max_steps=max_steps,
-                mcp_servers=utils.get_pydantic_model(
-                    mcp_servers, Optional[List[models.MCPServer]]
-                ),
+                agent_name=agent_name,
+                agent=utils.get_pydantic_model(agent, models.AgentConfig),
             ),
         )
 
@@ -587,16 +576,11 @@ class Sessions(BaseSDK):
         *,
         id: str,
         user_prompt: str,
-        model: Union[models.Model, models.ModelTypedDict],
+        agent_name: str,
+        agent: Union[models.AgentConfig, models.AgentConfigTypedDict],
         idempotency_key: Optional[str] = None,
         wait: Optional[bool] = False,
         wait_timeout: Optional[int] = None,
-        tools: Optional[Iterable[str]] = None,
-        system_prompt: Optional[str] = None,
-        max_steps: Optional[int] = None,
-        mcp_servers: Optional[
-            Union[Iterable[models.MCPServer], Iterable[models.MCPServerTypedDict]]
-        ] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -613,17 +597,16 @@ class Sessions(BaseSDK):
 
         :param id: Client-provided session identifier. Use the same value across requests to continue the same agent session.
         :param user_prompt: The user prompt driving this invocation.
-        :param model:
+        :param agent_name: Human-readable name identifying the agent (e.g. \"support-triage\"). Runs sharing a name are grouped as one agent; each distinct configuration under it becomes a revision.
+
+        :param agent: The agent configuration for a run: the model, tools, instructions, and MCP servers that define its behavior. Runs with the same configuration share a revision.
+
         :param idempotency_key: Optional but strongly encouraged. Uniquely identifies this invocation of the session; reuse the same value to safely retry a request, and a new value starts a new invocation. When omitted, the server generates a key for the invocation and returns it in the Idempotency-Key response header, but the request is not retry-safe.
 
         :param wait: When true, long-poll: block until the invocation's assistant response is available before returning.
 
         :param wait_timeout: Maximum time in seconds to block when wait=true. Omit to wait indefinitely. Ignored when wait is false.
 
-        :param tools: Names of the tools the model may call (e.g. \"WEB_SEARCH\").
-        :param system_prompt: System instructions for the model. Uses a default if omitted.
-        :param max_steps: Max model steps before the run stops. Uses a default if omitted.
-        :param mcp_servers: MCP servers whose tools are offered to the model.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -646,13 +629,8 @@ class Sessions(BaseSDK):
             wait_timeout=wait_timeout,
             body=models.RunSessionRequest(
                 user_prompt=user_prompt,
-                model=utils.get_pydantic_model(model, models.Model),
-                tools=utils.unmarshal(tools, Optional[List[str]]),
-                system_prompt=system_prompt,
-                max_steps=max_steps,
-                mcp_servers=utils.get_pydantic_model(
-                    mcp_servers, Optional[List[models.MCPServer]]
-                ),
+                agent_name=agent_name,
+                agent=utils.get_pydantic_model(agent, models.AgentConfig),
             ),
         )
 

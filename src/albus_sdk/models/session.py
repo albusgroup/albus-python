@@ -33,6 +33,12 @@ class SessionTypedDict(TypedDict):
     r"""The invocation currently running, if any. Omitted when the session is idle.
 
     """
+    agent_name: NotRequired[str]
+    r"""Name of the agent that last ran this session."""
+    agent_revision: NotRequired[str]
+    r"""Revision of the agent that last ran this session. Runs with the same configuration share this value.
+
+    """
 
 
 class Session(BaseModel):
@@ -54,9 +60,17 @@ class Session(BaseModel):
 
     """
 
+    agent_name: Optional[str] = None
+    r"""Name of the agent that last ran this session."""
+
+    agent_revision: Optional[str] = None
+    r"""Revision of the agent that last ran this session. Runs with the same configuration share this value.
+
+    """
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = set(["current_invocation_id"])
+        optional_fields = set(["current_invocation_id", "agent_name", "agent_revision"])
         serialized = handler(self)
         m = {}
 
