@@ -545,19 +545,12 @@ paths:
       summary: List agents
       description: >
         Lists the agents that have run in your organization, each with its
-        latest revision. Use `name` to look up a single agent by name.
+        latest revision.
       tags:
         - Agents
       security:
         - bearerAuth: []
         - apiKeyAuth: []
-      parameters:
-        - name: name
-          in: query
-          required: false
-          description: Return only the agent with this exact name.
-          schema:
-            type: string
       responses:
         "200":
           description: OK
@@ -1059,6 +1052,7 @@ components:
 
     Provider:
       type: object
+      additionalProperties: false
       required:
         - name
         - credential
@@ -1077,6 +1071,7 @@ components:
 
     Model:
       type: object
+      additionalProperties: false
       required:
         - name
       properties:
@@ -1088,6 +1083,7 @@ components:
 
     RunSessionRequest:
       type: object
+      additionalProperties: false
       required:
         - user_prompt
         - agent_name
@@ -1107,6 +1103,7 @@ components:
 
     AgentConfig:
       type: object
+      additionalProperties: false
       required:
         - model
       description: >
@@ -1225,6 +1222,7 @@ components:
 
     MCPServer:
       type: object
+      additionalProperties: false
       required:
         - name
         - url
@@ -1337,7 +1335,7 @@ components:
       required:
         - id
         - session_id
-        - invocation_id
+        - idempotency_key
         - type
         - payload
         - event_time
@@ -1348,21 +1346,41 @@ components:
         session_id:
           type: string
           description: The session this event belongs to.
-        invocation_id:
+        idempotency_key:
           type: string
-          description: The invocation (run) during which this event occurred.
+          description: >
+            Idempotency key of the run during which this event occurred.
+        agent_revision:
+          type: string
+          description: The agent revision the invocation ran (e.g. "a1b2c3d4").
         type:
           type: string
-          enum: [llm_call, tool_result, harness_exit, run_failed, run_succeeded]
+          enum:
+            - agent_invocation
+            - model_call
+            - tool_call
+            - harness_exit
+            - run_failed
+            - run_succeeded
+            - llm_call
+            - tool_result
           description: >
-            The kind of event (e.g. "llm_call" for a model call and the tool
-            calls it requested, "tool_result" for a tool's output).
+            The kind of event (e.g. "agent_invocation" for the request that
+            started the run, "model_call" for a model call and the tool calls it
+            requested, "tool_call" for an executed tool call and its output).
+            Events recorded earlier use "llm_call" and "tool_result" for those
+            same two kinds.
         payload:
           type: object
           additionalProperties: true
           description: >
             The event's details, whose shape depends on `type` (e.g. the model
-            content and requested tool calls for "llm_call").
+            content and requested tool calls for "model_call"; the call's
+            arguments, response, and MCP server URL for "tool_call"). Model and
+            tool output and tool arguments are stored up to 32 KiB each,
+            alongside the byte count, SHA-256 digest, and truncation flag of the
+            complete value (e.g. `contentBytes`, `contentSha256`,
+            `contentTruncated`).
         event_time:
           type: string
           format: date-time

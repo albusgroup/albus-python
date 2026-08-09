@@ -15,7 +15,6 @@ class Agents(BaseSDK):
     def list_agents(
         self,
         *,
-        name: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -23,12 +22,11 @@ class Agents(BaseSDK):
     ) -> models.ListAgentsResponse:
         r"""List agents
 
-        Lists the agents that have run in your organization, each with its latest revision. Use `name` to look up a single agent by name.
+        Lists the agents that have run in your organization, each with its latest revision.
 
 
         If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
 
-        :param name: Return only the agent with this exact name.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -43,17 +41,12 @@ class Agents(BaseSDK):
             base_url = server_url
         else:
             base_url = self._get_url(base_url, url_variables)
-
-        request = models.ListAgentsRequest(
-            name=name,
-        )
-
         req = self._build_request(
             method="GET",
             path="/agents",
             base_url=base_url,
             url_variables=url_variables,
-            request=request,
+            request=None,
             request_body_required=False,
             request_has_path_params=False,
             request_has_query_params=True,
@@ -115,7 +108,6 @@ class Agents(BaseSDK):
     async def list_agents_async(
         self,
         *,
-        name: Optional[str] = None,
         retries: OptionalNullable[utils.RetryConfig] = UNSET,
         server_url: Optional[str] = None,
         timeout_ms: Optional[int] = None,
@@ -123,12 +115,11 @@ class Agents(BaseSDK):
     ) -> models.ListAgentsResponse:
         r"""List agents
 
-        Lists the agents that have run in your organization, each with its latest revision. Use `name` to look up a single agent by name.
+        Lists the agents that have run in your organization, each with its latest revision.
 
 
         If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
 
-        :param name: Return only the agent with this exact name.
         :param retries: Override the default retry configuration for this method
         :param server_url: Override the default server URL for this method
         :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
@@ -143,17 +134,12 @@ class Agents(BaseSDK):
             base_url = server_url
         else:
             base_url = self._get_url(base_url, url_variables)
-
-        request = models.ListAgentsRequest(
-            name=name,
-        )
-
         req = self._build_request_async(
             method="GET",
             path="/agents",
             base_url=base_url,
             url_variables=url_variables,
-            request=request,
+            request=None,
             request_body_required=False,
             request_has_path_params=False,
             request_has_query_params=True,
