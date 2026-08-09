@@ -12,7 +12,7 @@ Inspect the agents that have run in your organization.
 
 ## list_agents
 
-Lists the agents that have run in your organization, each with its latest revision. Use `name` to look up a single agent by name.
+Lists the agents that have run in your organization, each with its latest revision.
 
 
 ### Example Usage
@@ -40,7 +40,6 @@ with Albus(
 
 | Parameter                                                           | Type                                                                | Required                                                            | Description                                                         |
 | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| `name`                                                              | *Optional[str]*                                                     | :heavy_minus_sign:                                                  | Return only the agent with this exact name.                         |
 | `retries`                                                           | [Optional[utils.RetryConfig]](../../models/utils/retryconfig.md)    | :heavy_minus_sign:                                                  | Configuration to override the default retry behavior of the client. |
 
 ### Response

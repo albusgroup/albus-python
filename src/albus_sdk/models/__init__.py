@@ -36,7 +36,6 @@ if TYPE_CHECKING:
     from .gettokenop import GetTokenRequest, GetTokenRequestTypedDict
     from .healthresponse import HealthResponse, HealthResponseTypedDict
     from .invite import Invite, InviteTypedDict
-    from .listagentsop import ListAgentsRequest, ListAgentsRequestTypedDict
     from .listagentsresponse import ListAgentsResponse, ListAgentsResponseTypedDict
     from .listauditeventsresponse import (
         ListAuditEventsResponse,
@@ -123,8 +122,6 @@ __all__ = [
     "HealthResponseTypedDict",
     "Invite",
     "InviteTypedDict",
-    "ListAgentsRequest",
-    "ListAgentsRequestTypedDict",
     "ListAgentsResponse",
     "ListAgentsResponseTypedDict",
     "ListAuditEventsResponse",
@@ -217,8 +214,6 @@ _dynamic_imports: dict[str, str] = {
     "HealthResponseTypedDict": ".healthresponse",
     "Invite": ".invite",
     "InviteTypedDict": ".invite",
-    "ListAgentsRequest": ".listagentsop",
-    "ListAgentsRequestTypedDict": ".listagentsop",
     "ListAgentsResponse": ".listagentsresponse",
     "ListAgentsResponseTypedDict": ".listagentsresponse",
     "ListAuditEventsResponse": ".listauditeventsresponse",
