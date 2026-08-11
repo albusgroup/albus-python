@@ -19,6 +19,7 @@ List all API tokens. Never returns token values, only metadata.
 
 <!-- UsageSnippet language="python" operationID="listTokens" method="get" path="/tokens" -->
 ```python
+# Synchronous Example
 from albus_sdk import Albus, models
 import os
 
@@ -33,7 +34,32 @@ with Albus(
 
     # Handle response
     print(res)
+```
 
+</br>
+
+An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
+
+```python
+# Asynchronous Example
+from albus_sdk import AsyncAlbus, models
+import asyncio
+import os
+
+async def main():
+
+    async with AsyncAlbus(
+        security=models.Security(
+            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
+        ),
+    ) as albus:
+
+        res = await albus.tokens.list_tokens()
+
+        # Handle response
+        print(res)
+
+asyncio.run(main())
 ```
 
 ### Parameters
@@ -61,6 +87,7 @@ Create an API token. The token value is returned only in this response.
 
 <!-- UsageSnippet language="python" operationID="createToken" method="post" path="/tokens" -->
 ```python
+# Synchronous Example
 from albus_sdk import Albus, models
 import os
 
@@ -75,7 +102,32 @@ with Albus(
 
     # Handle response
     print(res)
+```
 
+</br>
+
+An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
+
+```python
+# Asynchronous Example
+from albus_sdk import AsyncAlbus, models
+import asyncio
+import os
+
+async def main():
+
+    async with AsyncAlbus(
+        security=models.Security(
+            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
+        ),
+    ) as albus:
+
+        res = await albus.tokens.create_token(name="<value>")
+
+        # Handle response
+        print(res)
+
+asyncio.run(main())
 ```
 
 ### Parameters
@@ -104,6 +156,7 @@ Get token metadata by ID. Never returns the token value.
 
 <!-- UsageSnippet language="python" operationID="getToken" method="get" path="/tokens/{id}" -->
 ```python
+# Synchronous Example
 from albus_sdk import Albus, models
 import os
 
@@ -118,7 +171,32 @@ with Albus(
 
     # Handle response
     print(res)
+```
 
+</br>
+
+An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
+
+```python
+# Asynchronous Example
+from albus_sdk import AsyncAlbus, models
+import asyncio
+import os
+
+async def main():
+
+    async with AsyncAlbus(
+        security=models.Security(
+            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
+        ),
+    ) as albus:
+
+        res = await albus.tokens.get_token(id="<id>")
+
+        # Handle response
+        print(res)
+
+asyncio.run(main())
 ```
 
 ### Parameters
@@ -148,6 +226,7 @@ Revoke an API token by ID
 
 <!-- UsageSnippet language="python" operationID="deleteToken" method="delete" path="/tokens/{id}" -->
 ```python
+# Synchronous Example
 from albus_sdk import Albus, models
 import os
 
@@ -161,7 +240,31 @@ with Albus(
     albus.tokens.delete_token(id="<id>")
 
     # Use the SDK ...
+```
 
+</br>
+
+An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
+
+```python
+# Asynchronous Example
+from albus_sdk import AsyncAlbus, models
+import asyncio
+import os
+
+async def main():
+
+    async with AsyncAlbus(
+        security=models.Security(
+            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
+        ),
+    ) as albus:
+
+        await albus.tokens.delete_token(id="<id>")
+
+        # Use the SDK ...
+
+asyncio.run(main())
 ```
 
 ### Parameters

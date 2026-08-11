@@ -46,52 +46,6 @@ class BaseSDK:
 
         return utils.template_url(base_url, url_variables)
 
-    def _build_request_async(
-        self,
-        method,
-        path,
-        base_url,
-        url_variables,
-        request,
-        request_body_required,
-        request_has_path_params,
-        request_has_query_params,
-        user_agent_header,
-        accept_header_value,
-        _globals=None,
-        security=None,
-        timeout_ms: Optional[int] = None,
-        get_serialized_body: Optional[
-            Callable[[], Optional[SerializedRequestBody]]
-        ] = None,
-        url_override: Optional[str] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
-        allow_empty_value: Optional[List[str]] = None,
-        allowed_fields: Optional[List[str]] = None,
-    ) -> httpx.Request:
-        client = self.sdk_configuration.async_client
-        return self._build_request_with_client(
-            client,
-            method,
-            path,
-            base_url,
-            url_variables,
-            request,
-            request_body_required,
-            request_has_path_params,
-            request_has_query_params,
-            user_agent_header,
-            accept_header_value,
-            _globals,
-            security,
-            timeout_ms,
-            get_serialized_body,
-            url_override,
-            http_headers,
-            allow_empty_value,
-            allowed_fields,
-        )
-
     def _build_request(
         self,
         method,
@@ -306,6 +260,178 @@ class BaseSDK:
             http_res = hooks.after_success(AfterSuccessContext(hook_ctx), http_res)
 
         return http_res
+
+
+class AsyncBaseSDK:
+    sdk_configuration: SDKConfiguration
+    parent_ref: Optional[object] = None
+    """
+    Reference to the root SDK instance, if any. This will prevent it from
+    being garbage collected while there are active streams.
+    """
+
+    def __init__(
+        self,
+        sdk_config: SDKConfiguration,
+        parent_ref: Optional[object] = None,
+    ) -> None:
+        self.sdk_configuration = sdk_config
+        self.parent_ref = parent_ref
+
+    def _get_url(self, base_url, url_variables):
+        sdk_url, sdk_variables = self.sdk_configuration.get_server_details()
+
+        if base_url is None:
+            base_url = sdk_url
+
+        if url_variables is None:
+            url_variables = sdk_variables
+
+        return utils.template_url(base_url, url_variables)
+
+    def _build_request_async(
+        self,
+        method,
+        path,
+        base_url,
+        url_variables,
+        request,
+        request_body_required,
+        request_has_path_params,
+        request_has_query_params,
+        user_agent_header,
+        accept_header_value,
+        _globals=None,
+        security=None,
+        timeout_ms: Optional[int] = None,
+        get_serialized_body: Optional[
+            Callable[[], Optional[SerializedRequestBody]]
+        ] = None,
+        url_override: Optional[str] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
+        allow_empty_value: Optional[List[str]] = None,
+        allowed_fields: Optional[List[str]] = None,
+    ) -> httpx.Request:
+        client = self.sdk_configuration.async_client
+        return self._build_request_with_client(
+            client,
+            method,
+            path,
+            base_url,
+            url_variables,
+            request,
+            request_body_required,
+            request_has_path_params,
+            request_has_query_params,
+            user_agent_header,
+            accept_header_value,
+            _globals,
+            security,
+            timeout_ms,
+            get_serialized_body,
+            url_override,
+            http_headers,
+            allow_empty_value,
+            allowed_fields,
+        )
+
+    def _build_request_with_client(
+        self,
+        client,
+        method,
+        path,
+        base_url,
+        url_variables,
+        request,
+        request_body_required,
+        request_has_path_params,
+        request_has_query_params,
+        user_agent_header,
+        accept_header_value,
+        _globals=None,
+        security=None,
+        timeout_ms: Optional[int] = None,
+        get_serialized_body: Optional[
+            Callable[[], Optional[SerializedRequestBody]]
+        ] = None,
+        url_override: Optional[str] = None,
+        http_headers: Optional[Mapping[str, str]] = None,
+        allow_empty_value: Optional[List[str]] = None,
+        allowed_fields: Optional[List[str]] = None,
+    ) -> httpx.Request:
+        query_params = {}
+
+        url = url_override
+        if url is None:
+            url = utils.generate_url(
+                self._get_url(base_url, url_variables),
+                path,
+                request if request_has_path_params else None,
+                _globals if request_has_path_params else None,
+            )
+
+            query_params = utils.get_query_params(
+                request if request_has_query_params else None,
+                _globals if request_has_query_params else None,
+                allow_empty_value,
+            )
+        else:
+            # Pick up the query parameter from the override so they can be
+            # preserved when building the request later on (necessary as of
+            # httpx 0.28).
+            parsed_override = urlparse(str(url_override))
+            query_params = parse_qs(parsed_override.query, keep_blank_values=True)
+
+        headers = utils.get_headers(request, _globals)
+        headers["Accept"] = accept_header_value
+        headers[user_agent_header] = self.sdk_configuration.user_agent
+
+        if security is not None:
+            if callable(security):
+                security = security()
+        security = utils.get_security_from_env(security, models.Security)
+        if security is not None:
+            security_headers, security_query_params = utils.get_security(
+                security, allowed_fields
+            )
+            headers = {**headers, **security_headers}
+            query_params = {**query_params, **security_query_params}
+
+        serialized_request_body = SerializedRequestBody()
+        if get_serialized_body is not None:
+            rb = get_serialized_body()
+            if request_body_required and rb is None:
+                raise ValueError("request body is required")
+
+            if rb is not None:
+                serialized_request_body = rb
+
+        if (
+            serialized_request_body.media_type is not None
+            and serialized_request_body.media_type
+            not in (
+                "multipart/form-data",
+                "multipart/mixed",
+            )
+        ):
+            headers["content-type"] = serialized_request_body.media_type
+
+        if http_headers is not None:
+            for header, value in http_headers.items():
+                headers[header] = value
+
+        timeout = timeout_ms / 1000 if timeout_ms is not None else None
+
+        return client.build_request(
+            method,
+            url,
+            params=query_params,
+            content=serialized_request_body.content,
+            data=serialized_request_body.data,
+            files=serialized_request_body.files,
+            headers=headers,
+            timeout=timeout if timeout is not None else httpx.USE_CLIENT_DEFAULT,
+        )
 
     async def do_request_async(
         self,

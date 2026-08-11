@@ -15,6 +15,7 @@ Creates a pending invitation for an email address. Omit organization_id to invit
 
 <!-- UsageSnippet language="python" operationID="createInvite" method="post" path="/invites" -->
 ```python
+# Synchronous Example
 from albus_sdk import Albus, models
 import os
 
@@ -29,7 +30,32 @@ with Albus(
 
     # Handle response
     print(res)
+```
 
+</br>
+
+An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
+
+```python
+# Asynchronous Example
+from albus_sdk import AsyncAlbus, models
+import asyncio
+import os
+
+async def main():
+
+    async with AsyncAlbus(
+        security=models.Security(
+            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
+        ),
+    ) as albus:
+
+        res = await albus.invites.create_invite(email="Cassie27@hotmail.com")
+
+        # Handle response
+        print(res)
+
+asyncio.run(main())
 ```
 
 ### Parameters

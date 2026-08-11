@@ -1,0 +1,61 @@
+name: Bug report
+description: Report incorrect or unexpected behavior in the albus-sdk package
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The SDK is generated and maintained upstream, and this repository is a
+        mirror of each release. Fixes land upstream and arrive in the next
+        published version, which closes the issue.
+
+        **Never paste access tokens, API keys, secret values, or customer data
+        into this issue.** Redact them from code, logs, and tracebacks.
+        Report suspected vulnerabilities privately through
+        [SECURITY.md](https://github.com/albusgroup/albus-python/blob/master/SECURITY.md)
+        instead of opening an issue.
+
+  - type: input
+    id: sdk-version
+    attributes:
+      label: albus-sdk version
+      description: Output of `python -c "import albus_sdk; print(albus_sdk.VERSION)"`.
+      placeholder: "0.1.0"
+    validations:
+      required: true
+
+  - type: input
+    id: python-version
+    attributes:
+      label: Python version
+      description: Output of `python --version`.
+      placeholder: "3.12.4"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: >
+        The smallest code sample that shows the problem, with credentials and
+        customer data removed.
+      render: python
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: >
+        What happened instead, including the exception type, the HTTP status,
+        and redacted logs when relevant.
+    validations:
+      required: true

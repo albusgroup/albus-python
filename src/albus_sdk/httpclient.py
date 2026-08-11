@@ -91,9 +91,26 @@ class ClientOwner(Protocol):
 
 
 def close_clients(
+    owner: ClientOwner, sync_client: Union[HttpClient, None], sync_client_supplied: bool
+) -> None:
+    """
+    A finalizer function that is meant to be used with weakref.finalize to close
+    httpx clients used by an SDK so that underlying resources can be garbage
+    collected.
+    """
+
+    # Unset the client/async_client properties so there are no more references
+    # to them from the owning SDK instance and they can be reaped.
+    owner.client = None
+    if sync_client is not None and not sync_client_supplied:
+        try:
+            sync_client.close()
+        except Exception:
+            pass
+
+
+def close_clients_async(
     owner: ClientOwner,
-    sync_client: Union[HttpClient, None],
-    sync_client_supplied: bool,
     async_client: Union[AsyncHttpClient, None],
     async_client_supplied: bool,
 ) -> None:
@@ -105,14 +122,7 @@ def close_clients(
 
     # Unset the client/async_client properties so there are no more references
     # to them from the owning SDK instance and they can be reaped.
-    owner.client = None
     owner.async_client = None
-    if sync_client is not None and not sync_client_supplied:
-        try:
-            sync_client.close()
-        except Exception:
-            pass
-
     if async_client is not None and not async_client_supplied:
         try:
             loop = asyncio.get_running_loop()

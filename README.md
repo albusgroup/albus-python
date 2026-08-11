@@ -190,23 +190,23 @@ with Albus(
 
 </br>
 
-The same SDK client can also be used to make asynchronous requests by importing asyncio.
+An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
 
 ```python
 # Asynchronous Example
-from albus_sdk import Albus, models
+from albus_sdk import AsyncAlbus, models
 import asyncio
 import os
 
 async def main():
 
-    async with Albus(
+    async with AsyncAlbus(
         security=models.Security(
             bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
         ),
     ) as albus:
 
-        res = await albus.secrets.list_secrets_async()
+        res = await albus.secrets.list_secrets()
 
         # Handle response
         print(res)
@@ -229,6 +229,7 @@ This SDK supports the following security schemes globally:
 
 You can set the security parameters through the `security` optional parameter when initializing the SDK client instance. The selected scheme will be used by default to authenticate with the API for all operations that support it. For example:
 ```python
+# Synchronous Example
 from albus_sdk import Albus, models
 import os
 
@@ -243,7 +244,32 @@ with Albus(
 
     # Handle response
     print(res)
+```
 
+</br>
+
+An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
+
+```python
+# Asynchronous Example
+from albus_sdk import AsyncAlbus, models
+import asyncio
+import os
+
+async def main():
+
+    async with AsyncAlbus(
+        security=models.Security(
+            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
+        ),
+    ) as albus:
+
+        res = await albus.secrets.list_secrets()
+
+        # Handle response
+        print(res)
+
+asyncio.run(main())
 ```
 <!-- End Authentication [security] -->
 
@@ -304,6 +330,7 @@ Some of the endpoints in this SDK support retries. If you use the SDK without an
 
 To change the default retry strategy for a single API call, simply provide a `RetryConfig` object to the call:
 ```python
+# Synchronous Example
 from albus_sdk import Albus, models
 from albus_sdk.utils import BackoffStrategy, RetryConfig
 import os
@@ -325,11 +352,44 @@ with Albus(
 
     # Handle response
     print(res)
+```
 
+</br>
+
+An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
+
+```python
+# Asynchronous Example
+from albus_sdk import AsyncAlbus, models
+from albus_sdk.utils import BackoffStrategy, RetryConfig
+import asyncio
+import os
+
+async def main():
+
+    async with AsyncAlbus(
+        security=models.Security(
+            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
+        ),
+    ) as albus:
+
+        res = await albus.secrets.list_secrets(
+            retries=RetryConfig(
+                "backoff",
+                BackoffStrategy(1, 50, 1.1, 100),
+                False,
+            )
+        )
+
+        # Handle response
+        print(res)
+
+asyncio.run(main())
 ```
 
 If you'd like to override the default retry strategy for all operations that support retries, you can use the `retry_config` optional parameter when initializing the SDK:
 ```python
+# Synchronous Example
 from albus_sdk import Albus, models
 from albus_sdk.utils import BackoffStrategy, RetryConfig
 import os
@@ -346,7 +406,34 @@ with Albus(
 
     # Handle response
     print(res)
+```
 
+</br>
+
+An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
+
+```python
+# Asynchronous Example
+from albus_sdk import AsyncAlbus, models
+from albus_sdk.utils import BackoffStrategy, RetryConfig
+import asyncio
+import os
+
+async def main():
+
+    async with AsyncAlbus(
+        retry_config=RetryConfig("backoff", BackoffStrategy(1, 50, 1.1, 100), False),
+        security=models.Security(
+            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
+        ),
+    ) as albus:
+
+        res = await albus.secrets.list_secrets()
+
+        # Handle response
+        print(res)
+
+asyncio.run(main())
 ```
 <!-- End Retries [retries] -->
 
@@ -366,6 +453,7 @@ with Albus(
 
 ### Example
 ```python
+# Synchronous Example
 from albus_sdk import Albus, errors, models
 import os
 
@@ -395,6 +483,47 @@ with Albus(
         # Depending on the method different errors may be thrown
         if isinstance(e, errors.ErrUnauthorized):
             print(e.data.message)  # str
+```
+
+</br>
+
+An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
+
+```python
+# Asynchronous Example
+from albus_sdk import AsyncAlbus, errors, models
+import asyncio
+import os
+
+async def main():
+
+    async with AsyncAlbus(
+        security=models.Security(
+            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
+        ),
+    ) as albus:
+        res = None
+        try:
+
+            res = await albus.secrets.list_secrets()
+
+            # Handle response
+            print(res)
+
+
+            except errors.AlbusError as e:
+                # The base class for HTTP error responses
+                print(e.message)
+                print(e.status_code)
+                print(e.body)
+                print(e.headers)
+                print(e.raw_response)
+
+                # Depending on the method different errors may be thrown
+                if isinstance(e, errors.ErrUnauthorized):
+                    print(e.data.message)  # str
+
+asyncio.run(main())
 ```
 
 ### Error Classes
@@ -443,6 +572,7 @@ You can override the default server globally by passing a server index to the `s
 #### Example
 
 ```python
+# Synchronous Example
 from albus_sdk import Albus, models
 import os
 
@@ -458,13 +588,40 @@ with Albus(
 
     # Handle response
     print(res)
+```
 
+</br>
+
+An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
+
+```python
+# Asynchronous Example
+from albus_sdk import AsyncAlbus, models
+import asyncio
+import os
+
+async def main():
+
+    async with AsyncAlbus(
+        server_idx=0,
+        security=models.Security(
+            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
+        ),
+    ) as albus:
+
+        res = await albus.secrets.list_secrets()
+
+        # Handle response
+        print(res)
+
+asyncio.run(main())
 ```
 
 ### Override Server URL Per-Client
 
 The default server can also be overridden globally by passing a URL to the `server_url: str` optional parameter when initializing the SDK client instance. For example:
 ```python
+# Synchronous Example
 from albus_sdk import Albus, models
 import os
 
@@ -480,7 +637,33 @@ with Albus(
 
     # Handle response
     print(res)
+```
 
+</br>
+
+An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
+
+```python
+# Asynchronous Example
+from albus_sdk import AsyncAlbus, models
+import asyncio
+import os
+
+async def main():
+
+    async with AsyncAlbus(
+        server_url="http://localhost:8080",
+        security=models.Security(
+            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
+        ),
+    ) as albus:
+
+        res = await albus.secrets.list_secrets()
+
+        # Handle response
+        print(res)
+
+asyncio.run(main())
 ```
 <!-- End Server Selection [server] -->
 
@@ -568,12 +751,12 @@ s = Albus(async_client=CustomClient(httpx.AsyncClient()))
 <!-- Start Resource Management [resource-management] -->
 ## Resource Management
 
-The `Albus` class implements the context manager protocol and registers a finalizer function to close the underlying sync and async HTTPX clients it uses under the hood. This will close HTTP connections, release memory and free up other resources held by the SDK. In short-lived Python programs and notebooks that make a few SDK method calls, resource management may not be a concern. However, in longer-lived programs, it is beneficial to create a single SDK instance via a [context manager][context-manager] and reuse it across the application.
+The `Albus` and `AsyncAlbus` classes implement the context manager protocol and register finalizer functions to close the underlying HTTPX clients they use under the hood. This will close HTTP connections, release memory and free up other resources held by the SDKs. In short-lived Python programs and notebooks that make a few SDK method calls, resource management may not be a concern. However, in longer-lived programs, it is beneficial to create SDK instances via [context managers][context-manager] and reuse them across the application.
 
 [context-manager]: https://docs.python.org/3/reference/datamodel.html#context-managers
 
 ```python
-from albus_sdk import Albus, models
+from albus_sdk import Albus, AsyncAlbus, models
 import os
 def main():
 
@@ -588,7 +771,7 @@ def main():
 # Or when using async:
 async def amain():
 
-    async with Albus(
+    async with AsyncAlbus(
         security=models.Security(
             bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
         ),
@@ -623,12 +806,15 @@ You can also enable a default debug logger by setting an environment variable `A
 Regeneration requires `uv`, Speakeasy authentication, and the Speakeasy CLI
 version pinned in `.speakeasy/workflow.yaml`.
 
-Run the generator with the authoritative private OpenAPI specification and the
-SDK version to produce:
+Run the generator with the SDK version to produce:
 
 ```bash
-./tools/generate /path/to/albus/api/openapi.yaml 0.1.0
+./tools/generate 0.1.0
 ```
+
+The source is the authoritative `api/openapi.yaml` in the Albus repository,
+where this SDK is developed; pass a path as a second argument only to preview
+against a different specification.
 
 The command copies the exact specification snapshot into this repository,
 generates the SDK without uploading the specification, normalizes known

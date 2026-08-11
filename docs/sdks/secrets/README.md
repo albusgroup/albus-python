@@ -20,6 +20,7 @@ List all secrets
 
 <!-- UsageSnippet language="python" operationID="listSecrets" method="get" path="/secrets" -->
 ```python
+# Synchronous Example
 from albus_sdk import Albus, models
 import os
 
@@ -34,7 +35,32 @@ with Albus(
 
     # Handle response
     print(res)
+```
 
+</br>
+
+An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
+
+```python
+# Asynchronous Example
+from albus_sdk import AsyncAlbus, models
+import asyncio
+import os
+
+async def main():
+
+    async with AsyncAlbus(
+        security=models.Security(
+            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
+        ),
+    ) as albus:
+
+        res = await albus.secrets.list_secrets()
+
+        # Handle response
+        print(res)
+
+asyncio.run(main())
 ```
 
 ### Parameters
@@ -62,6 +88,7 @@ Create a secret
 
 <!-- UsageSnippet language="python" operationID="createSecret" method="post" path="/secrets" -->
 ```python
+# Synchronous Example
 from albus_sdk import Albus, models
 import os
 
@@ -76,7 +103,32 @@ with Albus(
 
     # Handle response
     print(res)
+```
 
+</br>
+
+An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
+
+```python
+# Asynchronous Example
+from albus_sdk import AsyncAlbus, models
+import asyncio
+import os
+
+async def main():
+
+    async with AsyncAlbus(
+        security=models.Security(
+            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
+        ),
+    ) as albus:
+
+        res = await albus.secrets.create_secret(name="<value>", value="<value>")
+
+        # Handle response
+        print(res)
+
+asyncio.run(main())
 ```
 
 ### Parameters
@@ -107,6 +159,7 @@ Get a secret by name
 
 <!-- UsageSnippet language="python" operationID="getSecret" method="get" path="/secrets/{name}" -->
 ```python
+# Synchronous Example
 from albus_sdk import Albus, models
 import os
 
@@ -121,7 +174,32 @@ with Albus(
 
     # Handle response
     print(res)
+```
 
+</br>
+
+An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
+
+```python
+# Asynchronous Example
+from albus_sdk import AsyncAlbus, models
+import asyncio
+import os
+
+async def main():
+
+    async with AsyncAlbus(
+        security=models.Security(
+            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
+        ),
+    ) as albus:
+
+        res = await albus.secrets.get_secret(name="<value>")
+
+        # Handle response
+        print(res)
+
+asyncio.run(main())
 ```
 
 ### Parameters
@@ -151,6 +229,7 @@ Update a secret by name
 
 <!-- UsageSnippet language="python" operationID="updateSecret" method="put" path="/secrets/{name}" -->
 ```python
+# Synchronous Example
 from albus_sdk import Albus, models
 import os
 
@@ -165,7 +244,32 @@ with Albus(
 
     # Handle response
     print(res)
+```
 
+</br>
+
+An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
+
+```python
+# Asynchronous Example
+from albus_sdk import AsyncAlbus, models
+import asyncio
+import os
+
+async def main():
+
+    async with AsyncAlbus(
+        security=models.Security(
+            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
+        ),
+    ) as albus:
+
+        res = await albus.secrets.update_secret(name="<value>", value="<value>")
+
+        # Handle response
+        print(res)
+
+asyncio.run(main())
 ```
 
 ### Parameters
@@ -197,6 +301,7 @@ Delete a secret by name
 
 <!-- UsageSnippet language="python" operationID="deleteSecret" method="delete" path="/secrets/{name}" -->
 ```python
+# Synchronous Example
 from albus_sdk import Albus, models
 import os
 
@@ -210,7 +315,31 @@ with Albus(
     albus.secrets.delete_secret(name="<value>")
 
     # Use the SDK ...
+```
 
+</br>
+
+An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
+
+```python
+# Asynchronous Example
+from albus_sdk import AsyncAlbus, models
+import asyncio
+import os
+
+async def main():
+
+    async with AsyncAlbus(
+        security=models.Security(
+            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
+        ),
+    ) as albus:
+
+        await albus.secrets.delete_secret(name="<value>")
+
+        # Use the SDK ...
+
+asyncio.run(main())
 ```
 
 ### Parameters

@@ -19,23 +19,23 @@ with Albus(
 
 </br>
 
-The same SDK client can also be used to make asynchronous requests by importing asyncio.
+An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
 
 ```python
 # Asynchronous Example
-from albus_sdk import Albus, models
+from albus_sdk import AsyncAlbus, models
 import asyncio
 import os
 
 async def main():
 
-    async with Albus(
+    async with AsyncAlbus(
         security=models.Security(
             bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
         ),
     ) as albus:
 
-        res = await albus.secrets.list_secrets_async()
+        res = await albus.secrets.list_secrets()
 
         # Handle response
         print(res)

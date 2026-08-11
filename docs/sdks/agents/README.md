@@ -19,6 +19,7 @@ Lists the agents that have run in your organization, each with its latest revisi
 
 <!-- UsageSnippet language="python" operationID="listAgents" method="get" path="/agents" -->
 ```python
+# Synchronous Example
 from albus_sdk import Albus, models
 import os
 
@@ -33,7 +34,32 @@ with Albus(
 
     # Handle response
     print(res)
+```
 
+</br>
+
+An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
+
+```python
+# Asynchronous Example
+from albus_sdk import AsyncAlbus, models
+import asyncio
+import os
+
+async def main():
+
+    async with AsyncAlbus(
+        security=models.Security(
+            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
+        ),
+    ) as albus:
+
+        res = await albus.agents.list_agents()
+
+        # Handle response
+        print(res)
+
+asyncio.run(main())
 ```
 
 ### Parameters
@@ -62,6 +88,7 @@ Returns the agent with the given name, its current revision, and the list of all
 
 <!-- UsageSnippet language="python" operationID="getAgent" method="get" path="/agents/{name}" -->
 ```python
+# Synchronous Example
 from albus_sdk import Albus, models
 import os
 
@@ -76,7 +103,32 @@ with Albus(
 
     # Handle response
     print(res)
+```
 
+</br>
+
+An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
+
+```python
+# Asynchronous Example
+from albus_sdk import AsyncAlbus, models
+import asyncio
+import os
+
+async def main():
+
+    async with AsyncAlbus(
+        security=models.Security(
+            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
+        ),
+    ) as albus:
+
+        res = await albus.agents.get_agent(name="<value>")
+
+        # Handle response
+        print(res)
+
+asyncio.run(main())
 ```
 
 ### Parameters
@@ -107,6 +159,7 @@ Returns the full configuration of one revision of an agent — its model, tools,
 
 <!-- UsageSnippet language="python" operationID="getAgentRevision" method="get" path="/agents/{name}/revisions/{revision}" -->
 ```python
+# Synchronous Example
 from albus_sdk import Albus, models
 import os
 
@@ -121,7 +174,32 @@ with Albus(
 
     # Handle response
     print(res)
+```
 
+</br>
+
+An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
+
+```python
+# Asynchronous Example
+from albus_sdk import AsyncAlbus, models
+import asyncio
+import os
+
+async def main():
+
+    async with AsyncAlbus(
+        security=models.Security(
+            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
+        ),
+    ) as albus:
+
+        res = await albus.agents.get_agent_revision(name="<value>", revision="<value>")
+
+        # Handle response
+        print(res)
+
+asyncio.run(main())
 ```
 
 ### Parameters

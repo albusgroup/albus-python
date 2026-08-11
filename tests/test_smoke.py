@@ -1,15 +1,14 @@
 from __future__ import annotations
 
-import asyncio
-from collections.abc import Callable, Iterator
-from contextlib import contextmanager
+from collections.abc import AsyncIterator, Callable, Iterator
+from contextlib import asynccontextmanager, contextmanager
 from datetime import datetime, timezone
 
 import httpx
 import pytest
 
 import albus_sdk
-from albus_sdk import Albus, errors, models
+from albus_sdk import Albus, AsyncAlbus, errors, models
 from albus_sdk.types import UnrecognizedStr
 
 Handler = Callable[[httpx.Request], httpx.Response]
@@ -22,22 +21,38 @@ def sdk_with_handler(
     security: models.Security | None = None,
 ) -> Iterator[Albus]:
     transport = httpx.MockTransport(handler)
-    async_client = httpx.AsyncClient(transport=transport)
 
     with httpx.Client(transport=transport) as client:
         try:
             yield Albus(
                 client=client,
-                async_client=async_client,
                 security=security,
             )
         finally:
-            asyncio.run(async_client.aclose())
+            pass
+
+
+@asynccontextmanager
+async def async_sdk_with_handler(
+    handler: Handler,
+    *,
+    security: models.Security | None = None,
+) -> AsyncIterator[AsyncAlbus]:
+    transport = httpx.MockTransport(handler)
+    async_client = httpx.AsyncClient(transport=transport)
+
+    try:
+        yield AsyncAlbus(
+            async_client=async_client,
+            security=security,
+        )
+    finally:
+        await async_client.aclose()
 
 
 def test_package_exposes_version() -> None:
     assert albus_sdk.VERSION == albus_sdk.__version__
-    assert albus_sdk.VERSION == "0.4.0"
+    assert albus_sdk.VERSION == "0.5.0"
 
 
 def test_default_production_url_and_sync_operation() -> None:
@@ -75,17 +90,10 @@ async def test_user_token_authentication_and_async_operation() -> None:
 
         return httpx.Response(200, json={"tokens": []})
 
-    transport = httpx.MockTransport(handler)
     security = models.Security(bearer_auth="user-token")
 
-    with httpx.Client(transport=transport) as client:
-        async with httpx.AsyncClient(transport=transport) as async_client:
-            sdk = Albus(
-                client=client,
-                async_client=async_client,
-                security=security,
-            )
-            response = await sdk.tokens.list_tokens_async()
+    async with async_sdk_with_handler(handler, security=security) as sdk:
+        response = await sdk.tokens.list_tokens()
 
     assert response.tokens == []
 

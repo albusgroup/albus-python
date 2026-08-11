@@ -35,6 +35,19 @@ VALID_RETRY_EXAMPLE = """    res = albus.secrets.list_secrets(
     )
 """
 
+INVALID_RETRY_EXAMPLE_ASYNC = """        res = await albus.secrets.list_secrets(,
+            RetryConfig("backoff", BackoffStrategy(1, 50, 1.1, 100), False))
+"""
+
+VALID_RETRY_EXAMPLE_ASYNC = """        res = await albus.secrets.list_secrets(
+            retries=RetryConfig(
+                "backoff",
+                BackoffStrategy(1, 50, 1.1, 100),
+                False,
+            )
+        )
+"""
+
 
 def normalize_lines(path: Path) -> None:
     lines = [line.rstrip() for line in path.read_text().splitlines()]
@@ -53,6 +66,7 @@ def normalize_readme() -> None:
         content = content.replace(generated, published)
 
     content = content.replace(INVALID_RETRY_EXAMPLE, VALID_RETRY_EXAMPLE)
+    content = content.replace(INVALID_RETRY_EXAMPLE_ASYNC, VALID_RETRY_EXAMPLE_ASYNC)
 
     if "To finish publishing your SDK to PyPI" in content:
         raise RuntimeError("unexpected Speakeasy publishing prompt was generated")
@@ -87,6 +101,20 @@ def normalize_package_metadata() -> None:
         content = content.replace(
             documentation_url,
             f"{documentation_url}\n{issues_url}",
+            1,
+        )
+
+    # The handwritten tests import tools/, which is not on the generated
+    # pytest path.
+    generated_pythonpath = 'pythonpath = ["src"]'
+    repository_pythonpath = 'pythonpath = ["src", "."]'
+    if repository_pythonpath not in content:
+        if generated_pythonpath not in content:
+            raise RuntimeError("expected pytest pythonpath was not generated")
+
+        content = content.replace(
+            generated_pythonpath,
+            repository_pythonpath,
             1,
         )
 

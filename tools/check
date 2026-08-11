@@ -6,18 +6,59 @@ script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd -- "$script_dir/.." && pwd)"
 dist_dir="$repo_root/dist"
 
-cd "$repo_root"
+usage() {
+    cat >&2 <<EOF
+usage: $0 [--without-speakeasy]
 
-for command in speakeasy uv; do
+Lint, type-check, test, build, and smoke-import the wheel.
+
+  --without-speakeasy   Skip the steps that need the Speakeasy CLI and a
+                        Speakeasy account. This is what CI runs, since the
+                        pinned CLI and its credentials are only available
+                        where the SDK is regenerated.
+EOF
+}
+
+with_speakeasy=true
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --without-speakeasy)
+            with_speakeasy=false
+            shift
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        *)
+            echo "error: unknown argument: $1" >&2
+            usage
+            exit 2
+            ;;
+    esac
+done
+
+cd "$repo_root"
+export PATH="$repo_root/bin:$PATH"
+
+required_commands=(uv)
+if [[ "$with_speakeasy" == true ]]; then
+    required_commands+=(speakeasy)
+fi
+
+for command in "${required_commands[@]}"; do
     if ! command -v "$command" >/dev/null 2>&1; then
         echo "error: required command not found: $command" >&2
         exit 1
     fi
 done
 
-speakeasy openapi lint \
-    --schema openapi/openapi.yaml \
-    --non-interactive
+if [[ "$with_speakeasy" == true ]]; then
+    speakeasy openapi lint \
+        --schema openapi/openapi.yaml \
+        --non-interactive
+fi
 
 uv sync --all-groups --frozen
 uv run ruff format --check tests tools/*.py

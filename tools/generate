@@ -6,9 +6,11 @@ script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd -- "$script_dir/.." && pwd)"
 workflow_file="$repo_root/.speakeasy/workflow.yaml"
 snapshot_path="$repo_root/openapi/openapi.yaml"
+monorepo_root="$(cd -- "$repo_root/../.." && pwd)"
+default_source="$monorepo_root/api/openapi.yaml"
 
 usage() {
-    echo "usage: $0 /path/to/openapi.yaml <sdk-version>" >&2
+    echo "usage: $0 <sdk-version> [/path/to/openapi.yaml]" >&2
 }
 
 sha256_file() {
@@ -21,13 +23,14 @@ print(sha256(Path(sys.argv[1]).read_bytes()).hexdigest())
 PY
 }
 
-if [[ $# -ne 2 ]]; then
+if [[ $# -lt 1 || $# -gt 2 ]]; then
     usage
     exit 2
 fi
 
-source_argument="$1"
-sdk_version="$2"
+sdk_version="$1"
+source_argument="${2:-$default_source}"
+export PATH="$repo_root/bin:$PATH"
 
 for command in speakeasy uv; do
     if ! command -v "$command" >/dev/null 2>&1; then

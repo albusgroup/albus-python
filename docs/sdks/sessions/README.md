@@ -20,6 +20,7 @@ List all sessions
 
 <!-- UsageSnippet language="python" operationID="listSessions" method="get" path="/sessions" -->
 ```python
+# Synchronous Example
 from albus_sdk import Albus, models
 import os
 
@@ -34,7 +35,32 @@ with Albus(
 
     # Handle response
     print(res)
+```
 
+</br>
+
+An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
+
+```python
+# Asynchronous Example
+from albus_sdk import AsyncAlbus, models
+import asyncio
+import os
+
+async def main():
+
+    async with AsyncAlbus(
+        security=models.Security(
+            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
+        ),
+    ) as albus:
+
+        res = await albus.sessions.list_sessions()
+
+        # Handle response
+        print(res)
+
+asyncio.run(main())
 ```
 
 ### Parameters
@@ -63,6 +89,7 @@ Returns the session's metadata and a page of its messages ordered by cursor asce
 
 <!-- UsageSnippet language="python" operationID="getSession" method="get" path="/sessions/{id}" -->
 ```python
+# Synchronous Example
 from albus_sdk import Albus, models
 import os
 
@@ -77,7 +104,32 @@ with Albus(
 
     # Handle response
     print(res)
+```
 
+</br>
+
+An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
+
+```python
+# Asynchronous Example
+from albus_sdk import AsyncAlbus, models
+import asyncio
+import os
+
+async def main():
+
+    async with AsyncAlbus(
+        security=models.Security(
+            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
+        ),
+    ) as albus:
+
+        res = await albus.sessions.get_session(id="<id>", limit=100)
+
+        # Handle response
+        print(res)
+
+asyncio.run(main())
 ```
 
 ### Parameters
@@ -113,6 +165,7 @@ With `wait=true` the request long-polls: it blocks until the invocation's assist
 
 <!-- UsageSnippet language="python" operationID="runSession" method="post" path="/sessions/{id}" -->
 ```python
+# Synchronous Example
 from albus_sdk import Albus, models
 import os
 
@@ -131,7 +184,36 @@ with Albus(
 
     # Handle response
     print(res)
+```
 
+</br>
+
+An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
+
+```python
+# Asynchronous Example
+from albus_sdk import AsyncAlbus, models
+import asyncio
+import os
+
+async def main():
+
+    async with AsyncAlbus(
+        security=models.Security(
+            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
+        ),
+    ) as albus:
+
+        res = await albus.sessions.run_session(id="<id>", user_prompt="<value>", agent_name="<value>", agent={
+            "model": {
+                "name": "<value>",
+            },
+        }, wait=False)
+
+        # Handle response
+        print(res)
+
+asyncio.run(main())
 ```
 
 ### Parameters
@@ -172,6 +254,7 @@ Delete a session
 
 <!-- UsageSnippet language="python" operationID="deleteSession" method="delete" path="/sessions/{id}" -->
 ```python
+# Synchronous Example
 from albus_sdk import Albus, models
 import os
 
@@ -185,7 +268,31 @@ with Albus(
     albus.sessions.delete_session(id="<id>")
 
     # Use the SDK ...
+```
 
+</br>
+
+An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
+
+```python
+# Asynchronous Example
+from albus_sdk import AsyncAlbus, models
+import asyncio
+import os
+
+async def main():
+
+    async with AsyncAlbus(
+        security=models.Security(
+            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
+        ),
+    ) as albus:
+
+        await albus.sessions.delete_session(id="<id>")
+
+        # Use the SDK ...
+
+asyncio.run(main())
 ```
 
 ### Parameters
@@ -212,6 +319,7 @@ Returns the session's audit log — an immutable, time-ordered record of what ha
 
 <!-- UsageSnippet language="python" operationID="getSessionAudit" method="get" path="/sessions/{id}/audit" -->
 ```python
+# Synchronous Example
 from albus_sdk import Albus, models
 import os
 
@@ -226,7 +334,32 @@ with Albus(
 
     # Handle response
     print(res)
+```
 
+</br>
+
+An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
+
+```python
+# Asynchronous Example
+from albus_sdk import AsyncAlbus, models
+import asyncio
+import os
+
+async def main():
+
+    async with AsyncAlbus(
+        security=models.Security(
+            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
+        ),
+    ) as albus:
+
+        res = await albus.sessions.get_session_audit(id="<id>", limit=100)
+
+        # Handle response
+        print(res)
+
+asyncio.run(main())
 ```
 
 ### Parameters
