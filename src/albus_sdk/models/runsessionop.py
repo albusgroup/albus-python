@@ -25,12 +25,8 @@ class RunSessionRequestRequestTypedDict(TypedDict):
     r"""Optional but strongly encouraged. Uniquely identifies this invocation of the session; reuse the same value to safely retry a request, and a new value starts a new invocation. When omitted, the server generates a key for the invocation and returns it in the Idempotency-Key response header, but the request is not retry-safe.
 
     """
-    wait: NotRequired[bool]
-    r"""When true, long-poll: block until the invocation's assistant response is available before returning.
-
-    """
-    wait_timeout: NotRequired[int]
-    r"""Maximum time in seconds to block when wait=true. Omit to wait indefinitely. Ignored when wait is false.
+    wait_timeout_seconds: NotRequired[int]
+    r"""Wait up to this many seconds for the assistant response. Omit to return after the invocation is accepted; use 0 to wait until a response is available.
 
     """
 
@@ -55,25 +51,17 @@ class RunSessionRequestRequest(BaseModel):
 
     """
 
-    wait: Annotated[
-        Optional[bool],
-        FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),
-    ] = False
-    r"""When true, long-poll: block until the invocation's assistant response is available before returning.
-
-    """
-
-    wait_timeout: Annotated[
+    wait_timeout_seconds: Annotated[
         Optional[int],
         FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),
     ] = None
-    r"""Maximum time in seconds to block when wait=true. Omit to wait indefinitely. Ignored when wait is false.
+    r"""Wait up to this many seconds for the assistant response. Omit to return after the invocation is accepted; use 0 to wait until a response is available.
 
     """
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = set(["Idempotency-Key", "wait", "wait_timeout"])
+        optional_fields = set(["Idempotency-Key", "wait_timeout_seconds"])
         serialized = handler(self)
         m = {}
 

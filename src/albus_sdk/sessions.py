@@ -6,7 +6,7 @@ from albus_sdk._hooks import HookContext
 from albus_sdk.types import OptionalNullable, UNSET
 from albus_sdk.utils import get_security_from_env
 from albus_sdk.utils.unmarshal_json_response import unmarshal_json_response
-from typing import Any, Mapping, Optional, Union
+from typing import Any, Optional, Union
 
 
 class Sessions(BaseSDK):
@@ -14,30 +14,14 @@ class Sessions(BaseSDK):
 
     def list_sessions(
         self,
-        *,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.ListSessionsResponse:
         r"""List all sessions
 
         If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
 
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
         """
-        base_url = None
         url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
+        base_url = self._get_url(None, url_variables)
         req = self._build_request(
             method="GET",
             path="/sessions",
@@ -49,20 +33,13 @@ class Sessions(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            http_headers=http_headers,
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key_auth"],
-            timeout_ms=timeout_ms,
+            timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-
         retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["429", "500", "502", "503", "504"])
 
         http_res = self.do_request(
             hook_ctx=HookContext(
@@ -78,7 +55,7 @@ class Sessions(BaseSDK):
             ),
             request=req,
             is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
-            retry_config=retry_config,
+            retry_config=None,
         )
 
         response_data: Any = None
@@ -108,10 +85,6 @@ class Sessions(BaseSDK):
         id: str,
         after: Optional[str] = None,
         limit: Optional[int] = 100,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.SessionResponse:
         r"""Get a session with its messages
 
@@ -124,20 +97,9 @@ class Sessions(BaseSDK):
         :param after: Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
 
         :param limit: Maximum number of items to return.
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
         """
-        base_url = None
         url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
+        base_url = self._get_url(None, url_variables)
 
         request = models.GetSessionRequest(
             id=id,
@@ -156,20 +118,13 @@ class Sessions(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            http_headers=http_headers,
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key_auth"],
-            timeout_ms=timeout_ms,
+            timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-
         retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["429", "500", "502", "503", "504"])
 
         http_res = self.do_request(
             hook_ctx=HookContext(
@@ -185,7 +140,7 @@ class Sessions(BaseSDK):
             ),
             request=req,
             is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
-            retry_config=retry_config,
+            retry_config=None,
         )
 
         response_data: Any = None
@@ -223,18 +178,14 @@ class Sessions(BaseSDK):
         agent_name: str,
         agent: Union[models.AgentConfig, models.AgentConfigTypedDict],
         idempotency_key: Optional[str] = None,
-        wait: Optional[bool] = False,
-        wait_timeout: Optional[int] = None,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
+        wait_timeout_seconds: Optional[int] = None,
+        retry_config: OptionalNullable[utils.RetryConfig] = UNSET,
     ) -> models.RunSessionResponse:
         r"""Run or resume a session
 
         Runs the session with the given ID, creating it if it does not exist and resuming it otherwise. Each call is a single invocation, optionally identified by the Idempotency-Key header. Supplying a key makes the call safe to retry: retrying with the same key and an identical body re-attaches to the in-flight invocation and returns its current state; a differing body for the same key returns 409; a new key while another invocation is still running returns 423. Omitting the header starts a fresh, non-idempotent invocation each time; the server generates a key and returns it in the Idempotency-Key response header.
 
-        With `wait=true` the request long-polls: it blocks until the invocation's assistant response is available and returns it in `messages`. `wait_timeout` bounds the wait in seconds; when omitted the request waits indefinitely (until the response arrives or the client disconnects). If the timeout elapses first, the request fails with 504 and a JSON body, letting the client distinguish an expected server-side timeout from a transport error; the client may retry.
+        With `wait_timeout_seconds` the request long-polls: it blocks until the invocation's assistant response is available and returns it in `messages`. Omit it to return as soon as the invocation is accepted, and pass 0 to wait until the response arrives (or the client disconnects). A positive value bounds the wait in seconds; if it elapses first the request fails with 504 and a JSON body, letting the client distinguish an expected server-side timeout from a transport error; the client may retry.
 
 
         If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
@@ -247,30 +198,17 @@ class Sessions(BaseSDK):
 
         :param idempotency_key: Optional but strongly encouraged. Uniquely identifies this invocation of the session; reuse the same value to safely retry a request, and a new value starts a new invocation. When omitted, the server generates a key for the invocation and returns it in the Idempotency-Key response header, but the request is not retry-safe.
 
-        :param wait: When true, long-poll: block until the invocation's assistant response is available before returning.
+        :param wait_timeout_seconds: Wait up to this many seconds for the assistant response. Omit to return after the invocation is accepted; use 0 to wait until a response is available.
 
-        :param wait_timeout: Maximum time in seconds to block when wait=true. Omit to wait indefinitely. Ignored when wait is false.
-
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
+        :param retry_config: Override the SDK retry configuration for this invocation.
         """
-        base_url = None
         url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
+        base_url = self._get_url(None, url_variables)
 
         request = models.RunSessionRequestRequest(
             id=id,
             idempotency_key=idempotency_key,
-            wait=wait,
-            wait_timeout=wait_timeout,
+            wait_timeout_seconds=wait_timeout_seconds,
             body=models.RunSessionRequest(
                 user_prompt=user_prompt,
                 agent_name=agent_name,
@@ -289,23 +227,27 @@ class Sessions(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            http_headers=http_headers,
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.body, False, False, "json", models.RunSessionRequest
             ),
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key_auth"],
-            timeout_ms=timeout_ms,
+            timeout_ms=self.sdk_configuration.timeout_ms,
         )
+
+        retries = retry_config
 
         if retries == UNSET:
             if self.sdk_configuration.retry_config is not UNSET:
                 retries = self.sdk_configuration.retry_config
 
-        retry_config = None
+        request_retry_config = None
         if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["429", "500", "502", "503", "504"])
+            request_retry_config = (
+                retries,
+                ["429", "500", "502", "503", "504"],
+            )
 
         http_res = self.do_request(
             hook_ctx=HookContext(
@@ -321,7 +263,7 @@ class Sessions(BaseSDK):
             ),
             request=req,
             is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
-            retry_config=retry_config,
+            retry_config=request_retry_config,
         )
 
         response_data: Any = None
@@ -372,30 +314,15 @@ class Sessions(BaseSDK):
         self,
         *,
         id: str,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
     ):
         r"""Delete a session
 
         If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
 
         :param id: Client-provided session identifier. Use the same value across requests to continue the same agent session.
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
         """
-        base_url = None
         url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
+        base_url = self._get_url(None, url_variables)
 
         request = models.DeleteSessionRequest(
             id=id,
@@ -412,20 +339,13 @@ class Sessions(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            http_headers=http_headers,
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key_auth"],
-            timeout_ms=timeout_ms,
+            timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-
         retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["429", "500", "502", "503", "504"])
 
         http_res = self.do_request(
             hook_ctx=HookContext(
@@ -441,7 +361,7 @@ class Sessions(BaseSDK):
             ),
             request=req,
             is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
-            retry_config=retry_config,
+            retry_config=None,
         )
 
         response_data: Any = None
@@ -474,10 +394,6 @@ class Sessions(BaseSDK):
         id: str,
         after: Optional[str] = None,
         limit: Optional[int] = 100,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.ListAuditEventsResponse:
         r"""List a session's audit log
 
@@ -490,20 +406,9 @@ class Sessions(BaseSDK):
         :param after: Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
 
         :param limit: Maximum number of items to return.
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
         """
-        base_url = None
         url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
+        base_url = self._get_url(None, url_variables)
 
         request = models.GetSessionAuditRequest(
             id=id,
@@ -522,20 +427,13 @@ class Sessions(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            http_headers=http_headers,
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key_auth"],
-            timeout_ms=timeout_ms,
+            timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-
         retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["429", "500", "502", "503", "504"])
 
         http_res = self.do_request(
             hook_ctx=HookContext(
@@ -551,7 +449,7 @@ class Sessions(BaseSDK):
             ),
             request=req,
             is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
-            retry_config=retry_config,
+            retry_config=None,
         )
 
         response_data: Any = None
@@ -587,30 +485,14 @@ class AsyncSessions(AsyncBaseSDK):
 
     async def list_sessions(
         self,
-        *,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.ListSessionsResponse:
         r"""List all sessions
 
         If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
 
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
         """
-        base_url = None
         url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
+        base_url = self._get_url(None, url_variables)
         req = self._build_request_async(
             method="GET",
             path="/sessions",
@@ -622,20 +504,13 @@ class AsyncSessions(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            http_headers=http_headers,
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key_auth"],
-            timeout_ms=timeout_ms,
+            timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-
         retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["429", "500", "502", "503", "504"])
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
@@ -651,7 +526,7 @@ class AsyncSessions(AsyncBaseSDK):
             ),
             request=req,
             is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
-            retry_config=retry_config,
+            retry_config=None,
         )
 
         response_data: Any = None
@@ -681,10 +556,6 @@ class AsyncSessions(AsyncBaseSDK):
         id: str,
         after: Optional[str] = None,
         limit: Optional[int] = 100,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.SessionResponse:
         r"""Get a session with its messages
 
@@ -697,20 +568,9 @@ class AsyncSessions(AsyncBaseSDK):
         :param after: Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
 
         :param limit: Maximum number of items to return.
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
         """
-        base_url = None
         url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
+        base_url = self._get_url(None, url_variables)
 
         request = models.GetSessionRequest(
             id=id,
@@ -729,20 +589,13 @@ class AsyncSessions(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            http_headers=http_headers,
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key_auth"],
-            timeout_ms=timeout_ms,
+            timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-
         retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["429", "500", "502", "503", "504"])
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
@@ -758,7 +611,7 @@ class AsyncSessions(AsyncBaseSDK):
             ),
             request=req,
             is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
-            retry_config=retry_config,
+            retry_config=None,
         )
 
         response_data: Any = None
@@ -796,18 +649,14 @@ class AsyncSessions(AsyncBaseSDK):
         agent_name: str,
         agent: Union[models.AgentConfig, models.AgentConfigTypedDict],
         idempotency_key: Optional[str] = None,
-        wait: Optional[bool] = False,
-        wait_timeout: Optional[int] = None,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
+        wait_timeout_seconds: Optional[int] = None,
+        retry_config: OptionalNullable[utils.RetryConfig] = UNSET,
     ) -> models.RunSessionResponse:
         r"""Run or resume a session
 
         Runs the session with the given ID, creating it if it does not exist and resuming it otherwise. Each call is a single invocation, optionally identified by the Idempotency-Key header. Supplying a key makes the call safe to retry: retrying with the same key and an identical body re-attaches to the in-flight invocation and returns its current state; a differing body for the same key returns 409; a new key while another invocation is still running returns 423. Omitting the header starts a fresh, non-idempotent invocation each time; the server generates a key and returns it in the Idempotency-Key response header.
 
-        With `wait=true` the request long-polls: it blocks until the invocation's assistant response is available and returns it in `messages`. `wait_timeout` bounds the wait in seconds; when omitted the request waits indefinitely (until the response arrives or the client disconnects). If the timeout elapses first, the request fails with 504 and a JSON body, letting the client distinguish an expected server-side timeout from a transport error; the client may retry.
+        With `wait_timeout_seconds` the request long-polls: it blocks until the invocation's assistant response is available and returns it in `messages`. Omit it to return as soon as the invocation is accepted, and pass 0 to wait until the response arrives (or the client disconnects). A positive value bounds the wait in seconds; if it elapses first the request fails with 504 and a JSON body, letting the client distinguish an expected server-side timeout from a transport error; the client may retry.
 
 
         If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
@@ -820,30 +669,17 @@ class AsyncSessions(AsyncBaseSDK):
 
         :param idempotency_key: Optional but strongly encouraged. Uniquely identifies this invocation of the session; reuse the same value to safely retry a request, and a new value starts a new invocation. When omitted, the server generates a key for the invocation and returns it in the Idempotency-Key response header, but the request is not retry-safe.
 
-        :param wait: When true, long-poll: block until the invocation's assistant response is available before returning.
+        :param wait_timeout_seconds: Wait up to this many seconds for the assistant response. Omit to return after the invocation is accepted; use 0 to wait until a response is available.
 
-        :param wait_timeout: Maximum time in seconds to block when wait=true. Omit to wait indefinitely. Ignored when wait is false.
-
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
+        :param retry_config: Override the SDK retry configuration for this invocation.
         """
-        base_url = None
         url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
+        base_url = self._get_url(None, url_variables)
 
         request = models.RunSessionRequestRequest(
             id=id,
             idempotency_key=idempotency_key,
-            wait=wait,
-            wait_timeout=wait_timeout,
+            wait_timeout_seconds=wait_timeout_seconds,
             body=models.RunSessionRequest(
                 user_prompt=user_prompt,
                 agent_name=agent_name,
@@ -862,23 +698,27 @@ class AsyncSessions(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            http_headers=http_headers,
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.body, False, False, "json", models.RunSessionRequest
             ),
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key_auth"],
-            timeout_ms=timeout_ms,
+            timeout_ms=self.sdk_configuration.timeout_ms,
         )
+
+        retries = retry_config
 
         if retries == UNSET:
             if self.sdk_configuration.retry_config is not UNSET:
                 retries = self.sdk_configuration.retry_config
 
-        retry_config = None
+        request_retry_config = None
         if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["429", "500", "502", "503", "504"])
+            request_retry_config = (
+                retries,
+                ["429", "500", "502", "503", "504"],
+            )
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
@@ -894,7 +734,7 @@ class AsyncSessions(AsyncBaseSDK):
             ),
             request=req,
             is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
-            retry_config=retry_config,
+            retry_config=request_retry_config,
         )
 
         response_data: Any = None
@@ -945,30 +785,15 @@ class AsyncSessions(AsyncBaseSDK):
         self,
         *,
         id: str,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
     ):
         r"""Delete a session
 
         If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
 
         :param id: Client-provided session identifier. Use the same value across requests to continue the same agent session.
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
         """
-        base_url = None
         url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
+        base_url = self._get_url(None, url_variables)
 
         request = models.DeleteSessionRequest(
             id=id,
@@ -985,20 +810,13 @@ class AsyncSessions(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            http_headers=http_headers,
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key_auth"],
-            timeout_ms=timeout_ms,
+            timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-
         retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["429", "500", "502", "503", "504"])
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
@@ -1014,7 +832,7 @@ class AsyncSessions(AsyncBaseSDK):
             ),
             request=req,
             is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
-            retry_config=retry_config,
+            retry_config=None,
         )
 
         response_data: Any = None
@@ -1047,10 +865,6 @@ class AsyncSessions(AsyncBaseSDK):
         id: str,
         after: Optional[str] = None,
         limit: Optional[int] = 100,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.ListAuditEventsResponse:
         r"""List a session's audit log
 
@@ -1063,20 +877,9 @@ class AsyncSessions(AsyncBaseSDK):
         :param after: Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
 
         :param limit: Maximum number of items to return.
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
         """
-        base_url = None
         url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
+        base_url = self._get_url(None, url_variables)
 
         request = models.GetSessionAuditRequest(
             id=id,
@@ -1095,20 +898,13 @@ class AsyncSessions(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            http_headers=http_headers,
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key_auth"],
-            timeout_ms=timeout_ms,
+            timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-
         retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["429", "500", "502", "503", "504"])
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
@@ -1124,7 +920,7 @@ class AsyncSessions(AsyncBaseSDK):
             ),
             request=req,
             is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
-            retry_config=retry_config,
+            retry_config=None,
         )
 
         response_data: Any = None

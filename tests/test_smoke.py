@@ -3,13 +3,14 @@ from __future__ import annotations
 from collections.abc import AsyncIterator, Callable, Iterator
 from contextlib import asynccontextmanager, contextmanager
 from datetime import datetime, timezone
+from inspect import signature
 
 import httpx
 import pytest
 
 import albus_sdk
 from albus_sdk import Albus, AsyncAlbus, errors, models
-from albus_sdk.types import UnrecognizedStr
+from albus_sdk.types import UNSET, UnrecognizedStr
 
 Handler = Callable[[httpx.Request], httpx.Response]
 
@@ -52,7 +53,7 @@ async def async_sdk_with_handler(
 
 def test_package_exposes_version() -> None:
     assert albus_sdk.VERSION == albus_sdk.__version__
-    assert albus_sdk.VERSION == "0.5.0"
+    assert albus_sdk.VERSION == "0.7.0"
 
 
 def test_default_production_url_and_sync_operation() -> None:
@@ -126,3 +127,25 @@ def test_session_state_accepts_future_values() -> None:
 
     assert session.state == "PAUSED"
     assert isinstance(session.state, UnrecognizedStr)
+
+
+def test_only_run_session_accepts_a_per_request_retry_configuration() -> None:
+    forbidden_parameters = {"retries", "server_url", "timeout_ms", "http_headers"}
+
+    for sdk in (Albus(), AsyncAlbus()):
+        for sdk_name in sdk._sub_sdk_map:
+            operations = getattr(sdk, sdk_name)
+            for operation_name, operation in type(operations).__dict__.items():
+                if operation_name.startswith("_") or not callable(operation):
+                    continue
+
+                operation = getattr(operations, operation_name)
+                if not callable(operation):
+                    continue
+
+                parameters = signature(operation).parameters
+                assert not forbidden_parameters.intersection(parameters)
+                if operation_name == "run_session":
+                    assert parameters["retry_config"].default is UNSET
+                else:
+                    assert "retry_config" not in parameters

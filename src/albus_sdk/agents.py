@@ -6,7 +6,7 @@ from albus_sdk._hooks import HookContext
 from albus_sdk.types import OptionalNullable, UNSET
 from albus_sdk.utils import get_security_from_env
 from albus_sdk.utils.unmarshal_json_response import unmarshal_json_response
-from typing import Any, Mapping, Optional
+from typing import Any, Optional
 
 
 class Agents(BaseSDK):
@@ -14,11 +14,6 @@ class Agents(BaseSDK):
 
     def list_agents(
         self,
-        *,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.ListAgentsResponse:
         r"""List agents
 
@@ -27,20 +22,9 @@ class Agents(BaseSDK):
 
         If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
 
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
         """
-        base_url = None
         url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
+        base_url = self._get_url(None, url_variables)
         req = self._build_request(
             method="GET",
             path="/agents",
@@ -52,20 +36,13 @@ class Agents(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            http_headers=http_headers,
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key_auth"],
-            timeout_ms=timeout_ms,
+            timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-
         retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["429", "500", "502", "503", "504"])
 
         http_res = self.do_request(
             hook_ctx=HookContext(
@@ -81,7 +58,7 @@ class Agents(BaseSDK):
             ),
             request=req,
             is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
-            retry_config=retry_config,
+            retry_config=None,
         )
 
         response_data: Any = None
@@ -109,10 +86,6 @@ class Agents(BaseSDK):
         self,
         *,
         name: str,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.Agent:
         r"""Get an agent by name
 
@@ -122,20 +95,9 @@ class Agents(BaseSDK):
         If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
 
         :param name: The agent's name.
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
         """
-        base_url = None
         url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
+        base_url = self._get_url(None, url_variables)
 
         request = models.GetAgentRequest(
             name=name,
@@ -152,20 +114,13 @@ class Agents(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            http_headers=http_headers,
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key_auth"],
-            timeout_ms=timeout_ms,
+            timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-
         retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["429", "500", "502", "503", "504"])
 
         http_res = self.do_request(
             hook_ctx=HookContext(
@@ -181,7 +136,7 @@ class Agents(BaseSDK):
             ),
             request=req,
             is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
-            retry_config=retry_config,
+            retry_config=None,
         )
 
         response_data: Any = None
@@ -213,10 +168,6 @@ class Agents(BaseSDK):
         *,
         name: str,
         revision: str,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AgentRevision:
         r"""Get a specific revision of an agent
 
@@ -227,20 +178,9 @@ class Agents(BaseSDK):
 
         :param name: The agent's name.
         :param revision: The agent revision to fetch.
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
         """
-        base_url = None
         url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
+        base_url = self._get_url(None, url_variables)
 
         request = models.GetAgentRevisionRequest(
             name=name,
@@ -258,20 +198,13 @@ class Agents(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            http_headers=http_headers,
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key_auth"],
-            timeout_ms=timeout_ms,
+            timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-
         retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["429", "500", "502", "503", "504"])
 
         http_res = self.do_request(
             hook_ctx=HookContext(
@@ -287,7 +220,7 @@ class Agents(BaseSDK):
             ),
             request=req,
             is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
-            retry_config=retry_config,
+            retry_config=None,
         )
 
         response_data: Any = None
@@ -320,11 +253,6 @@ class AsyncAgents(AsyncBaseSDK):
 
     async def list_agents(
         self,
-        *,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.ListAgentsResponse:
         r"""List agents
 
@@ -333,20 +261,9 @@ class AsyncAgents(AsyncBaseSDK):
 
         If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
 
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
         """
-        base_url = None
         url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
+        base_url = self._get_url(None, url_variables)
         req = self._build_request_async(
             method="GET",
             path="/agents",
@@ -358,20 +275,13 @@ class AsyncAgents(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            http_headers=http_headers,
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key_auth"],
-            timeout_ms=timeout_ms,
+            timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-
         retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["429", "500", "502", "503", "504"])
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
@@ -387,7 +297,7 @@ class AsyncAgents(AsyncBaseSDK):
             ),
             request=req,
             is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
-            retry_config=retry_config,
+            retry_config=None,
         )
 
         response_data: Any = None
@@ -415,10 +325,6 @@ class AsyncAgents(AsyncBaseSDK):
         self,
         *,
         name: str,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.Agent:
         r"""Get an agent by name
 
@@ -428,20 +334,9 @@ class AsyncAgents(AsyncBaseSDK):
         If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
 
         :param name: The agent's name.
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
         """
-        base_url = None
         url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
+        base_url = self._get_url(None, url_variables)
 
         request = models.GetAgentRequest(
             name=name,
@@ -458,20 +353,13 @@ class AsyncAgents(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            http_headers=http_headers,
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key_auth"],
-            timeout_ms=timeout_ms,
+            timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-
         retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["429", "500", "502", "503", "504"])
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
@@ -487,7 +375,7 @@ class AsyncAgents(AsyncBaseSDK):
             ),
             request=req,
             is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
-            retry_config=retry_config,
+            retry_config=None,
         )
 
         response_data: Any = None
@@ -519,10 +407,6 @@ class AsyncAgents(AsyncBaseSDK):
         *,
         name: str,
         revision: str,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.AgentRevision:
         r"""Get a specific revision of an agent
 
@@ -533,20 +417,9 @@ class AsyncAgents(AsyncBaseSDK):
 
         :param name: The agent's name.
         :param revision: The agent revision to fetch.
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
         """
-        base_url = None
         url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
+        base_url = self._get_url(None, url_variables)
 
         request = models.GetAgentRevisionRequest(
             name=name,
@@ -564,20 +437,13 @@ class AsyncAgents(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            http_headers=http_headers,
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key_auth"],
-            timeout_ms=timeout_ms,
+            timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-
         retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["429", "500", "502", "503", "504"])
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
@@ -593,7 +459,7 @@ class AsyncAgents(AsyncBaseSDK):
             ),
             request=req,
             is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
-            retry_config=retry_config,
+            retry_config=None,
         )
 
         response_data: Any = None

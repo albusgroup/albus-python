@@ -30,23 +30,54 @@ with Albus(
     print(response.sessions)
 ```
 
-User and token operations use a user bearer token. Every synchronous operation
-also has an asynchronous method with an `_async` suffix:
+Run or resume a session by ID, and wait for the assistant response:
 
 ```python
-import asyncio
 import os
 
 from albus_sdk import Albus, models
 
 
+with Albus(
+    security=models.Security(
+        api_key_auth=os.environ["ALBUS_API_KEY_AUTH"],
+    ),
+    timeout_ms=130_000,
+) as albus:
+    response = albus.sessions.run_session(
+        id="support-triage-1",
+        user_prompt="Summarize the latest ticket.",
+        agent_name="support-triage",
+        agent=models.AgentConfig(
+            model=models.Model(name="gemini-3.6-flash"),
+        ),
+        wait_timeout_seconds=120,
+    )
+    print(response.result.messages)
+```
+
+Omit `wait_timeout_seconds` to return as soon as the invocation is accepted, and
+pass 0 to wait until the response arrives. Waiting long-polls, so construct the
+client with a `timeout_ms` above the longest wait — it is a client-wide setting,
+and the underlying HTTP client otherwise gives up after its own 5-second default.
+
+User and token operations use a user bearer token. `AsyncAlbus` exposes the same
+operations as coroutines:
+
+```python
+import asyncio
+import os
+
+from albus_sdk import AsyncAlbus, models
+
+
 async def main() -> None:
-    async with Albus(
+    async with AsyncAlbus(
         security=models.Security(
             bearer_auth=os.environ["ALBUS_BEARER_AUTH"],
         ),
     ) as albus:
-        response = await albus.auth.whoami_async()
+        response = await albus.auth.whoami()
         print(response)
 
 
@@ -326,115 +357,10 @@ asyncio.run(main())
 <!-- Start Retries [retries] -->
 ## Retries
 
-Some of the endpoints in this SDK support retries. If you use the SDK without any configuration, it will fall back to the default retry strategy provided by the API. However, the default retry strategy can be overridden on a per-operation basis, or across the entire SDK.
-
-To change the default retry strategy for a single API call, simply provide a `RetryConfig` object to the call:
-```python
-# Synchronous Example
-from albus_sdk import Albus, models
-from albus_sdk.utils import BackoffStrategy, RetryConfig
-import os
-
-
-with Albus(
-    security=models.Security(
-        bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-    ),
-) as albus:
-
-    res = albus.secrets.list_secrets(
-        retries=RetryConfig(
-            "backoff",
-            BackoffStrategy(1, 50, 1.1, 100),
-            False,
-        )
-    )
-
-    # Handle response
-    print(res)
-```
-
-</br>
-
-An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
-
-```python
-# Asynchronous Example
-from albus_sdk import AsyncAlbus, models
-from albus_sdk.utils import BackoffStrategy, RetryConfig
-import asyncio
-import os
-
-async def main():
-
-    async with AsyncAlbus(
-        security=models.Security(
-            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-        ),
-    ) as albus:
-
-        res = await albus.secrets.list_secrets(
-            retries=RetryConfig(
-                "backoff",
-                BackoffStrategy(1, 50, 1.1, 100),
-                False,
-            )
-        )
-
-        # Handle response
-        print(res)
-
-asyncio.run(main())
-```
-
-If you'd like to override the default retry strategy for all operations that support retries, you can use the `retry_config` optional parameter when initializing the SDK:
-```python
-# Synchronous Example
-from albus_sdk import Albus, models
-from albus_sdk.utils import BackoffStrategy, RetryConfig
-import os
-
-
-with Albus(
-    retry_config=RetryConfig("backoff", BackoffStrategy(1, 50, 1.1, 100), False),
-    security=models.Security(
-        bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-    ),
-) as albus:
-
-    res = albus.secrets.list_secrets()
-
-    # Handle response
-    print(res)
-```
-
-</br>
-
-An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
-
-```python
-# Asynchronous Example
-from albus_sdk import AsyncAlbus, models
-from albus_sdk.utils import BackoffStrategy, RetryConfig
-import asyncio
-import os
-
-async def main():
-
-    async with AsyncAlbus(
-        retry_config=RetryConfig("backoff", BackoffStrategy(1, 50, 1.1, 100), False),
-        security=models.Security(
-            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-        ),
-    ) as albus:
-
-        res = await albus.secrets.list_secrets()
-
-        # Handle response
-        print(res)
-
-asyncio.run(main())
-```
+Only `run_session` supports retries. Configure its default retry policy with
+`retry_config` when constructing the SDK, or pass `retry_config` directly to a
+single `run_session` invocation. Omit it to inherit the SDK default; pass
+`None` to disable retries for that invocation.
 <!-- End Retries [retries] -->
 
 <!-- Start Error Handling [errors] -->
@@ -547,7 +473,7 @@ asyncio.run(main())
 * [`ErrConflict`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errconflict.py): Status code `409`. Applicable to 2 of 20 methods.*
 * [`ErrLocked`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errlocked.py): Another invocation is currently running for this session. Status code `423`. Applicable to 1 of 20 methods.*
 * [`ErrQuotaExceeded`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errquotaexceeded.py): The organization has reached its invocation quota. Status code `429`. Applicable to 1 of 20 methods.*
-* [`ErrRunFailed`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errrunfailed.py): The harness run failed instead of producing a response (only possible with wait=true, or when replaying a failed invocation). The body carries the failure kind and detail. Status code `502`. Applicable to 1 of 20 methods.*
+* [`ErrRunFailed`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errrunfailed.py): The harness run failed instead of producing a response (only possible while waiting for a response, or when replaying a failed invocation). The body carries the failure kind and detail. Status code `502`. Applicable to 1 of 20 methods.*
 * [`HealthResponseError`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/healthresponseerror.py): Service is healthy. Status code `503`. Applicable to 1 of 20 methods.*
 * [`ErrTimeout`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errtimeout.py): Timed out waiting for the assistant response. Status code `504`. Applicable to 1 of 20 methods.*
 * [`ResponseValidationError`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/responsevalidationerror.py): Type mismatch between the response data and the expected Pydantic model. Provides access to the Pydantic validation error via the `cause` attribute.

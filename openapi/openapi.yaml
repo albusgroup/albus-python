@@ -274,13 +274,14 @@ paths:
         and returns it in the Idempotency-Key response header.
 
 
-        With `wait=true` the request long-polls: it blocks until the
+        With `wait_timeout_seconds` the request long-polls: it blocks until the
         invocation's assistant response is available and returns it in
-        `messages`. `wait_timeout` bounds the wait in seconds; when omitted the
-        request waits indefinitely (until the response arrives or the client
-        disconnects). If the timeout elapses first, the request fails with 504
-        and a JSON body, letting the client distinguish an expected server-side
-        timeout from a transport error; the client may retry.
+        `messages`. Omit it to return as soon as the invocation is accepted, and
+        pass 0 to wait until the response arrives (or the client disconnects).
+        A positive value bounds the wait in seconds; if it elapses first the
+        request fails with 504 and a JSON body, letting the client distinguish
+        an expected server-side timeout from a transport error; the client may
+        retry.
       tags:
         - Sessions
       security:
@@ -288,8 +289,7 @@ paths:
         - apiKeyAuth: []
       parameters:
         - $ref: "#/components/parameters/IdempotencyKey"
-        - $ref: "#/components/parameters/Wait"
-        - $ref: "#/components/parameters/WaitTimeout"
+        - $ref: "#/components/parameters/WaitTimeoutSeconds"
       requestBody:
         required: true
         content:
@@ -345,8 +345,8 @@ paths:
         "502":
           description: >
             The harness run failed instead of producing a response (only
-            possible with wait=true, or when replaying a failed invocation).
-            The body carries the failure kind and detail.
+            possible while waiting for a response, or when replaying a failed
+            invocation). The body carries the failure kind and detail.
           content:
             application/json:
               schema:
@@ -797,27 +797,18 @@ components:
         minimum: 1
         maximum: 1000
         default: 100
-    Wait:
-      name: wait
+    WaitTimeoutSeconds:
+      name: wait_timeout_seconds
       in: query
       required: false
       description: >
-        When true, long-poll: block until the invocation's assistant response
-        is available before returning.
-      schema:
-        type: boolean
-        default: false
-    WaitTimeout:
-      name: wait_timeout
-      in: query
-      required: false
-      description: >
-        Maximum time in seconds to block when wait=true. Omit to wait
-        indefinitely. Ignored when wait is false.
+        Wait up to this many seconds for the assistant response. Omit to return
+        after the invocation is accepted; use 0 to wait until a response is
+        available.
       schema:
         type: integer
         format: int64
-        minimum: 1
+        minimum: 0
 
   schemas:
     HealthResponse:

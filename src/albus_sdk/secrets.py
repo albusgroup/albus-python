@@ -6,7 +6,7 @@ from albus_sdk._hooks import HookContext
 from albus_sdk.types import OptionalNullable, UNSET
 from albus_sdk.utils import get_security_from_env
 from albus_sdk.utils.unmarshal_json_response import unmarshal_json_response
-from typing import Any, Mapping, Optional
+from typing import Any, Optional
 
 
 class Secrets(BaseSDK):
@@ -14,30 +14,14 @@ class Secrets(BaseSDK):
 
     def list_secrets(
         self,
-        *,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.ListSecretsResponse:
         r"""List all secrets
 
         If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
 
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
         """
-        base_url = None
         url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
+        base_url = self._get_url(None, url_variables)
         req = self._build_request(
             method="GET",
             path="/secrets",
@@ -49,20 +33,13 @@ class Secrets(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            http_headers=http_headers,
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key_auth"],
-            timeout_ms=timeout_ms,
+            timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-
         retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["429", "500", "502", "503", "504"])
 
         http_res = self.do_request(
             hook_ctx=HookContext(
@@ -78,7 +55,7 @@ class Secrets(BaseSDK):
             ),
             request=req,
             is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
-            retry_config=retry_config,
+            retry_config=None,
         )
 
         response_data: Any = None
@@ -107,10 +84,6 @@ class Secrets(BaseSDK):
         *,
         name: str,
         value: str,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.Secret:
         r"""Create a secret
 
@@ -118,20 +91,9 @@ class Secrets(BaseSDK):
 
         :param name:
         :param value: The secret value.
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
         """
-        base_url = None
         url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
+        base_url = self._get_url(None, url_variables)
 
         request = models.CreateSecretRequest(
             name=name,
@@ -149,23 +111,16 @@ class Secrets(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            http_headers=http_headers,
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
                 request, False, False, "json", models.CreateSecretRequest
             ),
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key_auth"],
-            timeout_ms=timeout_ms,
+            timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-
         retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["429", "500", "502", "503", "504"])
 
         http_res = self.do_request(
             hook_ctx=HookContext(
@@ -181,7 +136,7 @@ class Secrets(BaseSDK):
             ),
             request=req,
             is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
-            retry_config=retry_config,
+            retry_config=None,
         )
 
         response_data: Any = None
@@ -212,30 +167,15 @@ class Secrets(BaseSDK):
         self,
         *,
         name: str,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.Secret:
         r"""Get a secret by name
 
         If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
 
         :param name:
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
         """
-        base_url = None
         url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
+        base_url = self._get_url(None, url_variables)
 
         request = models.GetSecretRequest(
             name=name,
@@ -252,20 +192,13 @@ class Secrets(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            http_headers=http_headers,
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key_auth"],
-            timeout_ms=timeout_ms,
+            timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-
         retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["429", "500", "502", "503", "504"])
 
         http_res = self.do_request(
             hook_ctx=HookContext(
@@ -281,7 +214,7 @@ class Secrets(BaseSDK):
             ),
             request=req,
             is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
-            retry_config=retry_config,
+            retry_config=None,
         )
 
         response_data: Any = None
@@ -313,10 +246,6 @@ class Secrets(BaseSDK):
         *,
         name: str,
         value: str,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.Secret:
         r"""Update a secret by name
 
@@ -324,20 +253,9 @@ class Secrets(BaseSDK):
 
         :param name:
         :param value: The new secret value.
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
         """
-        base_url = None
         url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
+        base_url = self._get_url(None, url_variables)
 
         request = models.UpdateSecretRequestRequest(
             name=name,
@@ -357,23 +275,16 @@ class Secrets(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            http_headers=http_headers,
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.body, False, False, "json", models.UpdateSecretRequest
             ),
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key_auth"],
-            timeout_ms=timeout_ms,
+            timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-
         retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["429", "500", "502", "503", "504"])
 
         http_res = self.do_request(
             hook_ctx=HookContext(
@@ -389,7 +300,7 @@ class Secrets(BaseSDK):
             ),
             request=req,
             is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
-            retry_config=retry_config,
+            retry_config=None,
         )
 
         response_data: Any = None
@@ -423,30 +334,15 @@ class Secrets(BaseSDK):
         self,
         *,
         name: str,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
     ):
         r"""Delete a secret by name
 
         If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
 
         :param name:
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
         """
-        base_url = None
         url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
+        base_url = self._get_url(None, url_variables)
 
         request = models.DeleteSecretRequest(
             name=name,
@@ -463,20 +359,13 @@ class Secrets(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            http_headers=http_headers,
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key_auth"],
-            timeout_ms=timeout_ms,
+            timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-
         retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["429", "500", "502", "503", "504"])
 
         http_res = self.do_request(
             hook_ctx=HookContext(
@@ -492,7 +381,7 @@ class Secrets(BaseSDK):
             ),
             request=req,
             is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
-            retry_config=retry_config,
+            retry_config=None,
         )
 
         response_data: Any = None
@@ -525,30 +414,14 @@ class AsyncSecrets(AsyncBaseSDK):
 
     async def list_secrets(
         self,
-        *,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.ListSecretsResponse:
         r"""List all secrets
 
         If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
 
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
         """
-        base_url = None
         url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
+        base_url = self._get_url(None, url_variables)
         req = self._build_request_async(
             method="GET",
             path="/secrets",
@@ -560,20 +433,13 @@ class AsyncSecrets(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            http_headers=http_headers,
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key_auth"],
-            timeout_ms=timeout_ms,
+            timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-
         retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["429", "500", "502", "503", "504"])
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
@@ -589,7 +455,7 @@ class AsyncSecrets(AsyncBaseSDK):
             ),
             request=req,
             is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
-            retry_config=retry_config,
+            retry_config=None,
         )
 
         response_data: Any = None
@@ -618,10 +484,6 @@ class AsyncSecrets(AsyncBaseSDK):
         *,
         name: str,
         value: str,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.Secret:
         r"""Create a secret
 
@@ -629,20 +491,9 @@ class AsyncSecrets(AsyncBaseSDK):
 
         :param name:
         :param value: The secret value.
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
         """
-        base_url = None
         url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
+        base_url = self._get_url(None, url_variables)
 
         request = models.CreateSecretRequest(
             name=name,
@@ -660,23 +511,16 @@ class AsyncSecrets(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            http_headers=http_headers,
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
                 request, False, False, "json", models.CreateSecretRequest
             ),
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key_auth"],
-            timeout_ms=timeout_ms,
+            timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-
         retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["429", "500", "502", "503", "504"])
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
@@ -692,7 +536,7 @@ class AsyncSecrets(AsyncBaseSDK):
             ),
             request=req,
             is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
-            retry_config=retry_config,
+            retry_config=None,
         )
 
         response_data: Any = None
@@ -723,30 +567,15 @@ class AsyncSecrets(AsyncBaseSDK):
         self,
         *,
         name: str,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.Secret:
         r"""Get a secret by name
 
         If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
 
         :param name:
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
         """
-        base_url = None
         url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
+        base_url = self._get_url(None, url_variables)
 
         request = models.GetSecretRequest(
             name=name,
@@ -763,20 +592,13 @@ class AsyncSecrets(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            http_headers=http_headers,
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key_auth"],
-            timeout_ms=timeout_ms,
+            timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-
         retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["429", "500", "502", "503", "504"])
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
@@ -792,7 +614,7 @@ class AsyncSecrets(AsyncBaseSDK):
             ),
             request=req,
             is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
-            retry_config=retry_config,
+            retry_config=None,
         )
 
         response_data: Any = None
@@ -824,10 +646,6 @@ class AsyncSecrets(AsyncBaseSDK):
         *,
         name: str,
         value: str,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
     ) -> models.Secret:
         r"""Update a secret by name
 
@@ -835,20 +653,9 @@ class AsyncSecrets(AsyncBaseSDK):
 
         :param name:
         :param value: The new secret value.
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
         """
-        base_url = None
         url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
+        base_url = self._get_url(None, url_variables)
 
         request = models.UpdateSecretRequestRequest(
             name=name,
@@ -868,23 +675,16 @@ class AsyncSecrets(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            http_headers=http_headers,
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.body, False, False, "json", models.UpdateSecretRequest
             ),
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key_auth"],
-            timeout_ms=timeout_ms,
+            timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-
         retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["429", "500", "502", "503", "504"])
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
@@ -900,7 +700,7 @@ class AsyncSecrets(AsyncBaseSDK):
             ),
             request=req,
             is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
-            retry_config=retry_config,
+            retry_config=None,
         )
 
         response_data: Any = None
@@ -934,30 +734,15 @@ class AsyncSecrets(AsyncBaseSDK):
         self,
         *,
         name: str,
-        retries: OptionalNullable[utils.RetryConfig] = UNSET,
-        server_url: Optional[str] = None,
-        timeout_ms: Optional[int] = None,
-        http_headers: Optional[Mapping[str, str]] = None,
     ):
         r"""Delete a secret by name
 
         If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
 
         :param name:
-        :param retries: Override the default retry configuration for this method
-        :param server_url: Override the default server URL for this method
-        :param timeout_ms: Override the default request timeout configuration for this method in milliseconds
-        :param http_headers: Additional headers to set or replace on requests.
         """
-        base_url = None
         url_variables = None
-        if timeout_ms is None:
-            timeout_ms = self.sdk_configuration.timeout_ms
-
-        if server_url is not None:
-            base_url = server_url
-        else:
-            base_url = self._get_url(base_url, url_variables)
+        base_url = self._get_url(None, url_variables)
 
         request = models.DeleteSecretRequest(
             name=name,
@@ -974,20 +759,13 @@ class AsyncSecrets(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            http_headers=http_headers,
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key_auth"],
-            timeout_ms=timeout_ms,
+            timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
-        if retries == UNSET:
-            if self.sdk_configuration.retry_config is not UNSET:
-                retries = self.sdk_configuration.retry_config
-
         retry_config = None
-        if isinstance(retries, utils.RetryConfig):
-            retry_config = (retries, ["429", "500", "502", "503", "504"])
 
         http_res = await self.do_request_async(
             hook_ctx=HookContext(
@@ -1003,7 +781,7 @@ class AsyncSecrets(AsyncBaseSDK):
             ),
             request=req,
             is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
-            retry_config=retry_config,
+            retry_config=None,
         )
 
         response_data: Any = None
