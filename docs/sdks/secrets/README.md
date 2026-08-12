@@ -26,9 +26,7 @@ import os
 
 
 with Albus(
-    security=models.Security(
-        bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-    ),
+    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
     res = albus.secrets.list_secrets()
@@ -50,9 +48,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
-        security=models.Security(
-            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-        ),
+        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
         res = await albus.secrets.list_secrets()
@@ -93,9 +89,7 @@ import os
 
 
 with Albus(
-    security=models.Security(
-        bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-    ),
+    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
     res = albus.secrets.create_secret(name="<value>", value="<value>")
@@ -117,9 +111,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
-        security=models.Security(
-            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-        ),
+        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
         res = await albus.secrets.create_secret(name="<value>", value="<value>")
@@ -163,9 +155,7 @@ import os
 
 
 with Albus(
-    security=models.Security(
-        bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-    ),
+    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
     res = albus.secrets.get_secret(name="<value>")
@@ -187,9 +177,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
-        security=models.Security(
-            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-        ),
+        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
         res = await albus.secrets.get_secret(name="<value>")
@@ -232,9 +220,7 @@ import os
 
 
 with Albus(
-    security=models.Security(
-        bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-    ),
+    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
     res = albus.secrets.update_secret(name="<value>", value="<value>")
@@ -256,9 +242,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
-        security=models.Security(
-            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-        ),
+        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
         res = await albus.secrets.update_secret(name="<value>", value="<value>")
@@ -303,9 +287,7 @@ import os
 
 
 with Albus(
-    security=models.Security(
-        bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-    ),
+    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
     albus.secrets.delete_secret(name="<value>")
@@ -326,9 +308,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
-        security=models.Security(
-            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-        ),
+        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
         await albus.secrets.delete_secret(name="<value>")

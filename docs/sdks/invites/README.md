@@ -21,9 +21,7 @@ import os
 
 
 with Albus(
-    security=models.Security(
-        bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-    ),
+    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
     res = albus.invites.create_invite(email="Cassie27@hotmail.com")
@@ -45,9 +43,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
-        security=models.Security(
-            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-        ),
+        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
         res = await albus.invites.create_invite(email="Cassie27@hotmail.com")

@@ -1,6 +1,6 @@
 [project]
 name = "albus-sdk"
-version = "0.7.0"
+version = "0.8.0"
 description = "Official Python SDK for the Albus API."
 authors = [{ name = "Albus" },]
 readme = "README-PYPI.md"

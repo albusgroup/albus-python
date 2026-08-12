@@ -17,7 +17,7 @@ from albus_sdk.types import OptionalNullable, UNSET
 import httpx
 import importlib
 import sys
-from typing import Callable, Dict, Optional, TYPE_CHECKING, Union, cast
+from typing import Dict, Optional, TYPE_CHECKING, cast
 import weakref
 
 if TYPE_CHECKING:
@@ -58,9 +58,8 @@ class Albus(BaseSDK):
 
     def __init__(
         self,
-        security: Optional[
-            Union[models.Security, Callable[[], models.Security]]
-        ] = None,
+        api_key: Optional[str] = None,
+        access_token: Optional[str] = None,
         server_idx: Optional[int] = None,
         url_params: Optional[Dict[str, str]] = None,
         server_url: Optional[str] = None,
@@ -71,7 +70,6 @@ class Albus(BaseSDK):
     ) -> None:
         r"""Instantiates the SDK configuring it with the provided parameters.
 
-        :param security: The security details required for authentication
         :param server_idx: The index of the server to use for all methods
         :param server_url: The server URL to use for all methods
         :param url_params: Parameters to optionally template the server URL with
@@ -79,6 +77,15 @@ class Albus(BaseSDK):
         :param retry_config: The retry configuration to use for all supported methods
         :param timeout_ms: Optional request timeout applied to each operation in milliseconds
         """
+        if api_key is not None and access_token is not None:
+            raise ValueError("api_key and access_token cannot both be set")
+
+        security = None
+        if api_key is not None:
+            security = models.Security(api_key_auth=api_key)
+        elif access_token is not None:
+            security = models.Security(bearer_auth=access_token)
+
         client_supplied = True
         if client is None:
             client = httpx.Client(follow_redirects=True)
@@ -205,9 +212,8 @@ class AsyncAlbus(AsyncBaseSDK):
 
     def __init__(
         self,
-        security: Optional[
-            Union[models.Security, Callable[[], models.Security]]
-        ] = None,
+        api_key: Optional[str] = None,
+        access_token: Optional[str] = None,
         server_idx: Optional[int] = None,
         url_params: Optional[Dict[str, str]] = None,
         server_url: Optional[str] = None,
@@ -218,7 +224,6 @@ class AsyncAlbus(AsyncBaseSDK):
     ) -> None:
         r"""Instantiates the SDK configuring it with the provided parameters.
 
-        :param security: The security details required for authentication
         :param server_idx: The index of the server to use for all methods
         :param server_url: The server URL to use for all methods
         :param url_params: Parameters to optionally template the server URL with
@@ -226,6 +231,15 @@ class AsyncAlbus(AsyncBaseSDK):
         :param retry_config: The retry configuration to use for all supported methods
         :param timeout_ms: Optional request timeout applied to each operation in milliseconds
         """
+        if api_key is not None and access_token is not None:
+            raise ValueError("api_key and access_token cannot both be set")
+
+        security = None
+        if api_key is not None:
+            security = models.Security(api_key_auth=api_key)
+        elif access_token is not None:
+            security = models.Security(bearer_auth=access_token)
+
         async_client_supplied = True
         if async_client is None:
             async_client = httpx.AsyncClient(follow_redirects=True)

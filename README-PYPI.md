@@ -22,9 +22,7 @@ from albus_sdk import Albus, models
 
 
 with Albus(
-    security=models.Security(
-        api_key_auth=os.environ["ALBUS_API_KEY_AUTH"],
-    ),
+    api_key=os.environ["ALBUS_API_KEY_AUTH"],
 ) as albus:
     response = albus.sessions.list_sessions()
     print(response.sessions)
@@ -39,9 +37,7 @@ from albus_sdk import Albus, models
 
 
 with Albus(
-    security=models.Security(
-        api_key_auth=os.environ["ALBUS_API_KEY_AUTH"],
-    ),
+    api_key=os.environ["ALBUS_API_KEY_AUTH"],
     timeout_ms=130_000,
 ) as albus:
     response = albus.sessions.run_session(
@@ -73,9 +69,7 @@ from albus_sdk import AsyncAlbus, models
 
 async def main() -> None:
     async with AsyncAlbus(
-        security=models.Security(
-            bearer_auth=os.environ["ALBUS_BEARER_AUTH"],
-        ),
+        access_token=os.environ["ALBUS_BEARER_AUTH"],
     ) as albus:
         response = await albus.auth.whoami()
         print(response)
@@ -208,9 +202,7 @@ import os
 
 
 with Albus(
-    security=models.Security(
-        bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-    ),
+    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
     res = albus.secrets.list_secrets()
@@ -232,9 +224,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
-        security=models.Security(
-            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-        ),
+        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
         res = await albus.secrets.list_secrets()
@@ -258,7 +248,7 @@ This SDK supports the following security schemes globally:
 | `bearer_auth`  | http | HTTP Bearer | `ALBUS_BEARER_AUTH`  |
 | `api_key_auth` | http | HTTP Bearer | `ALBUS_API_KEY_AUTH` |
 
-You can set the security parameters through the `security` optional parameter when initializing the SDK client instance. The selected scheme will be used by default to authenticate with the API for all operations that support it. For example:
+Pass an organization API key with `api_key`, or a user access token with `access_token`. The SDK sends the corresponding bearer credential for every operation that supports it. For example:
 ```python
 # Synchronous Example
 from albus_sdk import Albus, models
@@ -266,9 +256,7 @@ import os
 
 
 with Albus(
-    security=models.Security(
-        bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-    ),
+    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
     res = albus.secrets.list_secrets()
@@ -290,9 +278,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
-        security=models.Security(
-            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-        ),
+        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
         res = await albus.secrets.list_secrets()
@@ -385,9 +371,7 @@ import os
 
 
 with Albus(
-    security=models.Security(
-        bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-    ),
+    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
     res = None
     try:
@@ -424,9 +408,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
-        security=models.Security(
-            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-        ),
+        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
         res = None
         try:
@@ -505,9 +487,7 @@ import os
 
 with Albus(
     server_idx=0,
-    security=models.Security(
-        bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-    ),
+    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
     res = albus.secrets.list_secrets()
@@ -530,9 +510,7 @@ async def main():
 
     async with AsyncAlbus(
         server_idx=0,
-        security=models.Security(
-            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-        ),
+        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
         res = await albus.secrets.list_secrets()
@@ -554,9 +532,7 @@ import os
 
 with Albus(
     server_url="http://localhost:8080",
-    security=models.Security(
-        bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-    ),
+    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
     res = albus.secrets.list_secrets()
@@ -579,9 +555,7 @@ async def main():
 
     async with AsyncAlbus(
         server_url="http://localhost:8080",
-        security=models.Security(
-            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-        ),
+        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
         res = await albus.secrets.list_secrets()
@@ -687,9 +661,7 @@ import os
 def main():
 
     with Albus(
-        security=models.Security(
-            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-        ),
+        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
         # Rest of application here...
 
@@ -698,9 +670,7 @@ def main():
 async def amain():
 
     async with AsyncAlbus(
-        security=models.Security(
-            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-        ),
+        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
         # Rest of application here...
 ```

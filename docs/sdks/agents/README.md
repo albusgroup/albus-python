@@ -25,9 +25,7 @@ import os
 
 
 with Albus(
-    security=models.Security(
-        bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-    ),
+    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
     res = albus.agents.list_agents()
@@ -49,9 +47,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
-        security=models.Security(
-            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-        ),
+        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
         res = await albus.agents.list_agents()
@@ -93,9 +89,7 @@ import os
 
 
 with Albus(
-    security=models.Security(
-        bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-    ),
+    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
     res = albus.agents.get_agent(name="<value>")
@@ -117,9 +111,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
-        security=models.Security(
-            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-        ),
+        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
         res = await albus.agents.get_agent(name="<value>")
@@ -163,9 +155,7 @@ import os
 
 
 with Albus(
-    security=models.Security(
-        bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-    ),
+    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
     res = albus.agents.get_agent_revision(name="<value>", revision="<value>")
@@ -187,9 +177,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
-        security=models.Security(
-            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-        ),
+        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
         res = await albus.agents.get_agent_revision(name="<value>", revision="<value>")

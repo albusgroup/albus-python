@@ -19,7 +19,7 @@ Handler = Callable[[httpx.Request], httpx.Response]
 def sdk_with_handler(
     handler: Handler,
     *,
-    security: models.Security | None = None,
+    api_key: str | None = None,
 ) -> Iterator[Albus]:
     transport = httpx.MockTransport(handler)
 
@@ -27,7 +27,7 @@ def sdk_with_handler(
         try:
             yield Albus(
                 client=client,
-                security=security,
+                api_key=api_key,
             )
         finally:
             pass
@@ -37,7 +37,7 @@ def sdk_with_handler(
 async def async_sdk_with_handler(
     handler: Handler,
     *,
-    security: models.Security | None = None,
+    access_token: str | None = None,
 ) -> AsyncIterator[AsyncAlbus]:
     transport = httpx.MockTransport(handler)
     async_client = httpx.AsyncClient(transport=transport)
@@ -45,7 +45,7 @@ async def async_sdk_with_handler(
     try:
         yield AsyncAlbus(
             async_client=async_client,
-            security=security,
+            access_token=access_token,
         )
     finally:
         await async_client.aclose()
@@ -53,7 +53,7 @@ async def async_sdk_with_handler(
 
 def test_package_exposes_version() -> None:
     assert albus_sdk.VERSION == albus_sdk.__version__
-    assert albus_sdk.VERSION == "0.7.0"
+    assert albus_sdk.VERSION == "0.8.0"
 
 
 def test_default_production_url_and_sync_operation() -> None:
@@ -76,8 +76,14 @@ def test_organization_key_authentication() -> None:
 
         return httpx.Response(200, json={"sessions": []})
 
-    security = models.Security(api_key_auth="organization-key")
-    with sdk_with_handler(handler, security=security) as sdk:
+    transport = httpx.MockTransport(handler)
+    with (
+        httpx.Client(transport=transport) as client,
+        Albus(
+            client=client,
+            api_key="organization-key",
+        ) as sdk,
+    ):
         response = sdk.sessions.list_sessions()
 
     assert response.sessions == []
@@ -91,9 +97,14 @@ async def test_user_token_authentication_and_async_operation() -> None:
 
         return httpx.Response(200, json={"tokens": []})
 
-    security = models.Security(bearer_auth="user-token")
-
-    async with async_sdk_with_handler(handler, security=security) as sdk:
+    transport = httpx.MockTransport(handler)
+    async with (
+        httpx.AsyncClient(transport=transport) as client,
+        AsyncAlbus(
+            async_client=client,
+            access_token="user-token",
+        ) as sdk,
+    ):
         response = await sdk.tokens.list_tokens()
 
     assert response.tokens == []
@@ -106,13 +117,20 @@ def test_documented_error_is_typed() -> None:
             json={"message": "invalid organization key"},
         )
 
-    security = models.Security(api_key_auth="invalid-key")
-    with sdk_with_handler(handler, security=security) as sdk:
+    with sdk_with_handler(handler, api_key="invalid-key") as sdk:
         with pytest.raises(errors.ErrUnauthorized) as caught:
             sdk.sessions.list_sessions()
 
     assert caught.value.data.message == "invalid organization key"
     assert caught.value.status_code == 401
+
+
+def test_constructor_rejects_multiple_authentication_methods() -> None:
+    with pytest.raises(ValueError, match="api_key and access_token"):
+        Albus(api_key="organization-key", access_token="user-token")
+
+    with pytest.raises(TypeError, match="unexpected keyword argument 'security'"):
+        Albus(security=models.Security(api_key_auth="organization-key"))
 
 
 def test_session_state_accepts_future_values() -> None:

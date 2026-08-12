@@ -3,10 +3,10 @@
 import importlib.metadata
 
 __title__: str = "albus-sdk"
-__version__: str = "0.7.0"
+__version__: str = "0.8.0"
 __openapi_doc_version__: str = "1.0.0"
 __gen_version__: str = "2.924.0"
-__user_agent__: str = "speakeasy-sdk/python 0.7.0 2.924.0 1.0.0 albus-sdk"
+__user_agent__: str = "speakeasy-sdk/python 0.8.0 2.924.0 1.0.0 albus-sdk"
 
 try:
     if __package__ is not None:

@@ -25,9 +25,7 @@ import os
 
 
 with Albus(
-    security=models.Security(
-        bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-    ),
+    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
     res = albus.tokens.list_tokens()
@@ -49,9 +47,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
-        security=models.Security(
-            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-        ),
+        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
         res = await albus.tokens.list_tokens()
@@ -92,9 +88,7 @@ import os
 
 
 with Albus(
-    security=models.Security(
-        bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-    ),
+    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
     res = albus.tokens.create_token(name="<value>")
@@ -116,9 +110,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
-        security=models.Security(
-            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-        ),
+        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
         res = await albus.tokens.create_token(name="<value>")
@@ -160,9 +152,7 @@ import os
 
 
 with Albus(
-    security=models.Security(
-        bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-    ),
+    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
     res = albus.tokens.get_token(id="<id>")
@@ -184,9 +174,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
-        security=models.Security(
-            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-        ),
+        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
         res = await albus.tokens.get_token(id="<id>")
@@ -229,9 +217,7 @@ import os
 
 
 with Albus(
-    security=models.Security(
-        bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-    ),
+    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
     albus.tokens.delete_token(id="<id>")
@@ -252,9 +238,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
-        security=models.Security(
-            bearer_auth=os.getenv("ALBUS_BEARER_AUTH", ""),
-        ),
+        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
         await albus.tokens.delete_token(id="<id>")
