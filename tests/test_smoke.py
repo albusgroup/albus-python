@@ -53,7 +53,7 @@ async def async_sdk_with_handler(
 
 def test_package_exposes_version() -> None:
     assert albus_sdk.VERSION == albus_sdk.__version__
-    assert albus_sdk.VERSION == "0.8.0"
+    assert albus_sdk.VERSION == "0.8.1"
 
 
 def test_default_production_url_and_sync_operation() -> None:
@@ -87,6 +87,23 @@ def test_organization_key_authentication() -> None:
         response = sdk.sessions.list_sessions()
 
     assert response.sessions == []
+
+
+def test_run_session_defaults_to_a_30_minute_wait() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.params["wait_timeout_seconds"] == "1800"
+        assert request.extensions["timeout"]["read"] == 1860
+
+        return httpx.Response(504, json={"message": "still running"})
+
+    with sdk_with_handler(handler) as sdk:
+        with pytest.raises(errors.ErrTimeout):
+            sdk.sessions.run_session(
+                id="session-id",
+                user_prompt="hello",
+                agent_name="test-agent",
+                agent={"model": {"name": "gpt-4o"}},
+            )
 
 
 @pytest.mark.asyncio
@@ -165,5 +182,6 @@ def test_only_run_session_accepts_a_per_request_retry_configuration() -> None:
                 assert not forbidden_parameters.intersection(parameters)
                 if operation_name == "run_session":
                     assert parameters["retry_config"].default is UNSET
+                    assert parameters["wait_timeout_seconds"].default == 1800
                 else:
                     assert "retry_config" not in parameters

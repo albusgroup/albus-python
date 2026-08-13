@@ -26,7 +26,7 @@ class RunSessionRequestRequestTypedDict(TypedDict):
 
     """
     wait_timeout_seconds: NotRequired[int]
-    r"""Wait up to this many seconds for the assistant response. Omit to return after the invocation is accepted; use 0 to wait until a response is available.
+    r"""Wait up to this many seconds for the assistant response. Omit to wait up to 30 minutes; use 0 to return after the invocation is accepted.
 
     """
 
@@ -54,8 +54,8 @@ class RunSessionRequestRequest(BaseModel):
     wait_timeout_seconds: Annotated[
         Optional[int],
         FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),
-    ] = None
-    r"""Wait up to this many seconds for the assistant response. Omit to return after the invocation is accepted; use 0 to wait until a response is available.
+    ] = 1800
+    r"""Wait up to this many seconds for the assistant response. Omit to wait up to 30 minutes; use 0 to return after the invocation is accepted.
 
     """
 

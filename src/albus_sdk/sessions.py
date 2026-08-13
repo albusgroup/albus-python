@@ -178,14 +178,14 @@ class Sessions(BaseSDK):
         agent_name: str,
         agent: Union[models.AgentConfig, models.AgentConfigTypedDict],
         idempotency_key: Optional[str] = None,
-        wait_timeout_seconds: Optional[int] = None,
+        wait_timeout_seconds: Optional[int] = 1800,
         retry_config: OptionalNullable[utils.RetryConfig] = UNSET,
     ) -> models.RunSessionResponse:
         r"""Run or resume a session
 
         Runs the session with the given ID, creating it if it does not exist and resuming it otherwise. Each call is a single invocation, optionally identified by the Idempotency-Key header. Supplying a key makes the call safe to retry: retrying with the same key and an identical body re-attaches to the in-flight invocation and returns its current state; a differing body for the same key returns 409; a new key while another invocation is still running returns 423. Omitting the header starts a fresh, non-idempotent invocation each time; the server generates a key and returns it in the Idempotency-Key response header.
 
-        With `wait_timeout_seconds` the request long-polls: it blocks until the invocation's assistant response is available and returns it in `messages`. Omit it to return as soon as the invocation is accepted, and pass 0 to wait until the response arrives (or the client disconnects). A positive value bounds the wait in seconds; if it elapses first the request fails with 504 and a JSON body, letting the client distinguish an expected server-side timeout from a transport error; the client may retry.
+        With `wait_timeout_seconds` the request long-polls: it blocks until the invocation's assistant response is available and returns it in `messages`. Omit it to wait up to 30 minutes, or pass 0 to return as soon as the invocation is accepted. A positive value bounds the wait in seconds; if it elapses first the request fails with 504 and a JSON body, letting the client distinguish an expected server-side timeout from a transport error; the client may retry.
 
 
         If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
@@ -198,12 +198,16 @@ class Sessions(BaseSDK):
 
         :param idempotency_key: Optional but strongly encouraged. Uniquely identifies this invocation of the session; reuse the same value to safely retry a request, and a new value starts a new invocation. When omitted, the server generates a key for the invocation and returns it in the Idempotency-Key response header, but the request is not retry-safe.
 
-        :param wait_timeout_seconds: Wait up to this many seconds for the assistant response. Omit to return after the invocation is accepted; use 0 to wait until a response is available.
+        :param wait_timeout_seconds: Wait up to this many seconds for the assistant response. Omit to wait up to 30 minutes; use 0 to return after the invocation is accepted.
 
         :param retry_config: Override the SDK retry configuration for this invocation.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
+        timeout_ms = self.sdk_configuration.timeout_ms
+
+        if timeout_ms is None:
+            timeout_ms = 1860000
 
         request = models.RunSessionRequestRequest(
             id=id,
@@ -233,7 +237,7 @@ class Sessions(BaseSDK):
             ),
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key_auth"],
-            timeout_ms=self.sdk_configuration.timeout_ms,
+            timeout_ms=timeout_ms,
         )
 
         retries = retry_config
@@ -649,14 +653,14 @@ class AsyncSessions(AsyncBaseSDK):
         agent_name: str,
         agent: Union[models.AgentConfig, models.AgentConfigTypedDict],
         idempotency_key: Optional[str] = None,
-        wait_timeout_seconds: Optional[int] = None,
+        wait_timeout_seconds: Optional[int] = 1800,
         retry_config: OptionalNullable[utils.RetryConfig] = UNSET,
     ) -> models.RunSessionResponse:
         r"""Run or resume a session
 
         Runs the session with the given ID, creating it if it does not exist and resuming it otherwise. Each call is a single invocation, optionally identified by the Idempotency-Key header. Supplying a key makes the call safe to retry: retrying with the same key and an identical body re-attaches to the in-flight invocation and returns its current state; a differing body for the same key returns 409; a new key while another invocation is still running returns 423. Omitting the header starts a fresh, non-idempotent invocation each time; the server generates a key and returns it in the Idempotency-Key response header.
 
-        With `wait_timeout_seconds` the request long-polls: it blocks until the invocation's assistant response is available and returns it in `messages`. Omit it to return as soon as the invocation is accepted, and pass 0 to wait until the response arrives (or the client disconnects). A positive value bounds the wait in seconds; if it elapses first the request fails with 504 and a JSON body, letting the client distinguish an expected server-side timeout from a transport error; the client may retry.
+        With `wait_timeout_seconds` the request long-polls: it blocks until the invocation's assistant response is available and returns it in `messages`. Omit it to wait up to 30 minutes, or pass 0 to return as soon as the invocation is accepted. A positive value bounds the wait in seconds; if it elapses first the request fails with 504 and a JSON body, letting the client distinguish an expected server-side timeout from a transport error; the client may retry.
 
 
         If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
@@ -669,12 +673,16 @@ class AsyncSessions(AsyncBaseSDK):
 
         :param idempotency_key: Optional but strongly encouraged. Uniquely identifies this invocation of the session; reuse the same value to safely retry a request, and a new value starts a new invocation. When omitted, the server generates a key for the invocation and returns it in the Idempotency-Key response header, but the request is not retry-safe.
 
-        :param wait_timeout_seconds: Wait up to this many seconds for the assistant response. Omit to return after the invocation is accepted; use 0 to wait until a response is available.
+        :param wait_timeout_seconds: Wait up to this many seconds for the assistant response. Omit to wait up to 30 minutes; use 0 to return after the invocation is accepted.
 
         :param retry_config: Override the SDK retry configuration for this invocation.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
+        timeout_ms = self.sdk_configuration.timeout_ms
+
+        if timeout_ms is None:
+            timeout_ms = 1860000
 
         request = models.RunSessionRequestRequest(
             id=id,
@@ -704,7 +712,7 @@ class AsyncSessions(AsyncBaseSDK):
             ),
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key_auth"],
-            timeout_ms=self.sdk_configuration.timeout_ms,
+            timeout_ms=timeout_ms,
         )
 
         retries = retry_config

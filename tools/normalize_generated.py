@@ -61,6 +61,22 @@ REQUEST_CONFIGURATION = """        base_url = None
             base_url = self._get_url(base_url, url_variables)
 """
 
+OPERATION_TIMEOUT_CONFIGURATION = re.compile(
+    r"""        base_url = None
+        url_variables = None
+        if timeout_ms is None:
+            timeout_ms = self.sdk_configuration.timeout_ms
+
+        if timeout_ms is None:
+            timeout_ms = (?P<timeout_ms>\d+)
+
+        if server_url is not None:
+            base_url = server_url
+        else:
+            base_url = self\._get_url\(base_url, url_variables\)
+"""
+)
+
 RETRY_CONFIGURATION = """        if retries == UNSET:
             if self.sdk_configuration.retry_config is not UNSET:
                 retries = self.sdk_configuration.retry_config
@@ -305,18 +321,32 @@ def normalize_operation_method(content: str) -> str:
         )
         content = content.replace(RETRY_DOCUMENTATION, replacement, 1)
 
-    content = content.replace(
-        REQUEST_CONFIGURATION,
-        "        url_variables = None\n"
-        "        base_url = self._get_url(None, url_variables)\n",
-        1,
-    )
+    operation_timeout = OPERATION_TIMEOUT_CONFIGURATION.search(content)
+    if operation_timeout:
+        timeout_ms = operation_timeout.group("timeout_ms")
+        content = OPERATION_TIMEOUT_CONFIGURATION.sub(
+            "        url_variables = None\n"
+            "        base_url = self._get_url(None, url_variables)\n"
+            "        timeout_ms = self.sdk_configuration.timeout_ms\n\n"
+            "        if timeout_ms is None:\n"
+            f"            timeout_ms = {timeout_ms}\n",
+            content,
+            count=1,
+        )
+    else:
+        content = content.replace(
+            REQUEST_CONFIGURATION,
+            "        url_variables = None\n"
+            "        base_url = self._get_url(None, url_variables)\n",
+            1,
+        )
     content = content.replace("            http_headers=http_headers,\n", "", 1)
-    content = content.replace(
-        "            timeout_ms=timeout_ms,\n",
-        "            timeout_ms=self.sdk_configuration.timeout_ms,\n",
-        1,
-    )
+    if operation_timeout is None:
+        content = content.replace(
+            "            timeout_ms=timeout_ms,\n",
+            "            timeout_ms=self.sdk_configuration.timeout_ms,\n",
+            1,
+        )
 
     if GENERATED_RETRY_CONFIGURATION in content:
         replacement = (

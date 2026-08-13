@@ -4,6 +4,8 @@ sources:
     Albus API:
         inputs:
             - location: openapi/openapi.yaml
+        overlays:
+            - location: .speakeasy/run-session-timeout.overlay.yaml
         output: .speakeasy/out.openapi.yaml
 targets:
     albus:

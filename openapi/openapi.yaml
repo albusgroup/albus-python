@@ -276,12 +276,11 @@ paths:
 
         With `wait_timeout_seconds` the request long-polls: it blocks until the
         invocation's assistant response is available and returns it in
-        `messages`. Omit it to return as soon as the invocation is accepted, and
-        pass 0 to wait until the response arrives (or the client disconnects).
-        A positive value bounds the wait in seconds; if it elapses first the
-        request fails with 504 and a JSON body, letting the client distinguish
-        an expected server-side timeout from a transport error; the client may
-        retry.
+        `messages`. Omit it to wait up to 30 minutes, or pass 0 to return as
+        soon as the invocation is accepted. A positive value bounds the wait in
+        seconds; if it elapses first the request fails with 504 and a JSON body,
+        letting the client distinguish an expected server-side timeout from a
+        transport error; the client may retry.
       tags:
         - Sessions
       security:
@@ -802,13 +801,14 @@ components:
       in: query
       required: false
       description: >
-        Wait up to this many seconds for the assistant response. Omit to return
-        after the invocation is accepted; use 0 to wait until a response is
-        available.
+        Wait up to this many seconds for the assistant response. Omit to wait
+        up to 30 minutes; use 0 to return after the invocation is accepted.
       schema:
         type: integer
         format: int64
         minimum: 0
+        maximum: 1800
+        default: 1800
 
   schemas:
     HealthResponse:

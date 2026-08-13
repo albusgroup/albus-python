@@ -3,13 +3,11 @@ info:
   title: Albus API
   description: Albus service REST API
   version: 1.0.0
-
 servers:
   - url: https://albus.sh/api
     description: Production server
   - url: http://localhost:8080
     description: Local development server
-
 tags:
   - name: Agents
     description: Inspect the agents that have run in your organization.
@@ -23,11 +21,9 @@ tags:
     description: Run and inspect agent sessions.
   - name: Tokens
     description: Manage organization API keys.
-
 security:
   - bearerAuth: []
   - apiKeyAuth: []
-
 paths:
   /secrets:
     get:
@@ -84,7 +80,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrUnauthorized"
-
   /secrets/{name}:
     get:
       operationId: getSecret
@@ -193,7 +188,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrNotFound"
-
   /sessions:
     get:
       operationId: listSessions
@@ -216,7 +210,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrUnauthorized"
-
   /sessions/{id}:
     parameters:
       - $ref: "#/components/parameters/SessionID"
@@ -224,8 +217,8 @@ paths:
       operationId: getSession
       summary: Get a session with its messages
       description: >
-        Returns the session's metadata and a page of its messages ordered by
-        cursor ascending. Use `after` and `limit` to page through messages.
+        Returns the session's metadata and a page of its messages ordered by cursor ascending. Use `after` and `limit` to page through messages.
+
       tags:
         - Sessions
       security:
@@ -263,25 +256,11 @@ paths:
       operationId: runSession
       summary: Run or resume a session
       description: >
-        Runs the session with the given ID, creating it if it does not exist and
-        resuming it otherwise. Each call is a single invocation, optionally
-        identified by the Idempotency-Key header. Supplying a key makes the call
-        safe to retry: retrying with the same key and an identical body
-        re-attaches to the in-flight invocation and returns its current state; a
-        differing body for the same key returns 409; a new key while another
-        invocation is still running returns 423. Omitting the header starts a
-        fresh, non-idempotent invocation each time; the server generates a key
-        and returns it in the Idempotency-Key response header.
+        Runs the session with the given ID, creating it if it does not exist and resuming it otherwise. Each call is a single invocation, optionally identified by the Idempotency-Key header. Supplying a key makes the call safe to retry: retrying with the same key and an identical body re-attaches to the in-flight invocation and returns its current state; a differing body for the same key returns 409; a new key while another invocation is still running returns 423. Omitting the header starts a fresh, non-idempotent invocation each time; the server generates a key and returns it in the Idempotency-Key response header.
 
 
-        With `wait_timeout_seconds` the request long-polls: it blocks until the
-        invocation's assistant response is available and returns it in
-        `messages`. Omit it to return as soon as the invocation is accepted, and
-        pass 0 to wait until the response arrives (or the client disconnects).
-        A positive value bounds the wait in seconds; if it elapses first the
-        request fails with 504 and a JSON body, letting the client distinguish
-        an expected server-side timeout from a transport error; the client may
-        retry.
+        With `wait_timeout_seconds` the request long-polls: it blocks until the invocation's assistant response is available and returns it in `messages`. Omit it to wait up to 30 minutes, or pass 0 to return as soon as the invocation is accepted. A positive value bounds the wait in seconds; if it elapses first the request fails with 504 and a JSON body, letting the client distinguish an expected server-side timeout from a transport error; the client may retry.
+
       tags:
         - Sessions
       security:
@@ -302,10 +281,8 @@ paths:
           headers:
             Idempotency-Key:
               description: >
-                The effective idempotency key for this invocation — the value
-                sent in the request header, or a server-generated one when the
-                header was omitted. Use it to reference or safely retry this
-                invocation.
+                The effective idempotency key for this invocation — the value sent in the request header, or a server-generated one when the header was omitted. Use it to reference or safely retry this invocation.
+
               schema:
                 type: string
           content:
@@ -344,9 +321,8 @@ paths:
                 $ref: "#/components/schemas/ErrQuotaExceeded"
         "502":
           description: >
-            The harness run failed instead of producing a response (only
-            possible while waiting for a response, or when replaying a failed
-            invocation). The body carries the failure kind and detail.
+            The harness run failed instead of producing a response (only possible while waiting for a response, or when replaying a failed invocation). The body carries the failure kind and detail.
+
           content:
             application/json:
               schema:
@@ -357,6 +333,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrTimeout"
+      x-speakeasy-timeout: 1860000
     delete:
       operationId: deleteSession
       summary: Delete a session
@@ -380,7 +357,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrNotFound"
-
   /sessions/{id}/audit:
     parameters:
       - $ref: "#/components/parameters/SessionID"
@@ -388,11 +364,8 @@ paths:
       operationId: getSessionAudit
       summary: List a session's audit log
       description: >
-        Returns the session's audit log — an immutable, time-ordered record of
-        what happened during its agent runs (LLM calls, tool results, and run
-        outcomes). Events are ordered by the time they occurred. Use `after` and
-        `limit` to page through them; pass the response's `next_cursor` as the
-        next request's `after` to fetch the following page.
+        Returns the session's audit log — an immutable, time-ordered record of what happened during its agent runs (LLM calls, tool results, and run outcomes). Events are ordered by the time they occurred. Use `after` and `limit` to page through them; pass the response's `next_cursor` as the next request's `after` to fetch the following page.
+
       tags:
         - Sessions
       security:
@@ -426,7 +399,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrNotFound"
-
   /tokens:
     get:
       operationId: listTokens
@@ -474,7 +446,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrUnauthorized"
-
   /tokens/{id}:
     get:
       operationId: getToken
@@ -538,14 +509,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrNotFound"
-
   /agents:
     get:
       operationId: listAgents
       summary: List agents
       description: >
-        Lists the agents that have run in your organization, each with its
-        latest revision.
+        Lists the agents that have run in your organization, each with its latest revision.
+
       tags:
         - Agents
       security:
@@ -564,7 +534,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrUnauthorized"
-
   /agents/{name}:
     parameters:
       - name: name
@@ -577,8 +546,8 @@ paths:
       operationId: getAgent
       summary: Get an agent by name
       description: >
-        Returns the agent with the given name, its current revision, and the
-        list of all its revisions newest first.
+        Returns the agent with the given name, its current revision, and the list of all its revisions newest first.
+
       tags:
         - Agents
       security:
@@ -603,7 +572,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrNotFound"
-
   /agents/{name}/revisions/{revision}:
     parameters:
       - name: name
@@ -622,8 +590,8 @@ paths:
       operationId: getAgentRevision
       summary: Get a specific revision of an agent
       description: >
-        Returns the full configuration of one revision of an agent — its model,
-        tools, instructions, and MCP servers.
+        Returns the full configuration of one revision of an agent — its model, tools, instructions, and MCP servers.
+
       tags:
         - Agents
       security:
@@ -648,7 +616,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrNotFound"
-
   /health:
     get:
       operationId: health
@@ -670,14 +637,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthResponse"
-
   /whoami:
     get:
       operationId: whoami
       summary: Get current user information
       description: >
-        Returns the authenticated user along with every organization they
-        belong to and their roles in each.
+        Returns the authenticated user along with every organization they belong to and their roles in each.
+
       tags:
         - Auth
       security:
@@ -695,17 +661,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrUnauthorized"
-
   /invites:
     post:
       operationId: createInvite
       summary: Invite a user by email
       description: >
-        Creates a pending invitation for an email address. Omit
-        organization_id to invite the user as the founder of a new
-        organization that is created on their first sign-in; provide it to
-        invite them into an existing organization. The invitation is redeemed
-        automatically the first time the invitee signs in with that email.
+        Creates a pending invitation for an email address. Omit organization_id to invite the user as the founder of a new organization that is created on their first sign-in; provide it to invite them into an existing organization. The invitation is redeemed automatically the first time the invitee signs in with that email.
+
       tags:
         - Invites
       security:
@@ -741,7 +703,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrConflict"
-
 components:
   securitySchemes:
     bearerAuth:
@@ -752,7 +713,6 @@ components:
       type: http
       scheme: bearer
       description: Org-scoped API key issued via POST /tokens
-
   parameters:
     SessionID:
       name: id
@@ -769,11 +729,8 @@ components:
       in: header
       required: false
       description: >
-        Optional but strongly encouraged. Uniquely identifies this invocation of
-        the session; reuse the same value to safely retry a request, and a new
-        value starts a new invocation. When omitted, the server generates a key
-        for the invocation and returns it in the Idempotency-Key response header,
-        but the request is not retry-safe.
+        Optional but strongly encouraged. Uniquely identifies this invocation of the session; reuse the same value to safely retry a request, and a new value starts a new invocation. When omitted, the server generates a key for the invocation and returns it in the Idempotency-Key response header, but the request is not retry-safe.
+
       schema:
         type: string
         minLength: 1
@@ -783,8 +740,8 @@ components:
       in: query
       required: false
       description: >
-        Opaque pagination cursor. Return only items positioned after it; pass a
-        value obtained from a previous page to fetch the next one.
+        Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
+
       schema:
         type: string
     Limit:
@@ -802,14 +759,14 @@ components:
       in: query
       required: false
       description: >
-        Wait up to this many seconds for the assistant response. Omit to return
-        after the invocation is accepted; use 0 to wait until a response is
-        available.
+        Wait up to this many seconds for the assistant response. Omit to wait up to 30 minutes; use 0 to return after the invocation is accepted.
+
       schema:
         type: integer
         format: int64
         minimum: 0
-
+        maximum: 1800
+        default: 1800
   schemas:
     HealthResponse:
       type: object
@@ -819,7 +776,6 @@ components:
         status:
           type: string
           example: "ok"
-
     WhoamiResponse:
       type: object
       required:
@@ -845,16 +801,15 @@ components:
           items:
             type: string
           description: >
-            Roles in the active organization (present only when a single
-            organization is in scope).
+            Roles in the active organization (present only when a single organization is in scope).
+
           example: ["admin"]
         active_organization:
           allOf:
             - $ref: "#/components/schemas/OrganizationMembership"
           description: >
-            The organization this session is scoped to. Present when the user
-            belongs to exactly one organization; absent when they belong to
-            several and none is selected yet.
+            The organization this session is scoped to. Present when the user belongs to exactly one organization; absent when they belong to several and none is selected yet.
+
         organizations:
           type: array
           items:
@@ -868,7 +823,6 @@ components:
           type: integer
           format: int64
           description: Token expiration timestamp (Unix epoch)
-
     OrganizationMembership:
       type: object
       required:
@@ -890,7 +844,6 @@ components:
             type: string
           description: Roles the user holds in this organization
           example: ["admin"]
-
     CreateInviteRequest:
       type: object
       required:
@@ -906,13 +859,12 @@ components:
             - admin
             - member
           description: >
-            Role to grant the invitee. Defaults to admin when inviting to a new
-            organization and member when inviting into an existing one.
+            Role to grant the invitee. Defaults to admin when inviting to a new organization and member when inviting into an existing one.
+
         organization_id:
           type: string
           description: >
-            Organization to invite the user into (e.g. "42"). Omit to create a
-            new organization for the user on their first sign-in.
+            Organization to invite the user into (e.g. "42"). Omit to create a new organization for the user on their first sign-in.
 
     Invite:
       type: object
@@ -933,8 +885,7 @@ components:
         organization_id:
           type: string
           description: >
-            Organization the invitee will join. Absent when the invitation
-            creates a new organization on first sign-in.
+            Organization the invitee will join. Absent when the invitation creates a new organization on first sign-in.
 
     ErrUnauthorized:
       type: object
@@ -945,7 +896,6 @@ components:
           type: string
           description: Human-readable error message
           example: "Invalid or expired token"
-
     ErrNotFound:
       type: object
       required:
@@ -955,7 +905,6 @@ components:
           type: string
           description: Human-readable error message
           example: "Resource not found"
-
     ErrBadRequest:
       type: object
       required:
@@ -965,7 +914,6 @@ components:
           type: string
           description: Human-readable error message
           example: "Invalid request parameters"
-
     ErrConflict:
       type: object
       required:
@@ -975,7 +923,6 @@ components:
           type: string
           description: Human-readable error message
           example: "Idempotency key reused with a different request body"
-
     ErrLocked:
       type: object
       required:
@@ -985,7 +932,6 @@ components:
           type: string
           description: Human-readable error message
           example: "Another invocation is currently running for this session"
-
     ErrQuotaExceeded:
       type: object
       required:
@@ -995,7 +941,6 @@ components:
           type: string
           description: Human-readable error message
           example: "organization invocation quota exceeded"
-
     ErrRunFailed:
       type: object
       required:
@@ -1009,12 +954,9 @@ components:
         kind:
           type: string
           description: >
-            Failure classification: "crash" (unexpected exit or signal),
-            "no_progress" (the harness stalled and was force-killed), or
-            "interrupted" (the run could not continue), or "internal" (the run
-            could not start).
-          example: "crash"
+            Failure classification: "crash" (unexpected exit or signal), "no_progress" (the harness stalled and was force-killed), or "interrupted" (the run could not continue), or "internal" (the run could not start).
 
+          example: "crash"
     ErrTimeout:
       type: object
       required:
@@ -1024,9 +966,7 @@ components:
           type: string
           description: Human-readable error message
           example: "Timed out waiting for the assistant response"
-
     # Resource schemas
-
     Secret:
       type: object
       required:
@@ -1038,9 +978,7 @@ components:
         masked_value:
           type: string
           description: The secret value with all but the last 3 characters masked.
-
     # Sessions API (top-level /sessions)
-
     Provider:
       type: object
       additionalProperties: false
@@ -1057,8 +995,7 @@ components:
         credential:
           type: string
           description: >
-            Secret reference the provider authenticates with
-            (e.g. "albus.sh/secrets/my-key"), not a raw secret value.
+            Secret reference the provider authenticates with (e.g. "albus.sh/secrets/my-key"), not a raw secret value.
 
     Model:
       type: object
@@ -1071,7 +1008,6 @@ components:
           description: Model identifier (e.g. "gemini-3.6-flash", "claude-opus-4").
         provider:
           $ref: "#/components/schemas/Provider"
-
     RunSessionRequest:
       type: object
       additionalProperties: false
@@ -1086,21 +1022,18 @@ components:
         agent_name:
           type: string
           description: >
-            Human-readable name identifying the agent (e.g. "support-triage").
-            Runs sharing a name are grouped as one agent; each distinct
-            configuration under it becomes a revision.
+            Human-readable name identifying the agent (e.g. "support-triage"). Runs sharing a name are grouped as one agent; each distinct configuration under it becomes a revision.
+
         agent:
           $ref: "#/components/schemas/AgentConfig"
-
     AgentConfig:
       type: object
       additionalProperties: false
       required:
         - model
       description: >
-        The agent configuration for a run: the model, tools, instructions, and
-        MCP servers that define its behavior. Runs with the same configuration
-        share a revision.
+        The agent configuration for a run: the model, tools, instructions, and MCP servers that define its behavior. Runs with the same configuration share a revision.
+
       properties:
         model:
           $ref: "#/components/schemas/Model"
@@ -1121,7 +1054,6 @@ components:
           items:
             $ref: "#/components/schemas/MCPServer"
           description: MCP servers whose tools are offered to the model.
-
     AgentMeta:
       type: object
       description: A row in the agent list — an agent's identity and activity.
@@ -1146,7 +1078,6 @@ components:
           type: string
           format: date-time
           description: When the agent last ran.
-
     ListAgentsResponse:
       type: object
       required:
@@ -1156,7 +1087,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/AgentMeta"
-
     AgentRevisionMeta:
       type: object
       description: A reference to one agent revision, without its configuration.
@@ -1171,7 +1101,6 @@ components:
           type: string
           format: date-time
           description: When this revision first ran.
-
     AgentRevision:
       type: object
       description: One revision of an agent, with its full configuration.
@@ -1189,12 +1118,11 @@ components:
           description: When this revision first ran.
         config:
           $ref: "#/components/schemas/AgentConfig"
-
     Agent:
       type: object
       description: >
-        An agent identified by name, with its current revision's full
-        configuration and the list of all its revisions newest first.
+        An agent identified by name, with its current revision's full configuration and the list of all its revisions newest first.
+
       required:
         - name
         - current
@@ -1210,7 +1138,6 @@ components:
           items:
             $ref: "#/components/schemas/AgentRevisionMeta"
           description: All revisions of the agent, newest first.
-
     MCPServer:
       type: object
       additionalProperties: false
@@ -1221,8 +1148,8 @@ components:
         name:
           type: string
           description: >
-            Unique alias for the server. It prefixes the server's tool names
-            (e.g. "github" exposes its search tool as "github__search").
+            Unique alias for the server. It prefixes the server's tool names (e.g. "github" exposes its search tool as "github__search").
+
         url:
           type: string
           description: The server's Streamable HTTP endpoint.
@@ -1231,8 +1158,8 @@ components:
           additionalProperties:
             type: string
           description: >
-            HTTP headers sent to the server. Values are secret references
-            (e.g. "albus.sh/secrets/github-mcp"), not raw secret values.
+            HTTP headers sent to the server. Values are secret references (e.g. "albus.sh/secrets/github-mcp"), not raw secret values.
+
         allowed_tools:
           type: array
           items:
@@ -1262,8 +1189,8 @@ components:
         current_invocation_id:
           type: string
           description: >
-            The invocation currently running, if any. Omitted when the session
-            is idle.
+            The invocation currently running, if any. Omitted when the session is idle.
+
         invocation_count:
           type: integer
           format: int64
@@ -1274,15 +1201,14 @@ components:
         agent_revision:
           type: string
           description: >
-            Revision of the agent that last ran this session. Runs with the
-            same configuration share this value.
+            Revision of the agent that last ran this session. Runs with the same configuration share this value.
+
         created_at:
           type: string
           format: date-time
         updated_at:
           type: string
           format: date-time
-
     SessionMessage:
       type: object
       required:
@@ -1307,7 +1233,6 @@ components:
         created_at:
           type: string
           format: date-time
-
     SessionResponse:
       type: object
       required:
@@ -1320,7 +1245,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/SessionMessage"
-
     AuditEvent:
       type: object
       required:
@@ -1341,6 +1265,7 @@ components:
           type: string
           description: >
             Idempotency key of the run during which this event occurred.
+
         agent_revision:
           type: string
           description: The agent revision the invocation ran (e.g. "a1b2c3d4").
@@ -1356,27 +1281,18 @@ components:
             - llm_call
             - tool_result
           description: >
-            The kind of event (e.g. "agent_invocation" for the request that
-            started the run, "model_call" for a model call and the tool calls it
-            requested, "tool_call" for an executed tool call and its output).
-            Events recorded earlier use "llm_call" and "tool_result" for those
-            same two kinds.
+            The kind of event (e.g. "agent_invocation" for the request that started the run, "model_call" for a model call and the tool calls it requested, "tool_call" for an executed tool call and its output). Events recorded earlier use "llm_call" and "tool_result" for those same two kinds.
+
         payload:
           type: object
           additionalProperties: true
           description: >
-            The event's details, whose shape depends on `type` (e.g. the model
-            content and requested tool calls for "model_call"; the call's
-            arguments, response, and MCP server URL for "tool_call"). Model and
-            tool output and tool arguments are stored up to 32 KiB each,
-            alongside the byte count, SHA-256 digest, and truncation flag of the
-            complete value (e.g. `contentBytes`, `contentSha256`,
-            `contentTruncated`).
+            The event's details, whose shape depends on `type` (e.g. the model content and requested tool calls for "model_call"; the call's arguments, response, and MCP server URL for "tool_call"). Model and tool output and tool arguments are stored up to 32 KiB each, alongside the byte count, SHA-256 digest, and truncation flag of the complete value (e.g. `contentBytes`, `contentSha256`, `contentTruncated`).
+
         event_time:
           type: string
           format: date-time
           description: When the event occurred.
-
     ListAuditEventsResponse:
       type: object
       required:
@@ -1389,8 +1305,7 @@ components:
         next_cursor:
           type: string
           description: >
-            Cursor for the next page. Pass it as `after` to fetch the following
-            events. Omitted when there are no more events.
+            Cursor for the next page. Pass it as `after` to fetch the following events. Omitted when there are no more events.
 
     ListSessionsResponse:
       type: object
@@ -1401,7 +1316,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Session"
-
     Token:
       type: object
       description: API token metadata. Never includes the token value.
@@ -1423,9 +1337,7 @@ components:
           type: string
           format: date-time
           description: Timestamp of the last time this token was used for authentication.
-
     # Request/response envelopes
-
     ListSecretsResponse:
       type: object
       required:
@@ -1435,7 +1347,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Secret"
-
     CreateSecretRequest:
       type: object
       required:
@@ -1447,7 +1358,6 @@ components:
         value:
           type: string
           description: The secret value.
-
     UpdateSecretRequest:
       type: object
       required:
@@ -1456,7 +1366,6 @@ components:
         value:
           type: string
           description: The new secret value.
-
     ListTokensResponse:
       type: object
       required:
@@ -1466,7 +1375,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Token"
-
     CreateTokenRequest:
       type: object
       required:
@@ -1474,7 +1382,6 @@ components:
       properties:
         name:
           type: string
-
     # View-once response for POST /tokens — includes the full token value.
     # All other token responses use Token (which omits the value).
     CreateTokenResponse:
