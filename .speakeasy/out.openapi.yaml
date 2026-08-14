@@ -15,6 +15,8 @@ tags:
     description: Identify the authenticated user.
   - name: Health
     description: Check service availability.
+  - name: Models
+    description: Discover the models available to run agents on.
   - name: Secrets
     description: Manage secrets available to agent sessions.
   - name: Sessions
@@ -616,6 +618,31 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrNotFound"
+  /models:
+    get:
+      operationId: listModels
+      summary: List models
+      description: >
+        Lists the models available to run agents on, each with the provider that serves it.
+
+      tags:
+        - Models
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListModelsResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
   /health:
     get:
       operationId: health
@@ -1087,6 +1114,31 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/AgentMeta"
+    # Models API (top-level /models)
+    ModelMeta:
+      type: object
+      description: A model Albus can run, and the provider serving it.
+      required:
+        - name
+        - provider
+      properties:
+        name:
+          type: string
+          description: >
+            Model identifier to send as the agent's model name (e.g. "gemini-3.6-flash").
+
+        provider:
+          type: string
+          description: Name of the provider serving this model (e.g. "gemini").
+    ListModelsResponse:
+      type: object
+      required:
+        - models
+      properties:
+        models:
+          type: array
+          items:
+            $ref: "#/components/schemas/ModelMeta"
     AgentRevisionMeta:
       type: object
       description: A reference to one agent revision, without its configuration.

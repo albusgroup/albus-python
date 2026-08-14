@@ -11,7 +11,7 @@ from .httpclient import (
 from .sdkconfiguration import SDKConfiguration
 from .utils.logger import Logger, get_default_logger
 from .utils.retries import RetryConfig
-from albus_sdk import models, utils
+from albus_sdk import models as models_, utils
 from albus_sdk._hooks import SDKHooks
 from albus_sdk.types import OptionalNullable, UNSET
 import httpx
@@ -25,6 +25,7 @@ if TYPE_CHECKING:
     from albus_sdk.auth import AsyncAuth, Auth
     from albus_sdk.health import AsyncHealth, Health
     from albus_sdk.invites import AsyncInvites, Invites
+    from albus_sdk.models_ import AsyncModels, Models
     from albus_sdk.secrets import AsyncSecrets, Secrets
     from albus_sdk.sessions import AsyncSessions, Sessions
     from albus_sdk.tokens import AsyncTokens, Tokens
@@ -41,6 +42,8 @@ class Albus(BaseSDK):
     r"""Manage organization API keys."""
     agents: "Agents"
     r"""Inspect the agents that have run in your organization."""
+    models: "Models"
+    r"""Discover the models available to run agents on."""
     health: "Health"
     r"""Check service availability."""
     auth: "Auth"
@@ -51,6 +54,7 @@ class Albus(BaseSDK):
         "sessions": ("albus_sdk.sessions", "Sessions"),
         "tokens": ("albus_sdk.tokens", "Tokens"),
         "agents": ("albus_sdk.agents", "Agents"),
+        "models": ("albus_sdk.models_", "Models"),
         "health": ("albus_sdk.health", "Health"),
         "auth": ("albus_sdk.auth", "Auth"),
         "invites": ("albus_sdk.invites", "Invites"),
@@ -82,9 +86,9 @@ class Albus(BaseSDK):
 
         security = None
         if api_key is not None:
-            security = models.Security(api_key_auth=api_key)
+            security = models_.Security(api_key_auth=api_key)
         elif access_token is not None:
-            security = models.Security(bearer_auth=access_token)
+            security = models_.Security(bearer_auth=access_token)
 
         client_supplied = True
         if client is None:
@@ -195,6 +199,8 @@ class AsyncAlbus(AsyncBaseSDK):
     r"""Manage organization API keys."""
     agents: "AsyncAgents"
     r"""Inspect the agents that have run in your organization."""
+    models: "AsyncModels"
+    r"""Discover the models available to run agents on."""
     health: "AsyncHealth"
     r"""Check service availability."""
     auth: "AsyncAuth"
@@ -205,6 +211,7 @@ class AsyncAlbus(AsyncBaseSDK):
         "sessions": ("albus_sdk.sessions", "AsyncSessions"),
         "tokens": ("albus_sdk.tokens", "AsyncTokens"),
         "agents": ("albus_sdk.agents", "AsyncAgents"),
+        "models": ("albus_sdk.models_", "AsyncModels"),
         "health": ("albus_sdk.health", "AsyncHealth"),
         "auth": ("albus_sdk.auth", "AsyncAuth"),
         "invites": ("albus_sdk.invites", "AsyncInvites"),
@@ -236,9 +243,9 @@ class AsyncAlbus(AsyncBaseSDK):
 
         security = None
         if api_key is not None:
-            security = models.Security(api_key_auth=api_key)
+            security = models_.Security(api_key_auth=api_key)
         elif access_token is not None:
-            security = models.Security(bearer_auth=access_token)
+            security = models_.Security(bearer_auth=access_token)
 
         async_client_supplied = True
         if async_client is None:

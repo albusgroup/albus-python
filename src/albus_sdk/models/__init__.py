@@ -41,6 +41,7 @@ if TYPE_CHECKING:
         ListAuditEventsResponse,
         ListAuditEventsResponseTypedDict,
     )
+    from .listmodelsresponse import ListModelsResponse, ListModelsResponseTypedDict
     from .listsecretsresponse import ListSecretsResponse, ListSecretsResponseTypedDict
     from .listsessionsresponse import (
         ListSessionsResponse,
@@ -49,6 +50,7 @@ if TYPE_CHECKING:
     from .listtokensresponse import ListTokensResponse, ListTokensResponseTypedDict
     from .mcpserver import MCPServer, MCPServerTypedDict
     from .model import Model, ModelTypedDict
+    from .modelmeta import ModelMeta, ModelMetaTypedDict
     from .organizationmembership import (
         OrganizationMembership,
         OrganizationMembershipTypedDict,
@@ -126,6 +128,8 @@ __all__ = [
     "ListAgentsResponseTypedDict",
     "ListAuditEventsResponse",
     "ListAuditEventsResponseTypedDict",
+    "ListModelsResponse",
+    "ListModelsResponseTypedDict",
     "ListSecretsResponse",
     "ListSecretsResponseTypedDict",
     "ListSessionsResponse",
@@ -135,6 +139,8 @@ __all__ = [
     "MCPServer",
     "MCPServerTypedDict",
     "Model",
+    "ModelMeta",
+    "ModelMetaTypedDict",
     "ModelTypedDict",
     "OrganizationMembership",
     "OrganizationMembershipTypedDict",
@@ -218,6 +224,8 @@ _dynamic_imports: dict[str, str] = {
     "ListAgentsResponseTypedDict": ".listagentsresponse",
     "ListAuditEventsResponse": ".listauditeventsresponse",
     "ListAuditEventsResponseTypedDict": ".listauditeventsresponse",
+    "ListModelsResponse": ".listmodelsresponse",
+    "ListModelsResponseTypedDict": ".listmodelsresponse",
     "ListSecretsResponse": ".listsecretsresponse",
     "ListSecretsResponseTypedDict": ".listsecretsresponse",
     "ListSessionsResponse": ".listsessionsresponse",
@@ -228,6 +236,8 @@ _dynamic_imports: dict[str, str] = {
     "MCPServerTypedDict": ".mcpserver",
     "Model": ".model",
     "ModelTypedDict": ".model",
+    "ModelMeta": ".modelmeta",
+    "ModelMetaTypedDict": ".modelmeta",
     "OrganizationMembership": ".organizationmembership",
     "OrganizationMembershipTypedDict": ".organizationmembership",
     "Provider": ".provider",

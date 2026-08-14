@@ -4,13 +4,13 @@ management:
   docVersion: 1.0.0
   speakeasyVersion: 1.791.0
   generationVersion: 2.924.0
-  releaseVersion: 0.8.1
+  releaseVersion: 0.9.0
   repoURL: https://github.com/albusgroup/albus-python
   installationURL: https://github.com/albusgroup/albus-python.git
 persistentEdits:
-  generation_id: df224820-05fe-45ab-83e2-c9b71328b33b
-  pristine_commit_hash: 9a10e61f118002e716350668c36fd1487bfa071e
-  pristine_tree_hash: 686ab4417e49e1ad564a92219365c996f071c1be
+  generation_id: 8bca12eb-2f70-45aa-aa04-dfb9f555dd7c
+  pristine_commit_hash: dd0cad3778ebc47bc14186388f084078954c167d
+  pristine_tree_hash: ff4dfa66baccca607b8f45be8b7532444384f551
 features:
   python:
     additionalDependencies: 1.1.0
@@ -175,6 +175,10 @@ trackedFiles:
     id: 9ab97b008a0a
     last_write_checksum: sha1:00ed611f7442618e7d9290e8425766e5b63383db
     pristine_git_object: a52cb16fcce43c1f70f60b63375f45f92f8bf446
+  docs/models/listmodelsresponse.md:
+    id: 493522df3797
+    last_write_checksum: sha1:aba9fc72738f152e6d18b6385765491b18b0c07b
+    pristine_git_object: e38b577d3dc54df53977150ebb6c37ee07530bef
   docs/models/listsecretsresponse.md:
     id: 033def0610fb
     last_write_checksum: sha1:f827395460f0a04660e90650f3cc36ef9d904f81
@@ -195,6 +199,10 @@ trackedFiles:
     id: 66e0236ac289
     last_write_checksum: sha1:0baa9c1f64d045afb1d33e1372343ebc7c4e41a3
     pristine_git_object: 0e4d484010d3e0f891921b0a33d1409c64372c82
+  docs/models/modelmeta.md:
+    id: ca7a387cec30
+    last_write_checksum: sha1:a8fae076fde0ca31b7a8a2b75b3621ed8c740603
+    pristine_git_object: ed1529cb7839ef65fc99debf39bb25f6916acda0
   docs/models/organizationmembership.md:
     id: 83d47b3b2c72
     last_write_checksum: sha1:2e4f210db6fda2d2aa481dfcab49683195f06d50
@@ -283,6 +291,10 @@ trackedFiles:
     id: 292e7df78f50
     last_write_checksum: sha1:3249fa778650264fdca075da756e65af80152339
     pristine_git_object: 3700e94b0cc6a87f7e38500331be8f84681f19a9
+  docs/sdks/models/README.md:
+    id: b35bdf4bc7ed
+    last_write_checksum: sha1:ea08db277a8d6c2640d700124bfc280fd6112a6f
+    pristine_git_object: 64bb3c0cf1beb1bda4b57c379cd7ef3d63e2a6b8
   docs/sdks/secrets/README.md:
     id: 856a082980a1
     last_write_checksum: sha1:a20208768c48583dd6e6b2ba83a3b56d279622e7
@@ -305,8 +317,8 @@ trackedFiles:
     pristine_git_object: c00200cfd072e9febac5d6be783da1925d11dac0
   pyproject.toml:
     id: 5d07e7d72637
-    last_write_checksum: sha1:7ff696837cd301a48cfcd47b2007303ff1397b3e
-    pristine_git_object: 318ec360262a06368e2f6fc25289253fea5241e0
+    last_write_checksum: sha1:36875b4a90e332e2f60c90daad8480813d4ab4f6
+    pristine_git_object: 52fdcc7e41e4511b53451ed79891d9b6778638ab
   scripts/prepare_readme.py:
     id: e0c5957a6035
     last_write_checksum: sha1:87ae869992e135551fddfe7224d27c36a6e6f6a1
@@ -333,8 +345,8 @@ trackedFiles:
     pristine_git_object: cbf6440ec13211554ee2cecd1ae5c961400cb297
   src/albus_sdk/_version.py:
     id: ce551781b317
-    last_write_checksum: sha1:fe77b62069f3ff74a8e4e31abfb932d804e6dc9f
-    pristine_git_object: b1bced2ef204bc2296863af2732d2738d7904679
+    last_write_checksum: sha1:2e7e44b33e8b8585aca810c950fe0dee6d106c41
+    pristine_git_object: 7f8b94f626838ee4e226e7520684eb935131e331
   src/albus_sdk/agents.py:
     id: db42fb5fa8b3
     last_write_checksum: sha1:7579a81d3b8784a9c1cfffec33088a9eaa1ff0b1
@@ -417,8 +429,8 @@ trackedFiles:
     pristine_git_object: 21dceef34c2bc0029e9576772724af1f1571a2ea
   src/albus_sdk/models/__init__.py:
     id: d67e35945bd3
-    last_write_checksum: sha1:0700151065635ddf7c7c04b723c07e15a98371e7
-    pristine_git_object: 7c341f6b991f86e9a0f9225168cb4dd6aace08d0
+    last_write_checksum: sha1:3c3de29c295906cbf4eb70539f5c3e6848276a13
+    pristine_git_object: dae747acb3e3d5cc41a6860a923d719b83851ce9
   src/albus_sdk/models/agent.py:
     id: c7f1cb7278cc
     last_write_checksum: sha1:4f8909e0313c4f73582c80560265f91c1a582498
@@ -511,6 +523,10 @@ trackedFiles:
     id: d1515a490682
     last_write_checksum: sha1:99ce30072ad2e2776b0ac48e3ebaa31cb843f11d
     pristine_git_object: 45cb00ef2999154af88df68aa3e2d36470e059d1
+  src/albus_sdk/models/listmodelsresponse.py:
+    id: 9e22019eea9b
+    last_write_checksum: sha1:3bd96f3509cab3cb9629a58f06aac35e03f50ff0
+    pristine_git_object: a5e626585a4a48e4f54a0a76e425fe0caf9cd591
   src/albus_sdk/models/listsecretsresponse.py:
     id: a90198f6e8d5
     last_write_checksum: sha1:0899551143df07e948c84a20fd4d0ddfe0b96a39
@@ -531,6 +547,10 @@ trackedFiles:
     id: 95ef892c5d3a
     last_write_checksum: sha1:a0aaba8c4eb4a443cb9645c1a3a42a71e8156115
     pristine_git_object: 5369d8ad54ca04b649554e8a4ee086abc123af10
+  src/albus_sdk/models/modelmeta.py:
+    id: 7709d8bb0191
+    last_write_checksum: sha1:8042506420f09d7dee1d292e0309983fb74ff294
+    pristine_git_object: 28683dd25b9f2b8d7239cf255819b861cf7384ed
   src/albus_sdk/models/organizationmembership.py:
     id: a13c954e0611
     last_write_checksum: sha1:3f819959e720b1516f3aa96bbb3ffc7f91551441
@@ -583,14 +603,18 @@ trackedFiles:
     id: 141444cfe35f
     last_write_checksum: sha1:3cf5200d5ace62fe7a32ca75cb3ff91553b6840b
     pristine_git_object: 3bdf0379f7dff99cf27728daf3ebba83755acc2d
+  src/albus_sdk/models_.py:
+    id: 8355935e5b84
+    last_write_checksum: sha1:6be734dca9a0db8a733dfdd80a416c99744f052a
+    pristine_git_object: 3756328fc0d0c214e406cbf7333d1c61e1b0e2fa
   src/albus_sdk/py.typed:
     id: 7bc41fb6f114
     last_write_checksum: sha1:8efc425ffe830805ffcc0f3055871bdcdc542c60
     pristine_git_object: 3e38f1a929f7d6b1d6de74604aa87e3d8f010544
   src/albus_sdk/sdk.py:
     id: 95b22bb2f208
-    last_write_checksum: sha1:d1654e2604e29e6e0370eb0b7ed2f62175c849a6
-    pristine_git_object: 2bb50b4e66da6b93fa19d4593795148f53ddfc12
+    last_write_checksum: sha1:40ac6a373341e5657d1de85f1e117edef3cf9764
+    pristine_git_object: 5b02799e617c12795843204132234feeead7943a
   src/albus_sdk/sdkconfiguration.py:
     id: 854b2ba3c254
     last_write_checksum: sha1:57eb88e4c56c5cd764f2f2e5a26ef67e93e7e9f1
@@ -848,6 +872,13 @@ examples:
       responses:
         "200":
           application/json: {"agents": [{"name": "<value>", "revision_count": 754726, "created_at": "2026-06-09T00:14:53.661Z", "updated_at": "2024-03-01T09:37:09.086Z"}]}
+        "401":
+          application/json: {"message": "Invalid or expired token"}
+  listModels:
+    speakeasy-default-list-models:
+      responses:
+        "200":
+          application/json: {"models": [{"name": "<value>", "provider": "<value>"}]}
         "401":
           application/json: {"message": "Invalid or expired token"}
   listSecrets:

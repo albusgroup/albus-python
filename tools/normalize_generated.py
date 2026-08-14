@@ -108,8 +108,13 @@ SECURITY_EXAMPLE = re.compile(
     flags=re.MULTILINE,
 )
 
+MODELS_IMPORT = re.compile(
+    r"^from albus_sdk import models(?: as (?P<alias>\w+))?,",
+    flags=re.MULTILINE,
+)
+
 GENERATED_SECURITY_PARAMETER = """        security: Optional[
-            Union[models.Security, Callable[[], models.Security]]
+            Union[{models}.Security, Callable[[], {models}.Security]]
         ] = None,
 """
 
@@ -122,9 +127,9 @@ SDK_AUTHENTICATION_VALIDATION = """        if api_key is not None and access_tok
 
         security = None
         if api_key is not None:
-            security = models.Security(api_key_auth=api_key)
+            security = {models}.Security(api_key_auth=api_key)
         elif access_token is not None:
-            security = models.Security(bearer_auth=access_token)
+            security = {models}.Security(bearer_auth=access_token)
 
 """
 
@@ -199,19 +204,37 @@ def normalize_authentication_examples(content: str) -> str:
     )
 
 
+def models_module_name(content: str) -> str:
+    """Return the name `sdk.py` imports the models module under.
+
+    The generator aliases the import when an operation group shadows it, as
+    the `Models` tag does.
+    """
+    match = MODELS_IMPORT.search(content)
+    if match is None:
+        raise RuntimeError("expected a generated models import in sdk.py")
+
+    return match.group("alias") or "models"
+
+
 def normalize_sdk_authentication() -> None:
     content = SDK_PATH.read_text()
+    models_module = models_module_name(content)
+    security_parameter = GENERATED_SECURITY_PARAMETER.format(models=models_module)
+    authentication_validation = SDK_AUTHENTICATION_VALIDATION.format(
+        models=models_module
+    )
 
     if "api_key: Optional[str] = None" not in content:
-        if content.count(GENERATED_SECURITY_PARAMETER) != 2:
+        if content.count(security_parameter) != 2:
             raise RuntimeError("expected sync and async generated security parameters")
 
         content = content.replace(
-            GENERATED_SECURITY_PARAMETER,
+            security_parameter,
             SDK_AUTHENTICATION_PARAMETERS,
         )
     else:
-        content = content.replace(GENERATED_SECURITY_PARAMETER, "")
+        content = content.replace(security_parameter, "")
 
     validation_start = "        if api_key is not None and access_token is not None:\n"
     if validation_start in content:
@@ -223,10 +246,10 @@ def normalize_sdk_authentication() -> None:
         async_validation = async_validation.rsplit(validation_start, maxsplit=1)[0]
         content = (
             sync_validation
-            + SDK_AUTHENTICATION_VALIDATION
+            + authentication_validation
             + validation_end
             + async_validation
-            + SDK_AUTHENTICATION_VALIDATION
+            + authentication_validation
             + async_validation_end
             + suffix
         )
@@ -238,12 +261,12 @@ def normalize_sdk_authentication() -> None:
 
         content = content.replace(
             "        client_supplied = True\n",
-            SDK_AUTHENTICATION_VALIDATION + "        client_supplied = True\n",
+            authentication_validation + "        client_supplied = True\n",
             1,
         )
         content = content.replace(
             "        async_client_supplied = True\n",
-            SDK_AUTHENTICATION_VALIDATION + "        async_client_supplied = True\n",
+            authentication_validation + "        async_client_supplied = True\n",
             1,
         )
 
