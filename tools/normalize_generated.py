@@ -102,7 +102,7 @@ GENERATED_RETRY_CONFIGURATION = """        if retries == UNSET:
 
 SECURITY_EXAMPLE = re.compile(
     r"^(?P<indent>[ \t]*)security=models\.Security\(\n"
-    r"(?P=indent)    (?P<scheme>api_key_auth|bearer_auth)="
+    r"(?P=indent)    (?P<scheme>api_key|bearer_auth)="
     r"(?P<value>.+),\n"
     r"(?P=indent)\),\n",
     flags=re.MULTILINE,
@@ -127,7 +127,7 @@ SDK_AUTHENTICATION_VALIDATION = """        if api_key is not None and access_tok
 
         security = None
         if api_key is not None:
-            security = {models}.Security(api_key_auth=api_key)
+            security = {models}.Security(api_key=api_key)
         elif access_token is not None:
             security = {models}.Security(bearer_auth=access_token)
 
@@ -191,7 +191,7 @@ single `run_session` invocation. Omit it to inherit the SDK default; pass
 
 def normalize_authentication_examples(content: str) -> str:
     credential_names = {
-        "api_key_auth": "api_key",
+        "api_key": "api_key",
         "bearer_auth": "access_token",
     }
 

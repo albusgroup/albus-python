@@ -53,7 +53,7 @@ async def async_sdk_with_handler(
 
 def test_package_exposes_version() -> None:
     assert albus_sdk.VERSION == albus_sdk.__version__
-    assert albus_sdk.VERSION == "0.9.0"
+    assert albus_sdk.VERSION == "0.10.0"
 
 
 def test_default_production_url_and_sync_operation() -> None:
@@ -147,7 +147,7 @@ def test_constructor_rejects_multiple_authentication_methods() -> None:
         Albus(api_key="organization-key", access_token="user-token")
 
     with pytest.raises(TypeError, match="unexpected keyword argument 'security'"):
-        Albus(security=models.Security(api_key_auth="organization-key"))
+        Albus(security=models.Security(api_key="organization-key"))
 
 
 def test_session_state_accepts_future_values() -> None:

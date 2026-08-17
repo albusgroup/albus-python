@@ -22,7 +22,7 @@ from albus_sdk import Albus, models
 
 
 with Albus(
-    api_key=os.environ["ALBUS_API_KEY_AUTH"],
+    api_key=os.environ["ALBUS_API_KEY"],
 ) as albus:
     response = albus.sessions.list_sessions()
     print(response.sessions)
@@ -37,7 +37,7 @@ from albus_sdk import Albus, models
 
 
 with Albus(
-    api_key=os.environ["ALBUS_API_KEY_AUTH"],
+    api_key=os.environ["ALBUS_API_KEY"],
     timeout_ms=130_000,
 ) as albus:
     response = albus.sessions.run_session(
@@ -49,13 +49,23 @@ with Albus(
         ),
         wait_timeout_seconds=120,
     )
-    print(response.result.messages)
+    message = response.result.message
+    if message is None:
+        print("the invocation has not answered yet")
+    else:
+        print(message.content)
 ```
 
-Omit `wait_timeout_seconds` to return as soon as the invocation is accepted, and
-pass 0 to wait until the response arrives. Waiting long-polls, so construct the
-client with a `timeout_ms` above the longest wait — it is a client-wide setting,
-and the underlying HTTP client otherwise gives up after its own 5-second default.
+`message` is the single assistant message the invocation produced, and is absent
+when the invocation has not answered yet; read it later with
+`albus.sessions.get_session`, which returns the session's full `messages`
+history.
+
+Pass 0 for `wait_timeout_seconds` to return as soon as the invocation is
+accepted, and omit it to wait up to 30 minutes for the response. Waiting
+long-polls, so construct the client with a `timeout_ms` above the longest
+wait — it is a client-wide setting, and the underlying HTTP client otherwise
+gives up after its own 5-second default.
 
 User and token operations use a user bearer token. `AsyncAlbus` exposes the same
 operations as coroutines:
@@ -79,7 +89,7 @@ asyncio.run(main())
 ```
 
 Secret operations accept either credential. The SDK also reads
-`ALBUS_API_KEY_AUTH` and `ALBUS_BEARER_AUTH` directly from the environment, so
+`ALBUS_API_KEY` and `ALBUS_BEARER_AUTH` directly from the environment, so
 `Albus()` is sufficient when the appropriate variable is set. Production
 requests use `https://albus.sh/api` by default.
 
@@ -243,10 +253,10 @@ asyncio.run(main())
 
 This SDK supports the following security schemes globally:
 
-| Name           | Type | Scheme      | Environment Variable |
-| -------------- | ---- | ----------- | -------------------- |
-| `bearer_auth`  | http | HTTP Bearer | `ALBUS_BEARER_AUTH`  |
-| `api_key_auth` | http | HTTP Bearer | `ALBUS_API_KEY_AUTH` |
+| Name          | Type | Scheme      | Environment Variable |
+| ------------- | ---- | ----------- | -------------------- |
+| `bearer_auth` | http | HTTP Bearer | `ALBUS_BEARER_AUTH`  |
+| `api_key`     | http | HTTP Bearer | `ALBUS_API_KEY`      |
 
 Pass an organization API key with `api_key`, or a user access token with `access_token`. The SDK sends the corresponding bearer credential for every operation that supports it. For example:
 ```python
@@ -304,7 +314,7 @@ asyncio.run(main())
 
 ### [Auth](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/auth/README.md)
 
-* [whoami](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/auth/README.md#whoami) - Get current user information
+* [whoami](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/auth/README.md#whoami) - Get the authenticated caller
 
 ### [Health](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/health/README.md)
 

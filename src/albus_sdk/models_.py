@@ -20,7 +20,7 @@ class Models(BaseSDK):
         Lists the models available to run agents on, each with the provider that serves it.
 
 
-        If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
+        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
 
         """
         url_variables = None
@@ -38,7 +38,7 @@ class Models(BaseSDK):
             accept_header_value="application/json",
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key_auth"],
+            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -94,7 +94,7 @@ class AsyncModels(AsyncBaseSDK):
         Lists the models available to run agents on, each with the provider that serves it.
 
 
-        If set, this operation will use either `bearer_auth` or `api_key_auth` from the global security.
+        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
 
         """
         url_variables = None
@@ -112,7 +112,7 @@ class AsyncModels(AsyncBaseSDK):
             accept_header_value="application/json",
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key_auth"],
+            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 

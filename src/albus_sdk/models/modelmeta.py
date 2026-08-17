@@ -13,7 +13,9 @@ class ModelMetaTypedDict(TypedDict):
 
     """
     provider: str
-    r"""Name of the provider serving this model (e.g. \"gemini\")."""
+    r"""Provider serving this model (e.g. \"gemini\", or \"open_weight\" for open-weight models).
+
+    """
 
 
 class ModelMeta(BaseModel):
@@ -25,4 +27,6 @@ class ModelMeta(BaseModel):
     """
 
     provider: str
-    r"""Name of the provider serving this model (e.g. \"gemini\")."""
+    r"""Provider serving this model (e.g. \"gemini\", or \"open_weight\" for open-weight models).
+
+    """

@@ -79,8 +79,8 @@ def get_security_from_env(security: Any, security_class: Any) -> Optional[BaseMo
     if os.getenv("ALBUS_BEARER_AUTH"):
         security_dict["bearer_auth"] = os.getenv("ALBUS_BEARER_AUTH")
 
-    if os.getenv("ALBUS_API_KEY_AUTH"):
-        security_dict["api_key_auth"] = os.getenv("ALBUS_API_KEY_AUTH")
+    if os.getenv("ALBUS_API_KEY"):
+        security_dict["api_key"] = os.getenv("ALBUS_API_KEY")
 
     return security_class(**security_dict) if security_dict else None
 

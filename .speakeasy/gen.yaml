@@ -35,7 +35,7 @@ generation:
     skipResponseBodyAssertions: false
   repoUrl: https://github.com/albusgroup/albus-python
 python:
-  version: 0.9.0
+  version: 0.10.0
   additionalDependencies:
     dev:
       packaging: ==26.2
@@ -82,7 +82,7 @@ python:
     paths:
       callbacks: ""
       errors: errors
-      operations: ""
+      operations: operations
       shared: ""
       webhooks: ""
   inferUnionDiscriminators: true

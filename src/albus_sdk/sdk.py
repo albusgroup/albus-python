@@ -86,7 +86,7 @@ class Albus(BaseSDK):
 
         security = None
         if api_key is not None:
-            security = models_.Security(api_key_auth=api_key)
+            security = models_.Security(api_key=api_key)
         elif access_token is not None:
             security = models_.Security(bearer_auth=access_token)
 
@@ -243,7 +243,7 @@ class AsyncAlbus(AsyncBaseSDK):
 
         security = None
         if api_key is not None:
-            security = models_.Security(api_key_auth=api_key)
+            security = models_.Security(api_key=api_key)
         elif access_token is not None:
             security = models_.Security(bearer_auth=access_token)
 

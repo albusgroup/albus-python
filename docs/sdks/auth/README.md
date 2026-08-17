@@ -6,11 +6,11 @@ Identify the authenticated user.
 
 ### Available Operations
 
-* [whoami](#whoami) - Get current user information
+* [whoami](#whoami) - Get the authenticated caller
 
 ## whoami
 
-Returns the authenticated user along with every organization they belong to and their roles in each.
+Returns the caller a credential authenticates: a signed-in user with every organization they belong to and their roles in each, or the API key that signed the request, along with the organization it acts in.
 
 
 ### Example Usage

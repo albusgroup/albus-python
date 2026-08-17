@@ -1,4 +1,4 @@
-# UpdateSecretRequestRequest
+# UpdateSecretRequest
 
 
 ## Fields

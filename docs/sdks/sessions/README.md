@@ -148,7 +148,7 @@ asyncio.run(main())
 
 Runs the session with the given ID, creating it if it does not exist and resuming it otherwise. Each call is a single invocation, optionally identified by the Idempotency-Key header. Supplying a key makes the call safe to retry: retrying with the same key and an identical body re-attaches to the in-flight invocation and returns its current state; a differing body for the same key returns 409; a new key while another invocation is still running returns 423. Omitting the header starts a fresh, non-idempotent invocation each time; the server generates a key and returns it in the Idempotency-Key response header.
 
-With `wait_timeout_seconds` the request long-polls: it blocks until the invocation's assistant response is available and returns it in `messages`. Omit it to wait up to 30 minutes, or pass 0 to return as soon as the invocation is accepted. A positive value bounds the wait in seconds; if it elapses first the request fails with 504 and a JSON body, letting the client distinguish an expected server-side timeout from a transport error; the client may retry.
+With `wait_timeout_seconds` the request long-polls: it blocks until the invocation's assistant response is available and returns it in `message`. Omit it to wait up to 30 minutes, or pass 0 to return as soon as the invocation is accepted. A positive value bounds the wait in seconds; if it elapses first the request fails with 504 and a JSON body, letting the client distinguish an expected server-side timeout from a transport error; the client may retry.
 
 
 ### Example Usage
@@ -216,7 +216,7 @@ asyncio.run(main())
 
 ### Response
 
-**[models.RunSessionResponse](../../models/runsessionresponse.md)**
+**[operations.RunSessionResponse](../../operations/runsessionresponse.md)**
 
 ### Errors
 

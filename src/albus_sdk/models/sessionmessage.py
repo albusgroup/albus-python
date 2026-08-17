@@ -18,7 +18,9 @@ SessionMessageRole = Union[
 
 class SessionMessageTypedDict(TypedDict):
     cursor: int
-    r"""Monotonic per-session position of this message."""
+    r"""Position of this message in the session's history, ascending — not an index into the list it arrives in.
+
+    """
     invocation_id: str
     r"""The invocation that produced this message."""
     role: SessionMessageRole
@@ -28,7 +30,9 @@ class SessionMessageTypedDict(TypedDict):
 
 class SessionMessage(BaseModel):
     cursor: int
-    r"""Monotonic per-session position of this message."""
+    r"""Position of this message in the session's history, ascending — not an index into the list it arrives in.
+
+    """
 
     invocation_id: str
     r"""The invocation that produced this message."""

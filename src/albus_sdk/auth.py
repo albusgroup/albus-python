@@ -15,12 +15,12 @@ class Auth(BaseSDK):
     def whoami(
         self,
     ) -> models.WhoamiResponse:
-        r"""Get current user information
+        r"""Get the authenticated caller
 
-        Returns the authenticated user along with every organization they belong to and their roles in each.
+        Returns the caller a credential authenticates: a signed-in user with every organization they belong to and their roles in each, or the API key that signed the request, along with the organization it acts in.
 
 
-        If set, this operation will use `bearer_auth` from the global security.
+        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
 
         """
         url_variables = None
@@ -38,7 +38,7 @@ class Auth(BaseSDK):
             accept_header_value="application/json",
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth"],
+            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -89,12 +89,12 @@ class AsyncAuth(AsyncBaseSDK):
     async def whoami(
         self,
     ) -> models.WhoamiResponse:
-        r"""Get current user information
+        r"""Get the authenticated caller
 
-        Returns the authenticated user along with every organization they belong to and their roles in each.
+        Returns the caller a credential authenticates: a signed-in user with every organization they belong to and their roles in each, or the API key that signed the request, along with the organization it acts in.
 
 
-        If set, this operation will use `bearer_auth` from the global security.
+        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
 
         """
         url_variables = None
@@ -112,7 +112,7 @@ class AsyncAuth(AsyncBaseSDK):
             accept_header_value="application/json",
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth"],
+            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 

@@ -11,6 +11,8 @@ if TYPE_CHECKING:
     from .agentrevision import AgentRevision, AgentRevisionTypedDict
     from .agentrevisionmeta import AgentRevisionMeta, AgentRevisionMetaTypedDict
     from .auditevent import AuditEvent, AuditEventTypedDict, Type
+    from .authenticatedapikey import AuthenticatedAPIKey, AuthenticatedAPIKeyTypedDict
+    from .authenticateduser import AuthenticatedUser, AuthenticatedUserTypedDict
     from .createinviterequest import (
         CreateInviteRequest,
         CreateInviteRequestRole,
@@ -19,21 +21,6 @@ if TYPE_CHECKING:
     from .createsecretrequest import CreateSecretRequest, CreateSecretRequestTypedDict
     from .createtokenrequest import CreateTokenRequest, CreateTokenRequestTypedDict
     from .createtokenresponse import CreateTokenResponse, CreateTokenResponseTypedDict
-    from .deletesecretop import DeleteSecretRequest, DeleteSecretRequestTypedDict
-    from .deletesessionop import DeleteSessionRequest, DeleteSessionRequestTypedDict
-    from .deletetokenop import DeleteTokenRequest, DeleteTokenRequestTypedDict
-    from .getagentop import GetAgentRequest, GetAgentRequestTypedDict
-    from .getagentrevisionop import (
-        GetAgentRevisionRequest,
-        GetAgentRevisionRequestTypedDict,
-    )
-    from .getsecretop import GetSecretRequest, GetSecretRequestTypedDict
-    from .getsessionauditop import (
-        GetSessionAuditRequest,
-        GetSessionAuditRequestTypedDict,
-    )
-    from .getsessionop import GetSessionRequest, GetSessionRequestTypedDict
-    from .gettokenop import GetTokenRequest, GetTokenRequestTypedDict
     from .healthresponse import HealthResponse, HealthResponseTypedDict
     from .invite import Invite, InviteTypedDict
     from .listagentsresponse import ListAgentsResponse, ListAgentsResponseTypedDict
@@ -56,13 +43,8 @@ if TYPE_CHECKING:
         OrganizationMembershipTypedDict,
     )
     from .provider import Provider, ProviderTypedDict
-    from .runsessionop import (
-        RunSessionRequestRequest,
-        RunSessionRequestRequestTypedDict,
-        RunSessionResponse,
-        RunSessionResponseTypedDict,
-    )
     from .runsessionrequest import RunSessionRequest, RunSessionRequestTypedDict
+    from .runsessionresponse import RunSessionResponse, RunSessionResponseTypedDict
     from .secret import Secret, SecretTypedDict
     from .security import Security, SecurityTypedDict
     from .session import Session, SessionTypedDict, State
@@ -73,10 +55,6 @@ if TYPE_CHECKING:
     )
     from .sessionresponse import SessionResponse, SessionResponseTypedDict
     from .token import Token, TokenTypedDict
-    from .updatesecretop import (
-        UpdateSecretRequestRequest,
-        UpdateSecretRequestRequestTypedDict,
-    )
     from .updatesecretrequest import UpdateSecretRequest, UpdateSecretRequestTypedDict
     from .whoamiresponse import WhoamiResponse, WhoamiResponseTypedDict
 
@@ -93,6 +71,10 @@ __all__ = [
     "AgentTypedDict",
     "AuditEvent",
     "AuditEventTypedDict",
+    "AuthenticatedAPIKey",
+    "AuthenticatedAPIKeyTypedDict",
+    "AuthenticatedUser",
+    "AuthenticatedUserTypedDict",
     "CreateInviteRequest",
     "CreateInviteRequestRole",
     "CreateInviteRequestTypedDict",
@@ -102,24 +84,6 @@ __all__ = [
     "CreateTokenRequestTypedDict",
     "CreateTokenResponse",
     "CreateTokenResponseTypedDict",
-    "DeleteSecretRequest",
-    "DeleteSecretRequestTypedDict",
-    "DeleteSessionRequest",
-    "DeleteSessionRequestTypedDict",
-    "DeleteTokenRequest",
-    "DeleteTokenRequestTypedDict",
-    "GetAgentRequest",
-    "GetAgentRequestTypedDict",
-    "GetAgentRevisionRequest",
-    "GetAgentRevisionRequestTypedDict",
-    "GetSecretRequest",
-    "GetSecretRequestTypedDict",
-    "GetSessionAuditRequest",
-    "GetSessionAuditRequestTypedDict",
-    "GetSessionRequest",
-    "GetSessionRequestTypedDict",
-    "GetTokenRequest",
-    "GetTokenRequestTypedDict",
     "HealthResponse",
     "HealthResponseTypedDict",
     "Invite",
@@ -147,8 +111,6 @@ __all__ = [
     "Provider",
     "ProviderTypedDict",
     "RunSessionRequest",
-    "RunSessionRequestRequest",
-    "RunSessionRequestRequestTypedDict",
     "RunSessionRequestTypedDict",
     "RunSessionResponse",
     "RunSessionResponseTypedDict",
@@ -168,8 +130,6 @@ __all__ = [
     "TokenTypedDict",
     "Type",
     "UpdateSecretRequest",
-    "UpdateSecretRequestRequest",
-    "UpdateSecretRequestRequestTypedDict",
     "UpdateSecretRequestTypedDict",
     "WhoamiResponse",
     "WhoamiResponseTypedDict",
@@ -189,6 +149,10 @@ _dynamic_imports: dict[str, str] = {
     "AuditEvent": ".auditevent",
     "AuditEventTypedDict": ".auditevent",
     "Type": ".auditevent",
+    "AuthenticatedAPIKey": ".authenticatedapikey",
+    "AuthenticatedAPIKeyTypedDict": ".authenticatedapikey",
+    "AuthenticatedUser": ".authenticateduser",
+    "AuthenticatedUserTypedDict": ".authenticateduser",
     "CreateInviteRequest": ".createinviterequest",
     "CreateInviteRequestRole": ".createinviterequest",
     "CreateInviteRequestTypedDict": ".createinviterequest",
@@ -198,24 +162,6 @@ _dynamic_imports: dict[str, str] = {
     "CreateTokenRequestTypedDict": ".createtokenrequest",
     "CreateTokenResponse": ".createtokenresponse",
     "CreateTokenResponseTypedDict": ".createtokenresponse",
-    "DeleteSecretRequest": ".deletesecretop",
-    "DeleteSecretRequestTypedDict": ".deletesecretop",
-    "DeleteSessionRequest": ".deletesessionop",
-    "DeleteSessionRequestTypedDict": ".deletesessionop",
-    "DeleteTokenRequest": ".deletetokenop",
-    "DeleteTokenRequestTypedDict": ".deletetokenop",
-    "GetAgentRequest": ".getagentop",
-    "GetAgentRequestTypedDict": ".getagentop",
-    "GetAgentRevisionRequest": ".getagentrevisionop",
-    "GetAgentRevisionRequestTypedDict": ".getagentrevisionop",
-    "GetSecretRequest": ".getsecretop",
-    "GetSecretRequestTypedDict": ".getsecretop",
-    "GetSessionAuditRequest": ".getsessionauditop",
-    "GetSessionAuditRequestTypedDict": ".getsessionauditop",
-    "GetSessionRequest": ".getsessionop",
-    "GetSessionRequestTypedDict": ".getsessionop",
-    "GetTokenRequest": ".gettokenop",
-    "GetTokenRequestTypedDict": ".gettokenop",
     "HealthResponse": ".healthresponse",
     "HealthResponseTypedDict": ".healthresponse",
     "Invite": ".invite",
@@ -242,12 +188,10 @@ _dynamic_imports: dict[str, str] = {
     "OrganizationMembershipTypedDict": ".organizationmembership",
     "Provider": ".provider",
     "ProviderTypedDict": ".provider",
-    "RunSessionRequestRequest": ".runsessionop",
-    "RunSessionRequestRequestTypedDict": ".runsessionop",
-    "RunSessionResponse": ".runsessionop",
-    "RunSessionResponseTypedDict": ".runsessionop",
     "RunSessionRequest": ".runsessionrequest",
     "RunSessionRequestTypedDict": ".runsessionrequest",
+    "RunSessionResponse": ".runsessionresponse",
+    "RunSessionResponseTypedDict": ".runsessionresponse",
     "Secret": ".secret",
     "SecretTypedDict": ".secret",
     "Security": ".security",
@@ -262,8 +206,6 @@ _dynamic_imports: dict[str, str] = {
     "SessionResponseTypedDict": ".sessionresponse",
     "Token": ".token",
     "TokenTypedDict": ".token",
-    "UpdateSecretRequestRequest": ".updatesecretop",
-    "UpdateSecretRequestRequestTypedDict": ".updatesecretop",
     "UpdateSecretRequest": ".updatesecretrequest",
     "UpdateSecretRequestTypedDict": ".updatesecretrequest",
     "WhoamiResponse": ".whoamiresponse",
