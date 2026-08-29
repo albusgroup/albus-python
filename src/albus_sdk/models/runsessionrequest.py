@@ -10,11 +10,11 @@ class RunSessionRequestTypedDict(TypedDict):
     user_prompt: str
     r"""The user prompt driving this invocation."""
     agent_name: str
-    r"""Human-readable name identifying the agent (e.g. \"support-triage\"). Runs sharing a name are grouped as one agent; each distinct configuration under it becomes a revision.
+    r"""Human-readable name identifying the agent (e.g. \"support-triage\"). Invocations sharing a name are grouped as one agent; each distinct configuration under it becomes a revision.
 
     """
     agent: AgentConfigTypedDict
-    r"""The agent configuration for a run: the model, tools, instructions, and MCP servers that define its behavior. Runs with the same configuration share a revision.
+    r"""The agent configuration for an invocation: the model, tools, instructions, and MCP servers that define its behavior. Invocations with the same configuration share a revision.
 
     """
 
@@ -24,11 +24,11 @@ class RunSessionRequest(BaseModel):
     r"""The user prompt driving this invocation."""
 
     agent_name: str
-    r"""Human-readable name identifying the agent (e.g. \"support-triage\"). Runs sharing a name are grouped as one agent; each distinct configuration under it becomes a revision.
+    r"""Human-readable name identifying the agent (e.g. \"support-triage\"). Invocations sharing a name are grouped as one agent; each distinct configuration under it becomes a revision.
 
     """
 
     agent: AgentConfig
-    r"""The agent configuration for a run: the model, tools, instructions, and MCP servers that define its behavior. Runs with the same configuration share a revision.
+    r"""The agent configuration for an invocation: the model, tools, instructions, and MCP servers that define its behavior. Invocations with the same configuration share a revision.
 
     """

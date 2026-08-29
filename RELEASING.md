@@ -4,11 +4,12 @@ Run everything below from `clients/albus-python/` in the Albus repository,
 which is where the SDK is developed; the public `albus-python` repository is a
 mirror written by the release.
 
-A release is a maintainer running the scripts below from a clean, up-to-date
-`master` checkout: they run `./tools/check`, upload to PyPI or TestPyPI, push
-the released tree to the public mirror as a single tagged commit, and close the
-mirror issues the release fixes. Nothing publishes from CI, on push, on tag, or
-on merge.
+A release runs the scripts below from a clean, up-to-date `master` checkout —
+by a maintainer locally, or by the dispatched release workflow described in
+[Releasing from GitHub Actions](#releasing-from-github-actions). Either way
+they run `./tools/check`, upload to PyPI or TestPyPI, push the released tree to
+the public mirror as a single tagged commit, and close the mirror issues the
+release fixes. Nothing publishes on push, on tag, or on merge.
 
 ## One-time PyPI setup
 
@@ -107,6 +108,25 @@ refresh its package-index cache before retrying.
 Published PyPI versions and files are immutable. Fix a bad release with a new
 version rather than trying to replace its artifacts.
 
+## Releasing from GitHub Actions
+
+A release running in GitHub Actions passes `--non-interactive`, which skips the
+confirmation prompt because the dispatch already authorized the upload: a
+maintainer with write access typed the version in and turned `dry_run` off.
+The flag is refused when `GITHUB_ACTIONS` is unset: a phrase a script can type
+is not a confirmation, so a local release keeps the prompt.
+Deciding that from the environment is a guard against skipping the prompt out
+of habit, not a boundary — the token is what authorizes an upload, and a
+maintainer holding it can already publish.
+
+Actions checks out a detached `HEAD` with no upstream configured, so there the
+publisher proves the same invariant against `GITHUB_REF` instead — the ref must
+be a branch, `origin` must have it, and it must point at the commit being
+released. Uploads still only run from `master`.
+
+See
+[`client-release-automation.md`](../../.agents/plans/client-release-automation.md).
+
 ## The public mirror
 
 `albusgroup/albus-python` is written by the release, never edited directly:
@@ -123,9 +143,10 @@ commit recording the released `Source-Commit`, tags it `v<version>`, pushes
 `albusgroup/albus-python` issue named by a `Mirror-Issue` trailer added since
 the previous release, commenting with the published version.
 
-It needs push access to the mirror and a `gh` login that can close its issues —
-the same credentials a maintainer already has, since the release does not run
-from CI.
+It needs push access to the mirror and a `gh` login that can close its issues,
+and the mirror push includes `.github/`, so the credential must be allowed to
+write workflow files. A maintainer already has that; in Actions it comes from
+the release workflow's token.
 
 The checkout you pass is only read: the release commit is built in a throwaway
 clone of it, so a rejected push leaves nothing to unwind and the command is

@@ -35,7 +35,7 @@ generation:
     skipResponseBodyAssertions: false
   repoUrl: https://github.com/albusgroup/albus-python
 python:
-  version: 0.10.0
+  version: 0.11.0
   additionalDependencies:
     dev:
       packaging: ==26.2

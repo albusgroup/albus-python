@@ -21,8 +21,8 @@ class SessionMessageTypedDict(TypedDict):
     r"""Position of this message in the session's history, ascending — not an index into the list it arrives in.
 
     """
-    invocation_id: str
-    r"""The invocation that produced this message."""
+    invocation_key: str
+    r"""The key of the invocation that produced this message."""
     role: SessionMessageRole
     content: str
     created_at: datetime
@@ -34,8 +34,8 @@ class SessionMessage(BaseModel):
 
     """
 
-    invocation_id: str
-    r"""The invocation that produced this message."""
+    invocation_key: str
+    r"""The key of the invocation that produced this message."""
 
     role: SessionMessageRole
 

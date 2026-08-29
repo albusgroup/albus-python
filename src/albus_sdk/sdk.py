@@ -25,10 +25,12 @@ if TYPE_CHECKING:
     from albus_sdk.auth import AsyncAuth, Auth
     from albus_sdk.health import AsyncHealth, Health
     from albus_sdk.invites import AsyncInvites, Invites
+    from albus_sdk.memories import AsyncMemories, Memories
     from albus_sdk.models_ import AsyncModels, Models
     from albus_sdk.secrets import AsyncSecrets, Secrets
     from albus_sdk.sessions import AsyncSessions, Sessions
     from albus_sdk.tokens import AsyncTokens, Tokens
+    from albus_sdk.traces import AsyncTraces, Traces
 
 
 class Albus(BaseSDK):
@@ -38,10 +40,14 @@ class Albus(BaseSDK):
     r"""Manage secrets available to agent sessions."""
     sessions: "Sessions"
     r"""Run and inspect agent sessions."""
+    traces: "Traces"
+    r"""Find your agent invocations and read what they did."""
     tokens: "Tokens"
     r"""Manage organization API keys."""
     agents: "Agents"
     r"""Inspect the agents that have run in your organization."""
+    memories: "Memories"
+    r"""Read and delete what your agents remember."""
     models: "Models"
     r"""Discover the models available to run agents on."""
     health: "Health"
@@ -52,8 +58,10 @@ class Albus(BaseSDK):
     _sub_sdk_map = {
         "secrets": ("albus_sdk.secrets", "Secrets"),
         "sessions": ("albus_sdk.sessions", "Sessions"),
+        "traces": ("albus_sdk.traces", "Traces"),
         "tokens": ("albus_sdk.tokens", "Tokens"),
         "agents": ("albus_sdk.agents", "Agents"),
+        "memories": ("albus_sdk.memories", "Memories"),
         "models": ("albus_sdk.models_", "Models"),
         "health": ("albus_sdk.health", "Health"),
         "auth": ("albus_sdk.auth", "Auth"),
@@ -195,10 +203,14 @@ class AsyncAlbus(AsyncBaseSDK):
     r"""Manage secrets available to agent sessions."""
     sessions: "AsyncSessions"
     r"""Run and inspect agent sessions."""
+    traces: "AsyncTraces"
+    r"""Find your agent invocations and read what they did."""
     tokens: "AsyncTokens"
     r"""Manage organization API keys."""
     agents: "AsyncAgents"
     r"""Inspect the agents that have run in your organization."""
+    memories: "AsyncMemories"
+    r"""Read and delete what your agents remember."""
     models: "AsyncModels"
     r"""Discover the models available to run agents on."""
     health: "AsyncHealth"
@@ -209,8 +221,10 @@ class AsyncAlbus(AsyncBaseSDK):
     _sub_sdk_map = {
         "secrets": ("albus_sdk.secrets", "AsyncSecrets"),
         "sessions": ("albus_sdk.sessions", "AsyncSessions"),
+        "traces": ("albus_sdk.traces", "AsyncTraces"),
         "tokens": ("albus_sdk.tokens", "AsyncTokens"),
         "agents": ("albus_sdk.agents", "AsyncAgents"),
+        "memories": ("albus_sdk.memories", "AsyncMemories"),
         "models": ("albus_sdk.models_", "AsyncModels"),
         "health": ("albus_sdk.health", "AsyncHealth"),
         "auth": ("albus_sdk.auth", "AsyncAuth"),

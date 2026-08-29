@@ -1,0 +1,9 @@
+# DeleteMemoryRequest
+
+
+## Fields
+
+| Field                                                                                                      | Type                                                                                                       | Required                                                                                                   | Description                                                                                                |
+| ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `id`                                                                                                       | *str*                                                                                                      | :heavy_check_mark:                                                                                         | The memory's identifier, as returned by `GET /memories`.                                                   |
+| `group`                                                                                                    | *str*                                                                                                      | :heavy_check_mark:                                                                                         | The memory group to read or delete — the `memory.group` value the agents sharing those memories run with.<br/> |

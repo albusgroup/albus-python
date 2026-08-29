@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from .agentmeta import AgentMeta, AgentMetaTypedDict
     from .agentrevision import AgentRevision, AgentRevisionTypedDict
     from .agentrevisionmeta import AgentRevisionMeta, AgentRevisionMetaTypedDict
-    from .auditevent import AuditEvent, AuditEventTypedDict, Type
+    from .auditevent import AuditEvent, AuditEventType, AuditEventTypedDict
     from .authenticatedapikey import AuthenticatedAPIKey, AuthenticatedAPIKeyTypedDict
     from .authenticateduser import AuthenticatedUser, AuthenticatedUserTypedDict
     from .createinviterequest import (
@@ -28,6 +28,10 @@ if TYPE_CHECKING:
         ListAuditEventsResponse,
         ListAuditEventsResponseTypedDict,
     )
+    from .listmemoriesresponse import (
+        ListMemoriesResponse,
+        ListMemoriesResponseTypedDict,
+    )
     from .listmodelsresponse import ListModelsResponse, ListModelsResponseTypedDict
     from .listsecretsresponse import ListSecretsResponse, ListSecretsResponseTypedDict
     from .listsessionsresponse import (
@@ -35,7 +39,10 @@ if TYPE_CHECKING:
         ListSessionsResponseTypedDict,
     )
     from .listtokensresponse import ListTokensResponse, ListTokensResponseTypedDict
+    from .listtracesresponse import ListTracesResponse, ListTracesResponseTypedDict
     from .mcpserver import MCPServer, MCPServerTypedDict
+    from .memory import Memory, MemoryStatus, MemoryTypedDict
+    from .memoryconfig import Generation, MemoryConfig, MemoryConfigTypedDict
     from .model import Model, ModelTypedDict
     from .modelmeta import ModelMeta, ModelMetaTypedDict
     from .organizationmembership import (
@@ -54,8 +61,18 @@ if TYPE_CHECKING:
         SessionMessageTypedDict,
     )
     from .sessionresponse import SessionResponse, SessionResponseTypedDict
+    from .terminaltool import TerminalTool, TerminalToolTypedDict
     from .token import Token, TokenTypedDict
+    from .tokenusage import TokenUsage, TokenUsageTypedDict
+    from .tools import Tools, ToolsTypedDict
+    from .traceattempt import TraceAttempt, TraceAttemptTypedDict
+    from .tracefailure import TraceFailure, TraceFailureTypedDict
+    from .traceresponse import TraceResponse, TraceResponseTypedDict
+    from .tracespan import TraceSpan, TraceSpanStatus, TraceSpanType, TraceSpanTypedDict
+    from .tracestatus import TraceStatus
+    from .tracesummary import TraceSummary, TraceSummaryTypedDict
     from .updatesecretrequest import UpdateSecretRequest, UpdateSecretRequestTypedDict
+    from .websearchtool import WebSearchTool, WebSearchToolTypedDict
     from .whoamiresponse import WhoamiResponse, WhoamiResponseTypedDict
 
 __all__ = [
@@ -70,6 +87,7 @@ __all__ = [
     "AgentRevisionTypedDict",
     "AgentTypedDict",
     "AuditEvent",
+    "AuditEventType",
     "AuditEventTypedDict",
     "AuthenticatedAPIKey",
     "AuthenticatedAPIKeyTypedDict",
@@ -84,6 +102,7 @@ __all__ = [
     "CreateTokenRequestTypedDict",
     "CreateTokenResponse",
     "CreateTokenResponseTypedDict",
+    "Generation",
     "HealthResponse",
     "HealthResponseTypedDict",
     "Invite",
@@ -92,6 +111,8 @@ __all__ = [
     "ListAgentsResponseTypedDict",
     "ListAuditEventsResponse",
     "ListAuditEventsResponseTypedDict",
+    "ListMemoriesResponse",
+    "ListMemoriesResponseTypedDict",
     "ListModelsResponse",
     "ListModelsResponseTypedDict",
     "ListSecretsResponse",
@@ -100,8 +121,15 @@ __all__ = [
     "ListSessionsResponseTypedDict",
     "ListTokensResponse",
     "ListTokensResponseTypedDict",
+    "ListTracesResponse",
+    "ListTracesResponseTypedDict",
     "MCPServer",
     "MCPServerTypedDict",
+    "Memory",
+    "MemoryConfig",
+    "MemoryConfigTypedDict",
+    "MemoryStatus",
+    "MemoryTypedDict",
     "Model",
     "ModelMeta",
     "ModelMetaTypedDict",
@@ -126,11 +154,31 @@ __all__ = [
     "SessionResponseTypedDict",
     "SessionTypedDict",
     "State",
+    "TerminalTool",
+    "TerminalToolTypedDict",
     "Token",
     "TokenTypedDict",
-    "Type",
+    "TokenUsage",
+    "TokenUsageTypedDict",
+    "Tools",
+    "ToolsTypedDict",
+    "TraceAttempt",
+    "TraceAttemptTypedDict",
+    "TraceFailure",
+    "TraceFailureTypedDict",
+    "TraceResponse",
+    "TraceResponseTypedDict",
+    "TraceSpan",
+    "TraceSpanStatus",
+    "TraceSpanType",
+    "TraceSpanTypedDict",
+    "TraceStatus",
+    "TraceSummary",
+    "TraceSummaryTypedDict",
     "UpdateSecretRequest",
     "UpdateSecretRequestTypedDict",
+    "WebSearchTool",
+    "WebSearchToolTypedDict",
     "WhoamiResponse",
     "WhoamiResponseTypedDict",
 ]
@@ -147,8 +195,8 @@ _dynamic_imports: dict[str, str] = {
     "AgentRevisionMeta": ".agentrevisionmeta",
     "AgentRevisionMetaTypedDict": ".agentrevisionmeta",
     "AuditEvent": ".auditevent",
+    "AuditEventType": ".auditevent",
     "AuditEventTypedDict": ".auditevent",
-    "Type": ".auditevent",
     "AuthenticatedAPIKey": ".authenticatedapikey",
     "AuthenticatedAPIKeyTypedDict": ".authenticatedapikey",
     "AuthenticatedUser": ".authenticateduser",
@@ -170,6 +218,8 @@ _dynamic_imports: dict[str, str] = {
     "ListAgentsResponseTypedDict": ".listagentsresponse",
     "ListAuditEventsResponse": ".listauditeventsresponse",
     "ListAuditEventsResponseTypedDict": ".listauditeventsresponse",
+    "ListMemoriesResponse": ".listmemoriesresponse",
+    "ListMemoriesResponseTypedDict": ".listmemoriesresponse",
     "ListModelsResponse": ".listmodelsresponse",
     "ListModelsResponseTypedDict": ".listmodelsresponse",
     "ListSecretsResponse": ".listsecretsresponse",
@@ -178,8 +228,16 @@ _dynamic_imports: dict[str, str] = {
     "ListSessionsResponseTypedDict": ".listsessionsresponse",
     "ListTokensResponse": ".listtokensresponse",
     "ListTokensResponseTypedDict": ".listtokensresponse",
+    "ListTracesResponse": ".listtracesresponse",
+    "ListTracesResponseTypedDict": ".listtracesresponse",
     "MCPServer": ".mcpserver",
     "MCPServerTypedDict": ".mcpserver",
+    "Memory": ".memory",
+    "MemoryStatus": ".memory",
+    "MemoryTypedDict": ".memory",
+    "Generation": ".memoryconfig",
+    "MemoryConfig": ".memoryconfig",
+    "MemoryConfigTypedDict": ".memoryconfig",
     "Model": ".model",
     "ModelTypedDict": ".model",
     "ModelMeta": ".modelmeta",
@@ -204,10 +262,31 @@ _dynamic_imports: dict[str, str] = {
     "SessionMessageTypedDict": ".sessionmessage",
     "SessionResponse": ".sessionresponse",
     "SessionResponseTypedDict": ".sessionresponse",
+    "TerminalTool": ".terminaltool",
+    "TerminalToolTypedDict": ".terminaltool",
     "Token": ".token",
     "TokenTypedDict": ".token",
+    "TokenUsage": ".tokenusage",
+    "TokenUsageTypedDict": ".tokenusage",
+    "Tools": ".tools",
+    "ToolsTypedDict": ".tools",
+    "TraceAttempt": ".traceattempt",
+    "TraceAttemptTypedDict": ".traceattempt",
+    "TraceFailure": ".tracefailure",
+    "TraceFailureTypedDict": ".tracefailure",
+    "TraceResponse": ".traceresponse",
+    "TraceResponseTypedDict": ".traceresponse",
+    "TraceSpan": ".tracespan",
+    "TraceSpanStatus": ".tracespan",
+    "TraceSpanType": ".tracespan",
+    "TraceSpanTypedDict": ".tracespan",
+    "TraceStatus": ".tracestatus",
+    "TraceSummary": ".tracesummary",
+    "TraceSummaryTypedDict": ".tracesummary",
     "UpdateSecretRequest": ".updatesecretrequest",
     "UpdateSecretRequestTypedDict": ".updatesecretrequest",
+    "WebSearchTool": ".websearchtool",
+    "WebSearchToolTypedDict": ".websearchtool",
     "WhoamiResponse": ".whoamiresponse",
     "WhoamiResponseTypedDict": ".whoamiresponse",
 }

@@ -1,0 +1,120 @@
+#!/usr/bin/env bash
+
+# Run the spec-conformance tests: the SDK's real HTTP client against a Prism
+# mock of the specification it was generated from. Prism answers from
+# `openapi/openapi.yaml` and validates every request against it, so a client
+# that sends what the spec does not allow, or cannot parse what the spec says
+# it will receive, fails here.
+#
+# Kept out of tools/check, which must pass on a machine with no network: this
+# fetches Prism and binds a port.
+
+set -Eeuo pipefail
+
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="$(cd -- "$script_dir/.." && pwd)"
+spec="$repo_root/openapi/openapi.yaml"
+
+# Pinned so a Prism release cannot change what a release gate accepts.
+prism_version="5.14.2"
+port="${ALBUS_CONFORMANCE_PORT:-4010}"
+startup_timeout_seconds=60
+
+usage() {
+    cat >&2 <<EOF
+usage: $0 [--port <port>]
+
+Mock openapi/openapi.yaml with Prism and run tests/test_conformance.py
+against it.
+
+  --port <port>   Port for the mock server (default $port)
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --port)
+            if [[ $# -lt 2 ]]; then
+                echo "error: --port needs a value" >&2
+                exit 2
+            fi
+
+            port="$2"
+            shift 2
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        *)
+            echo "error: unknown argument: $1" >&2
+            usage
+            exit 2
+            ;;
+    esac
+done
+
+cd "$repo_root"
+
+for command in uv npx curl; do
+    if ! command -v "$command" >/dev/null 2>&1; then
+        echo "error: required command not found: $command" >&2
+        exit 1
+    fi
+done
+
+if [[ ! -f "$spec" ]]; then
+    echo "error: no specification snapshot at $spec" >&2
+    exit 1
+fi
+
+mock_log="$(mktemp)"
+mock_pid=""
+
+cleanup() {
+    if [[ -n "$mock_pid" ]] && kill -0 "$mock_pid" 2>/dev/null; then
+        kill "$mock_pid" 2>/dev/null || true
+        wait "$mock_pid" 2>/dev/null || true
+    fi
+
+    rm -f "$mock_log"
+}
+
+trap cleanup EXIT
+
+npx --yes "@stoplight/prism-cli@$prism_version" mock \
+    --errors \
+    --port "$port" \
+    "$spec" \
+    >"$mock_log" 2>&1 &
+mock_pid=$!
+
+echo "Waiting for the mock of $spec on port $port ..."
+
+for _ in $(seq "$startup_timeout_seconds"); do
+    if ! kill -0 "$mock_pid" 2>/dev/null; then
+        echo "error: the mock server exited before it was ready" >&2
+        cat "$mock_log" >&2
+        exit 1
+    fi
+
+    if curl --silent --fail --max-time 2 \
+        "http://127.0.0.1:$port/health" >/dev/null 2>&1; then
+        break
+    fi
+
+    sleep 1
+done
+
+if ! curl --silent --fail --max-time 2 \
+    "http://127.0.0.1:$port/health" >/dev/null 2>&1; then
+    echo "error: the mock server did not answer within" \
+        "${startup_timeout_seconds}s" >&2
+    cat "$mock_log" >&2
+    exit 1
+fi
+
+ALBUS_CONFORMANCE_URL="http://127.0.0.1:$port" \
+    uv run --frozen pytest tests/test_conformance.py
+
+echo "Conformance tests passed against the mocked specification."

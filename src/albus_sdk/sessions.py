@@ -177,13 +177,13 @@ class Sessions(BaseSDK):
         user_prompt: str,
         agent_name: str,
         agent: Union[models.AgentConfig, models.AgentConfigTypedDict],
-        idempotency_key: Optional[str] = None,
+        invocation_key: Optional[str] = None,
         wait_timeout_seconds: Optional[int] = 1800,
         retry_config: OptionalNullable[utils.RetryConfig] = UNSET,
     ) -> operations.RunSessionResponse:
         r"""Run or resume a session
 
-        Runs the session with the given ID, creating it if it does not exist and resuming it otherwise. Each call is a single invocation, optionally identified by the Idempotency-Key header. Supplying a key makes the call safe to retry: retrying with the same key and an identical body re-attaches to the in-flight invocation and returns its current state; a differing body for the same key returns 409; a new key while another invocation is still running returns 423. Omitting the header starts a fresh, non-idempotent invocation each time; the server generates a key and returns it in the Idempotency-Key response header.
+        Runs the session with the given ID, creating it if it does not exist and resuming it otherwise. Each call is a single invocation, optionally named by the Idempotency-Key header, whose value is the invocation's key. Supplying a key makes the call safe to retry: retrying with the same key and an identical body re-attaches to the in-flight invocation and returns its current state; a differing body for the same key returns 409; a new key while another invocation is still running returns 423. Omitting the header starts a fresh, non-idempotent invocation each time; the server generates a key and returns it in the Idempotency-Key response header.
 
         With `wait_timeout_seconds` the request long-polls: it blocks until the invocation's assistant response is available and returns it in `message`. Omit it to wait up to 30 minutes, or pass 0 to return as soon as the invocation is accepted. A positive value bounds the wait in seconds; if it elapses first the request fails with 504 and a JSON body, letting the client distinguish an expected server-side timeout from a transport error; the client may retry.
 
@@ -192,11 +192,11 @@ class Sessions(BaseSDK):
 
         :param id: Client-provided session identifier. Use the same value across requests to continue the same agent session.
         :param user_prompt: The user prompt driving this invocation.
-        :param agent_name: Human-readable name identifying the agent (e.g. \"support-triage\"). Runs sharing a name are grouped as one agent; each distinct configuration under it becomes a revision.
+        :param agent_name: Human-readable name identifying the agent (e.g. \"support-triage\"). Invocations sharing a name are grouped as one agent; each distinct configuration under it becomes a revision.
 
-        :param agent: The agent configuration for a run: the model, tools, instructions, and MCP servers that define its behavior. Runs with the same configuration share a revision.
+        :param agent: The agent configuration for an invocation: the model, tools, instructions, and MCP servers that define its behavior. Invocations with the same configuration share a revision.
 
-        :param idempotency_key: Optional but strongly encouraged. Uniquely identifies this invocation of the session; reuse the same value to safely retry a request, and a new value starts a new invocation. When omitted, the server generates a key for the invocation and returns it in the Idempotency-Key response header, but the request is not retry-safe.
+        :param invocation_key: Optional but strongly encouraged. The key naming this invocation of the session, unique within your organization: reuse the same value to safely retry a request, read the invocation back with `GET /traces/{invocation_key}`, and use a new value to start a new invocation. When omitted, the server generates a key for the invocation and returns it in the Idempotency-Key response header, but the request is not retry-safe.
 
         :param wait_timeout_seconds: Wait up to this many seconds for the assistant response. Omit to wait up to 30 minutes; use 0 to return after the invocation is accepted.
 
@@ -211,7 +211,7 @@ class Sessions(BaseSDK):
 
         request = operations.RunSessionRequest(
             id=id,
-            idempotency_key=idempotency_key,
+            invocation_key=invocation_key,
             wait_timeout_seconds=wait_timeout_seconds,
             body=models.RunSessionRequest(
                 user_prompt=user_prompt,
@@ -296,8 +296,10 @@ class Sessions(BaseSDK):
             )
             raise errors.ErrQuotaExceeded(response_data, http_res)
         if utils.match_response(http_res, "502", "application/json"):
-            response_data = unmarshal_json_response(errors.ErrRunFailedData, http_res)
-            raise errors.ErrRunFailed(response_data, http_res)
+            response_data = unmarshal_json_response(
+                errors.ErrInvocationFailedData, http_res
+            )
+            raise errors.ErrInvocationFailed(response_data, http_res)
         if utils.match_response(http_res, "504", "application/json"):
             response_data = unmarshal_json_response(errors.ErrTimeoutData, http_res)
             raise errors.ErrTimeout(response_data, http_res)
@@ -401,7 +403,7 @@ class Sessions(BaseSDK):
     ) -> models.ListAuditEventsResponse:
         r"""List a session's audit log
 
-        Returns the session's audit log — an immutable, time-ordered record of what happened during its agent runs (LLM calls, tool results, and run outcomes). Events are ordered by the time they occurred. Use `after` and `limit` to page through them; pass the response's `next_cursor` as the next request's `after` to fetch the following page.
+        Returns the session's audit log — an immutable, time-ordered record of what happened during its invocations (LLM calls, tool results, and invocation outcomes). Events are ordered by the time they occurred. Use `after` and `limit` to page through them; pass the response's `next_cursor` as the next request's `after` to fetch the following page.
 
 
         If set, this operation will use either `bearer_auth` or `api_key` from the global security.
@@ -652,13 +654,13 @@ class AsyncSessions(AsyncBaseSDK):
         user_prompt: str,
         agent_name: str,
         agent: Union[models.AgentConfig, models.AgentConfigTypedDict],
-        idempotency_key: Optional[str] = None,
+        invocation_key: Optional[str] = None,
         wait_timeout_seconds: Optional[int] = 1800,
         retry_config: OptionalNullable[utils.RetryConfig] = UNSET,
     ) -> operations.RunSessionResponse:
         r"""Run or resume a session
 
-        Runs the session with the given ID, creating it if it does not exist and resuming it otherwise. Each call is a single invocation, optionally identified by the Idempotency-Key header. Supplying a key makes the call safe to retry: retrying with the same key and an identical body re-attaches to the in-flight invocation and returns its current state; a differing body for the same key returns 409; a new key while another invocation is still running returns 423. Omitting the header starts a fresh, non-idempotent invocation each time; the server generates a key and returns it in the Idempotency-Key response header.
+        Runs the session with the given ID, creating it if it does not exist and resuming it otherwise. Each call is a single invocation, optionally named by the Idempotency-Key header, whose value is the invocation's key. Supplying a key makes the call safe to retry: retrying with the same key and an identical body re-attaches to the in-flight invocation and returns its current state; a differing body for the same key returns 409; a new key while another invocation is still running returns 423. Omitting the header starts a fresh, non-idempotent invocation each time; the server generates a key and returns it in the Idempotency-Key response header.
 
         With `wait_timeout_seconds` the request long-polls: it blocks until the invocation's assistant response is available and returns it in `message`. Omit it to wait up to 30 minutes, or pass 0 to return as soon as the invocation is accepted. A positive value bounds the wait in seconds; if it elapses first the request fails with 504 and a JSON body, letting the client distinguish an expected server-side timeout from a transport error; the client may retry.
 
@@ -667,11 +669,11 @@ class AsyncSessions(AsyncBaseSDK):
 
         :param id: Client-provided session identifier. Use the same value across requests to continue the same agent session.
         :param user_prompt: The user prompt driving this invocation.
-        :param agent_name: Human-readable name identifying the agent (e.g. \"support-triage\"). Runs sharing a name are grouped as one agent; each distinct configuration under it becomes a revision.
+        :param agent_name: Human-readable name identifying the agent (e.g. \"support-triage\"). Invocations sharing a name are grouped as one agent; each distinct configuration under it becomes a revision.
 
-        :param agent: The agent configuration for a run: the model, tools, instructions, and MCP servers that define its behavior. Runs with the same configuration share a revision.
+        :param agent: The agent configuration for an invocation: the model, tools, instructions, and MCP servers that define its behavior. Invocations with the same configuration share a revision.
 
-        :param idempotency_key: Optional but strongly encouraged. Uniquely identifies this invocation of the session; reuse the same value to safely retry a request, and a new value starts a new invocation. When omitted, the server generates a key for the invocation and returns it in the Idempotency-Key response header, but the request is not retry-safe.
+        :param invocation_key: Optional but strongly encouraged. The key naming this invocation of the session, unique within your organization: reuse the same value to safely retry a request, read the invocation back with `GET /traces/{invocation_key}`, and use a new value to start a new invocation. When omitted, the server generates a key for the invocation and returns it in the Idempotency-Key response header, but the request is not retry-safe.
 
         :param wait_timeout_seconds: Wait up to this many seconds for the assistant response. Omit to wait up to 30 minutes; use 0 to return after the invocation is accepted.
 
@@ -686,7 +688,7 @@ class AsyncSessions(AsyncBaseSDK):
 
         request = operations.RunSessionRequest(
             id=id,
-            idempotency_key=idempotency_key,
+            invocation_key=invocation_key,
             wait_timeout_seconds=wait_timeout_seconds,
             body=models.RunSessionRequest(
                 user_prompt=user_prompt,
@@ -771,8 +773,10 @@ class AsyncSessions(AsyncBaseSDK):
             )
             raise errors.ErrQuotaExceeded(response_data, http_res)
         if utils.match_response(http_res, "502", "application/json"):
-            response_data = unmarshal_json_response(errors.ErrRunFailedData, http_res)
-            raise errors.ErrRunFailed(response_data, http_res)
+            response_data = unmarshal_json_response(
+                errors.ErrInvocationFailedData, http_res
+            )
+            raise errors.ErrInvocationFailed(response_data, http_res)
         if utils.match_response(http_res, "504", "application/json"):
             response_data = unmarshal_json_response(errors.ErrTimeoutData, http_res)
             raise errors.ErrTimeout(response_data, http_res)
@@ -876,7 +880,7 @@ class AsyncSessions(AsyncBaseSDK):
     ) -> models.ListAuditEventsResponse:
         r"""List a session's audit log
 
-        Returns the session's audit log — an immutable, time-ordered record of what happened during its agent runs (LLM calls, tool results, and run outcomes). Events are ordered by the time they occurred. Use `after` and `limit` to page through them; pass the response's `next_cursor` as the next request's `after` to fetch the following page.
+        Returns the session's audit log — an immutable, time-ordered record of what happened during its invocations (LLM calls, tool results, and invocation outcomes). Events are ordered by the time they occurred. Use `after` and `limit` to page through them; pass the response's `next_cursor` as the next request's `after` to fetch the following page.
 
 
         If set, this operation will use either `bearer_auth` or `api_key` from the global security.

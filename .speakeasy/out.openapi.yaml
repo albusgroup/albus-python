@@ -15,6 +15,8 @@ tags:
     description: Identify the authenticated user.
   - name: Health
     description: Check service availability.
+  - name: Memories
+    description: Read and delete what your agents remember.
   - name: Models
     description: Discover the models available to run agents on.
   - name: Secrets
@@ -23,6 +25,8 @@ tags:
     description: Run and inspect agent sessions.
   - name: Tokens
     description: Manage organization API keys.
+  - name: Traces
+    description: Find your agent invocations and read what they did.
 security:
   - bearerAuth: []
   - apiKey: []
@@ -258,7 +262,7 @@ paths:
       operationId: runSession
       summary: Run or resume a session
       description: >
-        Runs the session with the given ID, creating it if it does not exist and resuming it otherwise. Each call is a single invocation, optionally identified by the Idempotency-Key header. Supplying a key makes the call safe to retry: retrying with the same key and an identical body re-attaches to the in-flight invocation and returns its current state; a differing body for the same key returns 409; a new key while another invocation is still running returns 423. Omitting the header starts a fresh, non-idempotent invocation each time; the server generates a key and returns it in the Idempotency-Key response header.
+        Runs the session with the given ID, creating it if it does not exist and resuming it otherwise. Each call is a single invocation, optionally named by the Idempotency-Key header, whose value is the invocation's key. Supplying a key makes the call safe to retry: retrying with the same key and an identical body re-attaches to the in-flight invocation and returns its current state; a differing body for the same key returns 409; a new key while another invocation is still running returns 423. Omitting the header starts a fresh, non-idempotent invocation each time; the server generates a key and returns it in the Idempotency-Key response header.
 
 
         With `wait_timeout_seconds` the request long-polls: it blocks until the invocation's assistant response is available and returns it in `message`. Omit it to wait up to 30 minutes, or pass 0 to return as soon as the invocation is accepted. A positive value bounds the wait in seconds; if it elapses first the request fails with 504 and a JSON body, letting the client distinguish an expected server-side timeout from a transport error; the client may retry.
@@ -283,7 +287,7 @@ paths:
           headers:
             Idempotency-Key:
               description: >
-                The effective idempotency key for this invocation — the value sent in the request header, or a server-generated one when the header was omitted. Use it to reference or safely retry this invocation.
+                This invocation's key — the value sent in the request header, or a server-generated one when the header was omitted. Use it to reference or safely retry this invocation.
 
               schema:
                 type: string
@@ -323,12 +327,12 @@ paths:
                 $ref: "#/components/schemas/ErrQuotaExceeded"
         "502":
           description: >
-            The harness run failed instead of producing a response (only possible while waiting for a response, or when replaying a failed invocation). The body carries the failure kind and detail.
+            The invocation failed instead of producing a response (only possible while waiting for a response, or when replaying a failed invocation). The body carries the failure kind and detail.
 
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrRunFailed"
+                $ref: "#/components/schemas/ErrInvocationFailed"
         "504":
           description: Timed out waiting for the assistant response
           content:
@@ -366,7 +370,7 @@ paths:
       operationId: getSessionAudit
       summary: List a session's audit log
       description: >
-        Returns the session's audit log — an immutable, time-ordered record of what happened during its agent runs (LLM calls, tool results, and run outcomes). Events are ordered by the time they occurred. Use `after` and `limit` to page through them; pass the response's `next_cursor` as the next request's `after` to fetch the following page.
+        Returns the session's audit log — an immutable, time-ordered record of what happened during its invocations (LLM calls, tool results, and invocation outcomes). Events are ordered by the time they occurred. Use `after` and `limit` to page through them; pass the response's `next_cursor` as the next request's `after` to fetch the following page.
 
       tags:
         - Sessions
@@ -401,6 +405,192 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrNotFound"
+  /traces:
+    get:
+      operationId: listTraces
+      summary: Search traces
+      description: >
+        Lists your organization's agent invocations, newest first, without their spans. Filter by agent name, agent revision, status, session, or start time to find the invocation you want, then read it with `GET /traces/{invocation_key}`. An invocation is listed as soon as it starts, and a filter that matches nothing returns an empty page rather than an error — except `session_id`, which is a `404` when your organization has no such session.
+
+
+        Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present — you have reached the end when it is absent. A page can hold fewer invocations than `limit`, or none at all, and still have a `next_cursor`; a short page is not the end of the results.
+
+
+        A listing covers the window given by `since` and `until`, and omitting `since` searches the last 31 days. The window is fixed when the first page is requested, so paging with `after` keeps returning results from the window that page used: `after` carries that window and the filters it was made with, so send it with no filters, or with every filter repeated exactly, and expect a `400` otherwise.
+
+      tags:
+        - Traces
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - name: agent_name
+          in: query
+          required: false
+          description: >
+            Return only invocations of this agent (e.g. "support-triage"). Invocations with no recorded agent name are not matched.
+
+          schema:
+            type: string
+            maxLength: 255
+        - name: agent_revision
+          in: query
+          required: false
+          description: >
+            Return only invocations of this exact agent revision (e.g. "a1b2c3d4"). Combines with `agent_name`. Invocations with no recorded revision are not matched.
+
+          schema:
+            type: string
+            maxLength: 255
+        - name: status
+          in: query
+          required: false
+          description: >
+            Return only invocations with this outcome. An invocation whose spans have aged out is still matched by the outcome it recorded.
+
+          schema:
+            $ref: "#/components/schemas/TraceStatus"
+        - name: session_id
+          in: query
+          required: false
+          description: >
+            Return only invocations of this session — the session identifier you ran it with. A session you do not have is a `404`.
+
+          schema:
+            type: string
+            minLength: 2
+            maxLength: 100
+            pattern: "^[0-9a-zA-Z._:-]+$"
+        - name: since
+          in: query
+          required: false
+          description: >
+            Return only invocations that started at or after this time. Defaults to 31 days ago; pass it to search further back.
+
+          schema:
+            type: string
+            format: date-time
+        - name: until
+          in: query
+          required: false
+          description: >
+            Return only invocations that started at or before this time. Defaults to now, and must be after `since`; an earlier `until` is a `400`.
+
+          schema:
+            type: string
+            format: date-time
+        - $ref: "#/components/parameters/AfterCursor"
+        - $ref: "#/components/parameters/TraceLimit"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListTracesResponse"
+        "400":
+          description: Invalid cursor or filter
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrBadRequest"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+        "404":
+          description: No session with the requested `session_id`
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrNotFound"
+  /traces/{invocation_key}:
+    parameters:
+      - $ref: "#/components/parameters/InvocationKey"
+    get:
+      operationId: getTrace
+      summary: Get one invocation's trace
+      description: >
+        Returns one agent invocation and a page of its spans in chronological order — the model calls it made and the tool calls they requested, with their payloads.
+
+
+        Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present — you have reached the end when it is absent. A page can hold fewer spans than `limit`, or none at all, and still have a `next_cursor`; a short page is not the end of the spans.
+
+
+        An invocation that was retried has more than one attempt, and by default only the spans of the latest attempt come back — the one that produced its outcome, or the one still in flight: the attempts before it are hidden, so a retried invocation reads as one history. They are hidden, not absent — every attempt ran, spent tokens, and may have made tool calls whose effects stand — so `attempts` lists all of them with their own outcomes and token usage, and `attempts=all` returns their spans too, each marked `superseded`.
+
+
+        A span becomes readable seconds after it happens, so an invocation still in flight can return fewer spans than it has already taken. A payload can come back shortened, or left out when it is too large — `input` and `output` say when, and `*_bytes`, `*_sha256` and `*_truncated` describe the complete value where the span carries them. Reading the shape of an invocation without its payloads is a request with `payloads=false`: the same spans with their timings, statuses and token usage, and `limit` up to 500, so a whole trace usually fits in one request. Spans age out after a retention window: past it `spans_expired` is true and no spans come back, while the invocation itself stays readable.
+
+      tags:
+        - Traces
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - name: payloads
+          in: query
+          required: false
+          description: >
+            Whether to include what each span was given and produced. `true`, the default, returns `input` and `output` and the fields that describe them. `false` returns the same spans without them — everything the span recorded about itself: `id`, `parent_id`, `type`, `name`, `status`, `started_at`, `ended_at` and `usage` — which is the cheap way to read an invocation's shape, and it lets `limit` go up to 500. `after` carries the mode it was made with, so page with the same `payloads` you started with and expect a `400` otherwise.
+
+          schema:
+            type: boolean
+            default: true
+        - name: attempts
+          in: query
+          required: false
+          description: >
+            Which attempts to return spans for. `final`, the default, returns only the spans of the latest attempt — the one that produced the invocation's outcome, or the one still in flight; `all` also returns the spans of the attempts before it, each marked `superseded`. Either way `attempts` in the response lists every attempt that ran.
+
+          schema:
+            type: string
+            enum: [final, all]
+            default: final
+        - $ref: "#/components/parameters/AfterCursor"
+        - $ref: "#/components/parameters/TraceSpanLimit"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TraceResponse"
+        "400":
+          description: Invalid cursor
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrBadRequest"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrNotFound"
+        "503":
+          description: >
+            The invocation's spans could not be read. Retry the request; the invocation and its spans are unaffected.
+
+          headers:
+            Retry-After:
+              description: >
+                Seconds to wait before retrying, when a wait is known to help.
+
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnavailable"
   /tokens:
     get:
       operationId: listTokens
@@ -618,6 +808,108 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrNotFound"
+  /memories:
+    get:
+      operationId: listMemories
+      summary: List a group's memories
+      description: >
+        Lists the memories of one memory group, newest first: both the memories agents currently read and those a later memory has replaced. A group nothing has been remembered in yet is an empty list, not an error.
+
+
+        Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present — you have reached the end when it is absent.
+
+      tags:
+        - Memories
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - $ref: "#/components/parameters/MemoryGroup"
+        - $ref: "#/components/parameters/AfterCursor"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListMemoriesResponse"
+        "400":
+          description: Invalid group or cursor
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrBadRequest"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+    delete:
+      operationId: deleteMemoryGroup
+      summary: Delete a group's memories
+      description: >
+        Deletes every memory of one memory group. Agents bound to the group remember nothing from before the call and can remember again after it. A group that holds no memories is deleted just the same, so the call is safe to repeat.
+
+      tags:
+        - Memories
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - $ref: "#/components/parameters/MemoryGroup"
+      responses:
+        "204":
+          description: Deleted
+        "400":
+          description: Invalid group
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrBadRequest"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+  /memories/{id}:
+    delete:
+      operationId: deleteMemory
+      summary: Delete one memory
+      description: >
+        Deletes one memory of a memory group. Agents bound to the group stop reading it, and the deletion is permanent. A memory the group does not hold is a `404`.
+
+      tags:
+        - Memories
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - $ref: "#/components/parameters/MemoryID"
+        - $ref: "#/components/parameters/MemoryGroup"
+      responses:
+        "204":
+          description: Deleted
+        "400":
+          description: Invalid group
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrBadRequest"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrNotFound"
   /models:
     get:
       operationId: listModels
@@ -756,13 +1048,45 @@ components:
       name: Idempotency-Key
       in: header
       required: false
+      x-speakeasy-name-override: invocation_key
       description: >
-        Optional but strongly encouraged. Uniquely identifies this invocation of the session; reuse the same value to safely retry a request, and a new value starts a new invocation. When omitted, the server generates a key for the invocation and returns it in the Idempotency-Key response header, but the request is not retry-safe.
+        Optional but strongly encouraged. The key naming this invocation of the session, unique within your organization: reuse the same value to safely retry a request, read the invocation back with `GET /traces/{invocation_key}`, and use a new value to start a new invocation. When omitted, the server generates a key for the invocation and returns it in the Idempotency-Key response header, but the request is not retry-safe.
 
       schema:
         type: string
         minLength: 1
         maxLength: 255
+    InvocationKey:
+      name: invocation_key
+      in: path
+      required: true
+      description: >
+        The invocation's key — the value sent as its Idempotency-Key, or the one the server returned in that header when it was omitted.
+
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 255
+    MemoryGroup:
+      name: group
+      in: query
+      required: true
+      description: >
+        The memory group to read or delete — the `memory.group` value the agents sharing those memories run with.
+
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 256
+    MemoryID:
+      name: id
+      in: path
+      required: true
+      description: The memory's identifier, as returned by `GET /memories`.
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 64
     AfterCursor:
       name: after
       in: query
@@ -782,6 +1106,29 @@ components:
         minimum: 1
         maximum: 1000
         default: 100
+    TraceLimit:
+      name: limit
+      in: query
+      required: false
+      description: >
+        Maximum number of traces to return. A page can be shorter, so page while `next_cursor` is present.
+
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+    TraceSpanLimit:
+      name: limit
+      in: query
+      required: false
+      description: >
+        Maximum number of spans to return. With payloads at most 25, which is also the default; with `payloads=false` at most 500, and 500 by default, so one request usually returns a whole trace. A `limit` above the bound for the mode you asked for is a `400`. A page can be shorter, so page while `next_cursor` is present.
+
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 500
     WaitTimeoutSeconds:
       name: wait_timeout_seconds
       in: query
@@ -996,7 +1343,7 @@ components:
           type: string
           description: Human-readable error message
           example: "organization invocation quota exceeded"
-    ErrRunFailed:
+    ErrInvocationFailed:
       type: object
       required:
         - message
@@ -1005,11 +1352,11 @@ components:
         message:
           type: string
           description: Human-readable failure detail
-          example: "harness run failed (crash): signal 9"
+          example: "invocation failed (crash): signal 9"
         kind:
           type: string
           description: >
-            Failure classification: "crash" (unexpected exit or signal), "no_progress" (the harness stalled and was force-killed), or "interrupted" (the run could not continue), or "internal" (the run could not start).
+            Failure classification: "crash" (unexpected exit or signal), "no_progress" (the harness stalled and was force-killed), or "interrupted" (the invocation could not continue), or "internal" (the invocation could not start).
 
           example: "crash"
     ErrTimeout:
@@ -1021,6 +1368,15 @@ components:
           type: string
           description: Human-readable error message
           example: "Timed out waiting for the assistant response"
+    ErrUnavailable:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Trace spans are temporarily unavailable"
     # Resource schemas
     Secret:
       type: object
@@ -1043,7 +1399,7 @@ components:
       properties:
         name:
           type: string
-          description: Provider name (e.g. "openai", "gemini", "vertex").
+          description: Provider name (e.g. "openai", "gemini").
         url:
           type: string
           description: Optional base URL override for the provider endpoint.
@@ -1077,7 +1433,7 @@ components:
         agent_name:
           type: string
           description: >
-            Human-readable name identifying the agent (e.g. "support-triage"). Runs sharing a name are grouped as one agent; each distinct configuration under it becomes a revision.
+            Human-readable name identifying the agent (e.g. "support-triage"). Invocations sharing a name are grouped as one agent; each distinct configuration under it becomes a revision.
 
         agent:
           $ref: "#/components/schemas/AgentConfig"
@@ -1087,28 +1443,35 @@ components:
       required:
         - model
       description: >
-        The agent configuration for a run: the model, tools, instructions, and MCP servers that define its behavior. Runs with the same configuration share a revision.
+        The agent configuration for an invocation: the model, tools, instructions, and MCP servers that define its behavior. Invocations with the same configuration share a revision.
 
       properties:
         model:
           $ref: "#/components/schemas/Model"
         tools:
-          type: array
-          items:
-            type: string
-          description: Names of the tools the model may call (e.g. "WEB_SEARCH").
+          $ref: "#/components/schemas/Tools"
+        memory:
+          $ref: "#/components/schemas/MemoryConfig"
         system_prompt:
           type: string
           description: System instructions for the model. Uses a default if omitted.
         max_steps:
           type: integer
           minimum: 1
-          description: Max model steps before the run stops. Uses a default if omitted.
+          description: >
+            Max model steps before the invocation stops. Uses a default if omitted.
+
         mcp_servers:
           type: array
           items:
             $ref: "#/components/schemas/MCPServer"
           description: MCP servers whose tools are offered to the model.
+        output_format:
+          type: object
+          additionalProperties: true
+          description: >
+            JSON Schema the answer must conform to; the answer is returned as a JSON document. Every object in the schema must set "additionalProperties" to false and list every property in "required". Choose a model that supports structured output.
+
     AgentMeta:
       type: object
       description: A row in the agent list — an agent's identity and activity.
@@ -1249,6 +1612,51 @@ components:
           description: >
             The server tools the model may call. Omit to allow all of them.
 
+    Tools:
+      type: object
+      additionalProperties: false
+      description: >
+        The built-in tools the model may call. Include a tool's block to offer it (e.g. {"web_search": {}}); omit it to withhold it.
+
+      properties:
+        web_search:
+          $ref: "#/components/schemas/WebSearchTool"
+        terminal:
+          $ref: "#/components/schemas/TerminalTool"
+    WebSearchTool:
+      type: object
+      additionalProperties: false
+      description: Offers the model web search.
+    TerminalTool:
+      type: object
+      additionalProperties: false
+      description: >
+        Offers the model a persistent Linux sandbox to run commands in.
+
+    MemoryConfig:
+      type: object
+      additionalProperties: false
+      required:
+        - group
+        - generation
+      description: >
+        Configures durable memory shared by invocations in the same group.
+
+      properties:
+        group:
+          type: string
+          minLength: 1
+          maxLength: 256
+          pattern: '^[\p{L}\p{M}\p{N}\p{P}\p{S} ]+$'
+          description: Key identifying invocations that share memory.
+        generation:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            type: string
+            enum: [agent, end_of_invocation]
+          description: Points when this agent may generate memories.
     Session:
       type: object
       required:
@@ -1268,22 +1676,22 @@ components:
           type: string
           enum: [RUNNING, DONE, FAILED, CANCELED]
           description: Lifecycle state of the session.
-        current_invocation_id:
+        current_invocation_key:
           type: string
           description: >
-            The invocation currently running, if any. Omitted when the session is idle.
+            The key of the invocation currently running, if any. Omitted when the session is idle.
 
         invocation_count:
           type: integer
           format: int64
-          description: Number of times this session has been run.
+          description: Number of invocations in this session.
         agent_name:
           type: string
           description: Name of the agent that last ran this session.
         agent_revision:
           type: string
           description: >
-            Revision of the agent that last ran this session. Runs with the same configuration share this value.
+            Revision of the agent that last ran this session. Invocations with the same configuration share this value.
 
         created_at:
           type: string
@@ -1295,7 +1703,7 @@ components:
       type: object
       required:
         - cursor
-        - invocation_id
+        - invocation_key
         - role
         - content
         - created_at
@@ -1306,9 +1714,9 @@ components:
           description: >
             Position of this message in the session's history, ascending — not an index into the list it arrives in.
 
-        invocation_id:
+        invocation_key:
           type: string
-          description: The invocation that produced this message.
+          description: The key of the invocation that produced this message.
         role:
           type: string
           enum: [user, assistant]
@@ -1347,7 +1755,7 @@ components:
       required:
         - id
         - session_id
-        - idempotency_key
+        - invocation_key
         - type
         - payload
         - event_time
@@ -1358,10 +1766,10 @@ components:
         session_id:
           type: string
           description: The session this event belongs to.
-        idempotency_key:
+        invocation_key:
           type: string
           description: >
-            Idempotency key of the run during which this event occurred.
+            Key of the invocation during which this event occurred.
 
         agent_revision:
           type: string
@@ -1370,21 +1778,24 @@ components:
           type: string
           enum:
             - agent_invocation
+            - agent_step
             - model_call
             - tool_call
             - harness_exit
-            - run_failed
-            - run_succeeded
+            - invocation_failed
+            - invocation_succeeded
             - llm_call
             - tool_result
+            - run_failed
+            - run_succeeded
           description: >
-            The kind of event (e.g. "agent_invocation" for the request that started the run, "model_call" for a model call and the tool calls it requested, "tool_call" for an executed tool call and its output). Events recorded earlier use "llm_call" and "tool_result" for those same two kinds.
+            The kind of event (e.g. "agent_invocation" for the request that started the invocation, "agent_step" for one turn, how it ended, and how long it took, "model_call" for a model call and the tool calls it requested, "tool_call" for an executed tool call and its output). Events recorded earlier use "llm_call", "tool_result", "run_failed" and "run_succeeded" for four of those kinds.
 
         payload:
           type: object
           additionalProperties: true
           description: >
-            The event's details, whose shape depends on `type` (e.g. the model content and requested tool calls for "model_call"; the call's arguments, response, and MCP server URL for "tool_call"). Model and tool output and tool arguments are stored up to 32 KiB each, alongside the byte count, SHA-256 digest, and truncation flag of the complete value (e.g. `contentBytes`, `contentSha256`, `contentTruncated`).
+            The event's details, whose shape depends on `type` (e.g. the model, its response, usage, and requested tool calls for "model_call"; the call's arguments, response, status, timing, and MCP server URL for "tool_call"). A large value may be stored truncated, marked by a flag such as `requestTruncated`; a truncated `request`, `response` or `content` also carries the byte count and SHA-256 digest of the complete value, in fields such as `requestBytes` and `requestSha256`. A "model_call"'s `request` is the input the model was given, so an invocation's final call using `output_format` includes turns Albus adds to obtain the JSON answer.
 
         event_time:
           type: string
@@ -1403,6 +1814,331 @@ components:
           type: string
           description: >
             Cursor for the next page. Pass it as `after` to fetch the following events. Omitted when there are no more events.
+
+    Memory:
+      type: object
+      required:
+        - id
+        - content
+        - status
+        - created_at
+      properties:
+        id:
+          type: string
+          description: >
+            Identifier of this memory; pass it to `DELETE /memories/{id}`.
+
+        content:
+          type: string
+          description: The fact remembered, as the agent stated it.
+        status:
+          type: string
+          enum: [active, invalidated]
+          description: >
+            `active` while agents read this memory, `invalidated` once a later memory replaced it.
+
+        created_at:
+          type: string
+          format: date-time
+          description: When the memory was remembered.
+        source_session:
+          type: string
+          description: >
+            Customer-provided session identifier that produced the memory.
+
+        source_invocation:
+          type: string
+          description: Invocation identifier that produced the memory.
+    ListMemoriesResponse:
+      type: object
+      required:
+        - memories
+      properties:
+        memories:
+          type: array
+          items:
+            $ref: "#/components/schemas/Memory"
+        next_cursor:
+          type: string
+          description: >
+            Cursor for the next page. Pass it as `after` to fetch the following memories. Omitted when there are no more memories.
+
+    # Traces API (top-level /traces)
+    TraceStatus:
+      type: string
+      enum: [RUNNING, SUCCEEDED, FAILED]
+      description: >
+        How an invocation or one of its attempts ended, or `RUNNING` while it is still in flight.
+
+    TokenUsage:
+      type: object
+      description: Tokens consumed. Absent when none were recorded.
+      properties:
+        input_tokens:
+          type: integer
+          format: int64
+        output_tokens:
+          type: integer
+          format: int64
+        total_tokens:
+          type: integer
+          format: int64
+    TraceAttempt:
+      type: object
+      description: >
+        One attempt of an invocation. An invocation is attempted again when an attempt cannot be finished, and every attempt starts the agent's work over: an attempt before the last one spent its own tokens and may have made tool calls whose effects stand, even though nothing it produced reached the invocation's output.
+
+      required:
+        - attempt
+        - status
+        - started_at
+      properties:
+        attempt:
+          type: integer
+          format: int32
+          description: >
+            Which attempt this is, counting from 1. The last one is the attempt that produced the invocation's outcome, or the one still in flight, and the one whose spans come back unless `attempts=all` is requested.
+
+        status:
+          $ref: "#/components/schemas/TraceStatus"
+        started_at:
+          type: string
+          format: date-time
+          description: When the attempt began.
+        ended_at:
+          type: string
+          format: date-time
+          description: When the attempt ended. Absent while it runs.
+        usage:
+          $ref: "#/components/schemas/TokenUsage"
+    TraceSummary:
+      type: object
+      description: One agent invocation — what it ran, how it ended, and when.
+      required:
+        - invocation_key
+        - session_id
+        - status
+        - spans_expired
+        - started_at
+      properties:
+        invocation_key:
+          type: string
+          description: >
+            The invocation's key — the value sent as its Idempotency-Key, or the one the server returned in that header when it was omitted.
+
+        session_id:
+          type: string
+          description: The session this invocation belongs to.
+        agent_name:
+          type: string
+          description: >
+            Name of the agent the invocation ran (e.g. "support-triage"). Absent for an invocation made before agent names were recorded.
+
+        agent_revision:
+          type: string
+          description: >
+            The agent revision the invocation ran (e.g. "a1b2c3d4"). Absent for an invocation made before revisions were recorded.
+
+        status:
+          $ref: "#/components/schemas/TraceStatus"
+        spans_expired:
+          type: boolean
+          description: >
+            Whether the invocation's spans have aged out. Spans are kept for the retention window (currently 90 days) from the invocation's start; the invocation itself is kept, so `status` and the fields beside it stay readable past it.
+
+        started_at:
+          type: string
+          format: date-time
+          description: When the invocation was accepted.
+        ended_at:
+          type: string
+          format: date-time
+          description: >
+            When the invocation's outcome was recorded. Absent while it runs.
+
+    TraceSpan:
+      type: object
+      description: >
+        One span of an invocation — a model call, a tool call it requested, or a level of the invocation above them.
+
+      required:
+        - id
+        - type
+        - status
+        - started_at
+        - ended_at
+      properties:
+        id:
+          type: string
+          description: >
+            Where the span sits in its session, as a dotted path you can read: `inv2` is the invocation itself — the second invocation of its session — `inv2.attempt1.step3` one step of it, a model call and the tool calls it requested, `inv2.attempt1.step3.model` that step's model call, and `inv2.attempt1.step3.tool1` a tool call it requested, numbered in the order it requested them. Every count starts at 1, no segment is ever `0`, and `.model` is a slot rather than a count, so a step has exactly one. `inv2.attempt1` is not a span you can fetch: an attempt is not a span, so a step's parent is the invocation, and only a model or tool call's parent is its own id without its last segment. The attempt segment is what keeps an id from being reused: the same step of a second attempt is `inv2.attempt2.step3`, never a fresh `inv2.attempt1.step3` under an id you have already read. An id comes from the span itself, not from the page or the attempts you asked for, so the same span has the same id on every page, under `attempts=final` and under `attempts=all`, and across requests. Ids are unique within a session, so the spans of several of a session's invocations read as one tree with the session as its root.
+
+        parent_id:
+          type: string
+          description: >
+            Id of the span this one belongs to: for a model call or a tool call, this span's id without its last segment; for a step, the invocation itself — an attempt is not a span. Absent only for the invocation. It is present even when the span it names is not in this response: the invocation is published once it has ended and a step once that step has ended, so a still-running invocation has spans whose parent is not there yet, which is not an error. Treat a parent you cannot find as one you do not have.
+
+        attempt:
+          type: integer
+          minimum: 1
+          description: >
+            Which attempt of the invocation this span belongs to, counting from 1 — the same number as the second segment of its `id`, so a retry is visible without reading the id. Absent on the invocation itself, which belongs to no single attempt.
+
+        superseded:
+          type: boolean
+          description: >
+            Whether this span belongs to an attempt that was tried again, so nothing it produced reached the invocation's output. Only `attempts=all` returns such spans, and what they did still stands: their tokens were spent and their tool calls had their effects. Absent on a span of the latest attempt.
+
+        type:
+          type: string
+          enum:
+            - invocation
+            - step
+            - model_call
+            - tool_call
+          description: >
+            The kind of span (e.g. "invocation" for the invocation itself, "step" for one step, "model_call" for a model call, "tool_call" for a tool call it requested).
+
+        name:
+          type: string
+          description: >
+            The model or tool the span called (e.g. "WEB_SEARCH"). Absent for a span that called neither.
+
+        status:
+          type: string
+          enum: [SUCCEEDED, FAILED]
+          description: >
+            Whether the span succeeded. Only finished spans are returned.
+
+        error:
+          type: string
+          description: >
+            Why the span failed. Absent when it succeeded. A long message is shortened, and then carries the same `[omitted: N of M bytes; sha256=…]` marker a payload does.
+
+        started_at:
+          type: string
+          format: date-time
+          description: When the span began.
+        ended_at:
+          type: string
+          format: date-time
+          description: When the span finished.
+        usage:
+          $ref: "#/components/schemas/TokenUsage"
+        input:
+          type: string
+          description: >
+            What the span was given. A shortened value carries its head and tail separated by a `[omitted: N of M bytes; sha256=…]` marker; a model call's payloads are left out entirely when the span records too much to keep. A tool call's input is the one that comes with `input_bytes` and `input_sha256`.
+
+        input_bytes:
+          type: integer
+          format: int64
+          description: >
+            Size of the complete input, when known.
+
+        input_sha256:
+          type: string
+          description: >
+            SHA-256 of the complete input, when known.
+
+        input_truncated:
+          type: boolean
+          description: >
+            Whether `input` is shortened or left out, when known. A left-out payload carries neither `input_bytes` nor `input_sha256`; the invocation's own shortened input carries no `input_truncated` either.
+
+        output:
+          type: string
+          description: >
+            What the span returned. A shortened value carries its head and tail separated by a `[omitted: N of M bytes; sha256=…]` marker; a model call's payloads are left out entirely when the span records too much to keep. A tool call's output is the one that comes with `output_bytes` and `output_sha256`.
+
+        output_bytes:
+          type: integer
+          format: int64
+          description: >
+            Size of the complete output, when known.
+
+        output_sha256:
+          type: string
+          description: >
+            SHA-256 of the complete output, when known.
+
+        output_truncated:
+          type: boolean
+          description: >
+            Whether `output` is shortened or left out, when known. A left-out payload carries neither `output_bytes` nor `output_sha256`; the invocation's own shortened output carries no `output_truncated` either.
+
+    TraceFailure:
+      type: object
+      description: Why an invocation failed, and what to show for it.
+      required:
+        - kind
+        - message
+      properties:
+        kind:
+          type: string
+          description: >
+            Failure classification: "crash" (unexpected exit or signal), "no_progress" (the harness stalled and was force-killed), "interrupted" (the invocation could not continue), or "internal" (the invocation could not start).
+
+          example: "crash"
+        message:
+          type: string
+          description: The sentence recorded for this failure.
+          example: "The invocation failed. Try again."
+    TraceResponse:
+      allOf:
+        - $ref: "#/components/schemas/TraceSummary"
+        - type: object
+          required:
+            - spans
+            - session_position
+          properties:
+            failure:
+              allOf:
+                - $ref: "#/components/schemas/TraceFailure"
+              description: >
+                Why the invocation failed. Present only when `status` is `FAILED`, and readable past the retention window, since it comes from the invocation rather than its spans. Read it here rather than from `GET /traces`, which reports only that an invocation failed — listing a page of reasons costs a lookup per invocation on it.
+
+            session_position:
+              type: integer
+              minimum: 1
+              description: >
+                Which invocation of its session this is, counting from 1 in the order they were created — the same number as the `inv` segment of every span's id, so you do not have to read an id to know which invocation you are holding. Invocations are only ever appended, so a position never changes.
+
+            spans:
+              type: array
+              items:
+                $ref: "#/components/schemas/TraceSpan"
+              description: >
+                A page of the invocation's spans, oldest first, from its latest attempt unless `attempts=all` asked for the earlier attempts as well. It can hold fewer than `limit`, or none at all, while `next_cursor` is present. Empty once `spans_expired` is true.
+
+            attempts:
+              type: array
+              items:
+                $ref: "#/components/schemas/TraceAttempt"
+              description: >
+                Every attempt of the invocation, oldest first, whichever attempts `spans` came from — so one entry means it ran once, and more than one means the attempts before the last produced nothing that reached its output, while still spending tokens and making any tool calls they made. Read them with `attempts=all`. Absent once `spans_expired` is true.
+
+            next_cursor:
+              type: string
+              description: >
+                Cursor for the next page. Pass it as `after` to fetch the following spans. Present whenever there may be more spans, however few this page returned; omitted once there are none left, including once `spans_expired` is true.
+
+    ListTracesResponse:
+      type: object
+      required:
+        - traces
+      properties:
+        traces:
+          type: array
+          items:
+            $ref: "#/components/schemas/TraceSummary"
+          description: >
+            This page of invocations, newest first. It can hold fewer than `limit`, or none at all, while `next_cursor` is present.
+
+        next_cursor:
+          type: string
+          description: >
+            Cursor for the next page. Pass it as `after`, with no filters or with every filter this listing used repeated exactly, to fetch the following traces. Present whenever there may be more traces, however few this page returned; omitted only once there are none left.
 
     ListSessionsResponse:
       type: object

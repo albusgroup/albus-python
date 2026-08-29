@@ -8,22 +8,18 @@ import httpx
 from typing import Optional
 
 
-class ErrRunFailedData(BaseModel):
+class ErrUnavailableData(BaseModel):
     message: str
-    r"""Human-readable failure detail"""
-    kind: str
-    r"""Failure classification: \"crash\" (unexpected exit or signal), \"no_progress\" (the harness stalled and was force-killed), or \"interrupted\" (the run could not continue), or \"internal\" (the run could not start).
-
-    """
+    r"""Human-readable error message"""
 
 
 @dataclass(unsafe_hash=True)
-class ErrRunFailed(AlbusError):
-    data: ErrRunFailedData = field(hash=False)
+class ErrUnavailable(AlbusError):
+    data: ErrUnavailableData = field(hash=False)
 
     def __init__(
         self,
-        data: ErrRunFailedData,
+        data: ErrUnavailableData,
         raw_response: httpx.Response,
         body: Optional[str] = None,
     ):

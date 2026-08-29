@@ -26,17 +26,17 @@ class SessionTypedDict(TypedDict):
     state: State
     r"""Lifecycle state of the session."""
     invocation_count: int
-    r"""Number of times this session has been run."""
+    r"""Number of invocations in this session."""
     created_at: datetime
     updated_at: datetime
-    current_invocation_id: NotRequired[str]
-    r"""The invocation currently running, if any. Omitted when the session is idle.
+    current_invocation_key: NotRequired[str]
+    r"""The key of the invocation currently running, if any. Omitted when the session is idle.
 
     """
     agent_name: NotRequired[str]
     r"""Name of the agent that last ran this session."""
     agent_revision: NotRequired[str]
-    r"""Revision of the agent that last ran this session. Runs with the same configuration share this value.
+    r"""Revision of the agent that last ran this session. Invocations with the same configuration share this value.
 
     """
 
@@ -49,14 +49,14 @@ class Session(BaseModel):
     r"""Lifecycle state of the session."""
 
     invocation_count: int
-    r"""Number of times this session has been run."""
+    r"""Number of invocations in this session."""
 
     created_at: datetime
 
     updated_at: datetime
 
-    current_invocation_id: Optional[str] = None
-    r"""The invocation currently running, if any. Omitted when the session is idle.
+    current_invocation_key: Optional[str] = None
+    r"""The key of the invocation currently running, if any. Omitted when the session is idle.
 
     """
 
@@ -64,13 +64,15 @@ class Session(BaseModel):
     r"""Name of the agent that last ran this session."""
 
     agent_revision: Optional[str] = None
-    r"""Revision of the agent that last ran this session. Runs with the same configuration share this value.
+    r"""Revision of the agent that last ran this session. Invocations with the same configuration share this value.
 
     """
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = set(["current_invocation_id", "agent_name", "agent_revision"])
+        optional_fields = set(
+            ["current_invocation_key", "agent_name", "agent_revision"]
+        )
         serialized = handler(self)
         m = {}
 

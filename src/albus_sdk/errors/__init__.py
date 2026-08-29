@@ -9,12 +9,13 @@ if TYPE_CHECKING:
     from .albusdefaulterror import AlbusDefaultError
     from .errbadrequest import ErrBadRequest, ErrBadRequestData
     from .errconflict import ErrConflict, ErrConflictData
+    from .errinvocationfailed import ErrInvocationFailed, ErrInvocationFailedData
     from .errlocked import ErrLocked, ErrLockedData
     from .errnotfound import ErrNotFound, ErrNotFoundData
     from .errquotaexceeded import ErrQuotaExceeded, ErrQuotaExceededData
-    from .errrunfailed import ErrRunFailed, ErrRunFailedData
     from .errtimeout import ErrTimeout, ErrTimeoutData
     from .errunauthorized import ErrUnauthorized, ErrUnauthorizedData
+    from .errunavailable import ErrUnavailable, ErrUnavailableData
     from .healthresponse_error import HealthResponseError, HealthResponseErrorData
     from .no_response_error import NoResponseError
     from .responsevalidationerror import ResponseValidationError
@@ -26,18 +27,20 @@ __all__ = [
     "ErrBadRequestData",
     "ErrConflict",
     "ErrConflictData",
+    "ErrInvocationFailed",
+    "ErrInvocationFailedData",
     "ErrLocked",
     "ErrLockedData",
     "ErrNotFound",
     "ErrNotFoundData",
     "ErrQuotaExceeded",
     "ErrQuotaExceededData",
-    "ErrRunFailed",
-    "ErrRunFailedData",
     "ErrTimeout",
     "ErrTimeoutData",
     "ErrUnauthorized",
     "ErrUnauthorizedData",
+    "ErrUnavailable",
+    "ErrUnavailableData",
     "HealthResponseError",
     "HealthResponseErrorData",
     "NoResponseError",
@@ -50,18 +53,20 @@ _dynamic_imports: dict[str, str] = {
     "ErrBadRequestData": ".errbadrequest",
     "ErrConflict": ".errconflict",
     "ErrConflictData": ".errconflict",
+    "ErrInvocationFailed": ".errinvocationfailed",
+    "ErrInvocationFailedData": ".errinvocationfailed",
     "ErrLocked": ".errlocked",
     "ErrLockedData": ".errlocked",
     "ErrNotFound": ".errnotfound",
     "ErrNotFoundData": ".errnotfound",
     "ErrQuotaExceeded": ".errquotaexceeded",
     "ErrQuotaExceededData": ".errquotaexceeded",
-    "ErrRunFailed": ".errrunfailed",
-    "ErrRunFailedData": ".errrunfailed",
     "ErrTimeout": ".errtimeout",
     "ErrTimeoutData": ".errtimeout",
     "ErrUnauthorized": ".errunauthorized",
     "ErrUnauthorizedData": ".errunauthorized",
+    "ErrUnavailable": ".errunavailable",
+    "ErrUnavailableData": ".errunavailable",
     "HealthResponseError": ".healthresponse_error",
     "HealthResponseErrorData": ".healthresponse_error",
     "NoResponseError": ".no_response_error",

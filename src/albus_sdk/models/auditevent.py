@@ -8,20 +8,23 @@ from typing import Any, Dict, Literal, Optional, Union
 from typing_extensions import NotRequired, TypedDict
 
 
-Type = Union[
+AuditEventType = Union[
     Literal[
         "agent_invocation",
+        "agent_step",
         "model_call",
         "tool_call",
         "harness_exit",
-        "run_failed",
-        "run_succeeded",
+        "invocation_failed",
+        "invocation_succeeded",
         "llm_call",
         "tool_result",
+        "run_failed",
+        "run_succeeded",
     ],
     UnrecognizedStr,
 ]
-r"""The kind of event (e.g. \"agent_invocation\" for the request that started the run, \"model_call\" for a model call and the tool calls it requested, \"tool_call\" for an executed tool call and its output). Events recorded earlier use \"llm_call\" and \"tool_result\" for those same two kinds.
+r"""The kind of event (e.g. \"agent_invocation\" for the request that started the invocation, \"agent_step\" for one turn, how it ended, and how long it took, \"model_call\" for a model call and the tool calls it requested, \"tool_call\" for an executed tool call and its output). Events recorded earlier use \"llm_call\", \"tool_result\", \"run_failed\" and \"run_succeeded\" for four of those kinds.
 
 """
 
@@ -31,16 +34,16 @@ class AuditEventTypedDict(TypedDict):
     r"""Stable identifier of this audit event within the session."""
     session_id: str
     r"""The session this event belongs to."""
-    idempotency_key: str
-    r"""Idempotency key of the run during which this event occurred.
+    invocation_key: str
+    r"""Key of the invocation during which this event occurred.
 
     """
-    type: Type
-    r"""The kind of event (e.g. \"agent_invocation\" for the request that started the run, \"model_call\" for a model call and the tool calls it requested, \"tool_call\" for an executed tool call and its output). Events recorded earlier use \"llm_call\" and \"tool_result\" for those same two kinds.
+    type: AuditEventType
+    r"""The kind of event (e.g. \"agent_invocation\" for the request that started the invocation, \"agent_step\" for one turn, how it ended, and how long it took, \"model_call\" for a model call and the tool calls it requested, \"tool_call\" for an executed tool call and its output). Events recorded earlier use \"llm_call\", \"tool_result\", \"run_failed\" and \"run_succeeded\" for four of those kinds.
 
     """
     payload: Dict[str, Any]
-    r"""The event's details, whose shape depends on `type` (e.g. the model content and requested tool calls for \"model_call\"; the call's arguments, response, and MCP server URL for \"tool_call\"). Model and tool output and tool arguments are stored up to 32 KiB each, alongside the byte count, SHA-256 digest, and truncation flag of the complete value (e.g. `contentBytes`, `contentSha256`, `contentTruncated`).
+    r"""The event's details, whose shape depends on `type` (e.g. the model, its response, usage, and requested tool calls for \"model_call\"; the call's arguments, response, status, timing, and MCP server URL for \"tool_call\"). A large value may be stored truncated, marked by a flag such as `requestTruncated`; a truncated `request`, `response` or `content` also carries the byte count and SHA-256 digest of the complete value, in fields such as `requestBytes` and `requestSha256`. A \"model_call\"'s `request` is the input the model was given, so an invocation's final call using `output_format` includes turns Albus adds to obtain the JSON answer.
 
     """
     event_time: datetime
@@ -56,18 +59,18 @@ class AuditEvent(BaseModel):
     session_id: str
     r"""The session this event belongs to."""
 
-    idempotency_key: str
-    r"""Idempotency key of the run during which this event occurred.
+    invocation_key: str
+    r"""Key of the invocation during which this event occurred.
 
     """
 
-    type: Type
-    r"""The kind of event (e.g. \"agent_invocation\" for the request that started the run, \"model_call\" for a model call and the tool calls it requested, \"tool_call\" for an executed tool call and its output). Events recorded earlier use \"llm_call\" and \"tool_result\" for those same two kinds.
+    type: AuditEventType
+    r"""The kind of event (e.g. \"agent_invocation\" for the request that started the invocation, \"agent_step\" for one turn, how it ended, and how long it took, \"model_call\" for a model call and the tool calls it requested, \"tool_call\" for an executed tool call and its output). Events recorded earlier use \"llm_call\", \"tool_result\", \"run_failed\" and \"run_succeeded\" for four of those kinds.
 
     """
 
     payload: Dict[str, Any]
-    r"""The event's details, whose shape depends on `type` (e.g. the model content and requested tool calls for \"model_call\"; the call's arguments, response, and MCP server URL for \"tool_call\"). Model and tool output and tool arguments are stored up to 32 KiB each, alongside the byte count, SHA-256 digest, and truncation flag of the complete value (e.g. `contentBytes`, `contentSha256`, `contentTruncated`).
+    r"""The event's details, whose shape depends on `type` (e.g. the model, its response, usage, and requested tool calls for \"model_call\"; the call's arguments, response, status, timing, and MCP server URL for \"tool_call\"). A large value may be stored truncated, marked by a flag such as `requestTruncated`; a truncated `request`, `response` or `content` also carries the byte count and SHA-256 digest of the complete value, in fields such as `requestBytes` and `requestSha256`. A \"model_call\"'s `request` is the input the model was given, so an invocation's final call using `output_format` includes turns Albus adds to obtain the JSON answer.
 
     """
 

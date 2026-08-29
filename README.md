@@ -324,6 +324,12 @@ asyncio.run(main())
 
 * [create_invite](docs/sdks/invites/README.md#create_invite) - Invite a user by email
 
+### [Memories](docs/sdks/memories/README.md)
+
+* [list_memories](docs/sdks/memories/README.md#list_memories) - List a group's memories
+* [delete_memory_group](docs/sdks/memories/README.md#delete_memory_group) - Delete a group's memories
+* [delete_memory](docs/sdks/memories/README.md#delete_memory) - Delete one memory
+
 ### [Models](docs/sdks/models/README.md)
 
 * [list_models](docs/sdks/models/README.md#list_models) - List models
@@ -350,6 +356,11 @@ asyncio.run(main())
 * [create_token](docs/sdks/tokens/README.md#create_token) - Create an API token. The token value is returned only in this response.
 * [get_token](docs/sdks/tokens/README.md#get_token) - Get token metadata by ID. Never returns the token value.
 * [delete_token](docs/sdks/tokens/README.md#delete_token) - Revoke an API token by ID
+
+### [Traces](docs/sdks/traces/README.md)
+
+* [list_traces](docs/sdks/traces/README.md#list_traces) - Search traces
+* [get_trace](docs/sdks/traces/README.md#get_trace) - Get one invocation's trace
 
 </details>
 <!-- End Available Resources and Operations [operations] -->
@@ -453,7 +464,7 @@ asyncio.run(main())
 * [`AlbusError`](./src/albus_sdk/errors/albuserror.py): The base class for HTTP error responses.
   * [`ErrUnauthorized`](./src/albus_sdk/errors/errunauthorized.py): Status code `401`. *
 
-<details><summary>Less common errors (13)</summary>
+<details><summary>Less common errors (14)</summary>
 
 <br />
 
@@ -464,14 +475,15 @@ asyncio.run(main())
 
 
 **Inherit from [`AlbusError`](./src/albus_sdk/errors/albuserror.py)**:
-* [`ErrNotFound`](./src/albus_sdk/errors/errnotfound.py): Not found. Status code `404`. Applicable to 10 of 21 methods.*
-* [`ErrBadRequest`](./src/albus_sdk/errors/errbadrequest.py): Status code `400`. Applicable to 6 of 21 methods.*
-* [`ErrConflict`](./src/albus_sdk/errors/errconflict.py): Status code `409`. Applicable to 2 of 21 methods.*
-* [`ErrLocked`](./src/albus_sdk/errors/errlocked.py): Another invocation is currently running for this session. Status code `423`. Applicable to 1 of 21 methods.*
-* [`ErrQuotaExceeded`](./src/albus_sdk/errors/errquotaexceeded.py): The organization has reached its invocation quota. Status code `429`. Applicable to 1 of 21 methods.*
-* [`ErrRunFailed`](./src/albus_sdk/errors/errrunfailed.py): The harness run failed instead of producing a response (only possible while waiting for a response, or when replaying a failed invocation). The body carries the failure kind and detail. Status code `502`. Applicable to 1 of 21 methods.*
-* [`HealthResponseError`](./src/albus_sdk/errors/healthresponseerror.py): Service is healthy. Status code `503`. Applicable to 1 of 21 methods.*
-* [`ErrTimeout`](./src/albus_sdk/errors/errtimeout.py): Timed out waiting for the assistant response. Status code `504`. Applicable to 1 of 21 methods.*
+* [`ErrNotFound`](./src/albus_sdk/errors/errnotfound.py): Status code `404`. Applicable to 13 of 26 methods.*
+* [`ErrBadRequest`](./src/albus_sdk/errors/errbadrequest.py): Status code `400`. Applicable to 11 of 26 methods.*
+* [`ErrConflict`](./src/albus_sdk/errors/errconflict.py): Status code `409`. Applicable to 2 of 26 methods.*
+* [`ErrLocked`](./src/albus_sdk/errors/errlocked.py): Another invocation is currently running for this session. Status code `423`. Applicable to 1 of 26 methods.*
+* [`ErrQuotaExceeded`](./src/albus_sdk/errors/errquotaexceeded.py): The organization has reached its invocation quota. Status code `429`. Applicable to 1 of 26 methods.*
+* [`ErrInvocationFailed`](./src/albus_sdk/errors/errinvocationfailed.py): The invocation failed instead of producing a response (only possible while waiting for a response, or when replaying a failed invocation). The body carries the failure kind and detail. Status code `502`. Applicable to 1 of 26 methods.*
+* [`ErrUnavailable`](./src/albus_sdk/errors/errunavailable.py): The invocation's spans could not be read. Retry the request; the invocation and its spans are unaffected. Status code `503`. Applicable to 1 of 26 methods.*
+* [`HealthResponseError`](./src/albus_sdk/errors/healthresponseerror.py): Service is healthy. Status code `503`. Applicable to 1 of 26 methods.*
+* [`ErrTimeout`](./src/albus_sdk/errors/errtimeout.py): Timed out waiting for the assistant response. Status code `504`. Applicable to 1 of 26 methods.*
 * [`ResponseValidationError`](./src/albus_sdk/errors/responsevalidationerror.py): Type mismatch between the response data and the expected Pydantic model. Provides access to the Pydantic validation error via the `cause` attribute.
 
 </details>

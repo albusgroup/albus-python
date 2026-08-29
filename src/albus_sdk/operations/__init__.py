@@ -5,6 +5,11 @@ from typing import Any, TYPE_CHECKING
 from albus_sdk.utils.dynamic_imports import lazy_getattr, lazy_dir
 
 if TYPE_CHECKING:
+    from .deletememory import DeleteMemoryRequest, DeleteMemoryRequestTypedDict
+    from .deletememorygroup import (
+        DeleteMemoryGroupRequest,
+        DeleteMemoryGroupRequestTypedDict,
+    )
     from .deletesecret import DeleteSecretRequest, DeleteSecretRequestTypedDict
     from .deletesession import DeleteSessionRequest, DeleteSessionRequestTypedDict
     from .deletetoken import DeleteTokenRequest, DeleteTokenRequestTypedDict
@@ -17,6 +22,15 @@ if TYPE_CHECKING:
     from .getsession import GetSessionRequest, GetSessionRequestTypedDict
     from .getsessionaudit import GetSessionAuditRequest, GetSessionAuditRequestTypedDict
     from .gettoken import GetTokenRequest, GetTokenRequestTypedDict
+    from .gettrace import (
+        Attempts,
+        GetTraceRequest,
+        GetTraceRequestTypedDict,
+        GetTraceResponse,
+        GetTraceResponseTypedDict,
+    )
+    from .listmemories import ListMemoriesRequest, ListMemoriesRequestTypedDict
+    from .listtraces import ListTracesRequest, ListTracesRequestTypedDict
     from .runsession import (
         RunSessionRequest,
         RunSessionRequestTypedDict,
@@ -26,6 +40,11 @@ if TYPE_CHECKING:
     from .updatesecret import UpdateSecretRequest, UpdateSecretRequestTypedDict
 
 __all__ = [
+    "Attempts",
+    "DeleteMemoryGroupRequest",
+    "DeleteMemoryGroupRequestTypedDict",
+    "DeleteMemoryRequest",
+    "DeleteMemoryRequestTypedDict",
     "DeleteSecretRequest",
     "DeleteSecretRequestTypedDict",
     "DeleteSessionRequest",
@@ -44,6 +63,14 @@ __all__ = [
     "GetSessionRequestTypedDict",
     "GetTokenRequest",
     "GetTokenRequestTypedDict",
+    "GetTraceRequest",
+    "GetTraceRequestTypedDict",
+    "GetTraceResponse",
+    "GetTraceResponseTypedDict",
+    "ListMemoriesRequest",
+    "ListMemoriesRequestTypedDict",
+    "ListTracesRequest",
+    "ListTracesRequestTypedDict",
     "RunSessionRequest",
     "RunSessionRequestTypedDict",
     "RunSessionResponse",
@@ -53,6 +80,10 @@ __all__ = [
 ]
 
 _dynamic_imports: dict[str, str] = {
+    "DeleteMemoryRequest": ".deletememory",
+    "DeleteMemoryRequestTypedDict": ".deletememory",
+    "DeleteMemoryGroupRequest": ".deletememorygroup",
+    "DeleteMemoryGroupRequestTypedDict": ".deletememorygroup",
     "DeleteSecretRequest": ".deletesecret",
     "DeleteSecretRequestTypedDict": ".deletesecret",
     "DeleteSessionRequest": ".deletesession",
@@ -71,6 +102,15 @@ _dynamic_imports: dict[str, str] = {
     "GetSessionAuditRequestTypedDict": ".getsessionaudit",
     "GetTokenRequest": ".gettoken",
     "GetTokenRequestTypedDict": ".gettoken",
+    "Attempts": ".gettrace",
+    "GetTraceRequest": ".gettrace",
+    "GetTraceRequestTypedDict": ".gettrace",
+    "GetTraceResponse": ".gettrace",
+    "GetTraceResponseTypedDict": ".gettrace",
+    "ListMemoriesRequest": ".listmemories",
+    "ListMemoriesRequestTypedDict": ".listmemories",
+    "ListTracesRequest": ".listtraces",
+    "ListTracesRequestTypedDict": ".listtraces",
     "RunSessionRequest": ".runsession",
     "RunSessionRequestTypedDict": ".runsession",
     "RunSessionResponse": ".runsession",

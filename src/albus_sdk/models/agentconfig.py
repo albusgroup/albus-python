@@ -2,47 +2,84 @@
 
 from __future__ import annotations
 from .mcpserver import MCPServer, MCPServerTypedDict
+from .memoryconfig import MemoryConfig, MemoryConfigTypedDict
 from .model import Model, ModelTypedDict
+from .tools import Tools, ToolsTypedDict
 from albus_sdk.types import BaseModel, UNSET_SENTINEL
 from pydantic import model_serializer
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from typing_extensions import NotRequired, TypedDict
 
 
 class AgentConfigTypedDict(TypedDict):
-    r"""The agent configuration for a run: the model, tools, instructions, and MCP servers that define its behavior. Runs with the same configuration share a revision."""
+    r"""The agent configuration for an invocation: the model, tools, instructions, and MCP servers that define its behavior. Invocations with the same configuration share a revision."""
 
     model: ModelTypedDict
-    tools: NotRequired[List[str]]
-    r"""Names of the tools the model may call (e.g. \"WEB_SEARCH\")."""
+    tools: NotRequired[ToolsTypedDict]
+    r"""The built-in tools the model may call. Include a tool's block to offer it (e.g. {\"web_search\": {}}); omit it to withhold it.
+
+    """
+    memory: NotRequired[MemoryConfigTypedDict]
+    r"""Configures durable memory shared by invocations in the same group.
+
+    """
     system_prompt: NotRequired[str]
     r"""System instructions for the model. Uses a default if omitted."""
     max_steps: NotRequired[int]
-    r"""Max model steps before the run stops. Uses a default if omitted."""
+    r"""Max model steps before the invocation stops. Uses a default if omitted.
+
+    """
     mcp_servers: NotRequired[List[MCPServerTypedDict]]
     r"""MCP servers whose tools are offered to the model."""
+    output_format: NotRequired[Dict[str, Any]]
+    r"""JSON Schema the answer must conform to; the answer is returned as a JSON document. Every object in the schema must set \"additionalProperties\" to false and list every property in \"required\". Choose a model that supports structured output.
+
+    """
 
 
 class AgentConfig(BaseModel):
-    r"""The agent configuration for a run: the model, tools, instructions, and MCP servers that define its behavior. Runs with the same configuration share a revision."""
+    r"""The agent configuration for an invocation: the model, tools, instructions, and MCP servers that define its behavior. Invocations with the same configuration share a revision."""
 
     model: Model
 
-    tools: Optional[List[str]] = None
-    r"""Names of the tools the model may call (e.g. \"WEB_SEARCH\")."""
+    tools: Optional[Tools] = None
+    r"""The built-in tools the model may call. Include a tool's block to offer it (e.g. {\"web_search\": {}}); omit it to withhold it.
+
+    """
+
+    memory: Optional[MemoryConfig] = None
+    r"""Configures durable memory shared by invocations in the same group.
+
+    """
 
     system_prompt: Optional[str] = None
     r"""System instructions for the model. Uses a default if omitted."""
 
     max_steps: Optional[int] = None
-    r"""Max model steps before the run stops. Uses a default if omitted."""
+    r"""Max model steps before the invocation stops. Uses a default if omitted.
+
+    """
 
     mcp_servers: Optional[List[MCPServer]] = None
     r"""MCP servers whose tools are offered to the model."""
 
+    output_format: Optional[Dict[str, Any]] = None
+    r"""JSON Schema the answer must conform to; the answer is returned as a JSON document. Every object in the schema must set \"additionalProperties\" to false and list every property in \"required\". Choose a model that supports structured output.
+
+    """
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = set(["tools", "system_prompt", "max_steps", "mcp_servers"])
+        optional_fields = set(
+            [
+                "tools",
+                "memory",
+                "system_prompt",
+                "max_steps",
+                "mcp_servers",
+                "output_format",
+            ]
+        )
         serialized = handler(self)
         m = {}
 

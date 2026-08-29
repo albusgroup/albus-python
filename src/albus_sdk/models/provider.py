@@ -9,7 +9,7 @@ from typing_extensions import NotRequired, TypedDict
 
 class ProviderTypedDict(TypedDict):
     name: str
-    r"""Provider name (e.g. \"openai\", \"gemini\", \"vertex\")."""
+    r"""Provider name (e.g. \"openai\", \"gemini\")."""
     credential: str
     r"""Secret reference the provider authenticates with (e.g. \"albus.sh/secrets/my-key\"), not a raw secret value.
 
@@ -20,7 +20,7 @@ class ProviderTypedDict(TypedDict):
 
 class Provider(BaseModel):
     name: str
-    r"""Provider name (e.g. \"openai\", \"gemini\", \"vertex\")."""
+    r"""Provider name (e.g. \"openai\", \"gemini\")."""
 
     credential: str
     r"""Secret reference the provider authenticates with (e.g. \"albus.sh/secrets/my-key\"), not a raw secret value.

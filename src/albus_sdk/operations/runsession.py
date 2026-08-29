@@ -23,8 +23,8 @@ class RunSessionRequestTypedDict(TypedDict):
     id: str
     r"""Client-provided session identifier. Use the same value across requests to continue the same agent session."""
     body: models_runsessionrequest.RunSessionRequestTypedDict
-    idempotency_key: NotRequired[str]
-    r"""Optional but strongly encouraged. Uniquely identifies this invocation of the session; reuse the same value to safely retry a request, and a new value starts a new invocation. When omitted, the server generates a key for the invocation and returns it in the Idempotency-Key response header, but the request is not retry-safe.
+    invocation_key: NotRequired[str]
+    r"""Optional but strongly encouraged. The key naming this invocation of the session, unique within your organization: reuse the same value to safely retry a request, read the invocation back with `GET /traces/{invocation_key}`, and use a new value to start a new invocation. When omitted, the server generates a key for the invocation and returns it in the Idempotency-Key response header, but the request is not retry-safe.
 
     """
     wait_timeout_seconds: NotRequired[int]
@@ -44,12 +44,12 @@ class RunSessionRequest(BaseModel):
         FieldMetadata(request=RequestMetadata(media_type="application/json")),
     ]
 
-    idempotency_key: Annotated[
+    invocation_key: Annotated[
         Optional[str],
         pydantic.Field(alias="Idempotency-Key"),
         FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
     ] = None
-    r"""Optional but strongly encouraged. Uniquely identifies this invocation of the session; reuse the same value to safely retry a request, and a new value starts a new invocation. When omitted, the server generates a key for the invocation and returns it in the Idempotency-Key response header, but the request is not retry-safe.
+    r"""Optional but strongly encouraged. The key naming this invocation of the session, unique within your organization: reuse the same value to safely retry a request, read the invocation back with `GET /traces/{invocation_key}`, and use a new value to start a new invocation. When omitted, the server generates a key for the invocation and returns it in the Idempotency-Key response header, but the request is not retry-safe.
 
     """
 
@@ -63,7 +63,7 @@ class RunSessionRequest(BaseModel):
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = set(["Idempotency-Key", "wait_timeout_seconds"])
+        optional_fields = set(["invocation_key", "wait_timeout_seconds"])
         serialized = handler(self)
         m = {}
 
