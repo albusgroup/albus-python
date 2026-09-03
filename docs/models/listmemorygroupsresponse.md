@@ -1,0 +1,9 @@
+# ListMemoryGroupsResponse
+
+
+## Fields
+
+| Field                                                                                                               | Type                                                                                                                | Required                                                                                                            | Description                                                                                                         |
+| ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `memory_groups`                                                                                                     | List[[models.MemoryGroup](../models/memorygroup.md)]                                                                | :heavy_check_mark:                                                                                                  | N/A                                                                                                                 |
+| `next_cursor`                                                                                                       | *Optional[str]*                                                                                                     | :heavy_minus_sign:                                                                                                  | Cursor for the next page. Pass it as `after` to fetch the following groups. Omitted when there are no more groups.<br/> |

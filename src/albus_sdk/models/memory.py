@@ -22,7 +22,7 @@ r"""`active` while agents read this memory, `invalidated` once a later memory re
 
 class MemoryTypedDict(TypedDict):
     id: str
-    r"""Identifier of this memory; pass it to `DELETE /memories/{id}`.
+    r"""Identifier of this memory; pass it to `DELETE /memorygroups/{group}/memories/{id}`.
 
     """
     content: str
@@ -43,7 +43,7 @@ class MemoryTypedDict(TypedDict):
 
 class Memory(BaseModel):
     id: str
-    r"""Identifier of this memory; pass it to `DELETE /memories/{id}`.
+    r"""Identifier of this memory; pass it to `DELETE /memorygroups/{group}/memories/{id}`.
 
     """
 

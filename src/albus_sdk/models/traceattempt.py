@@ -18,7 +18,7 @@ class TraceAttemptTypedDict(TypedDict):
 
     """
     status: TraceStatus
-    r"""How an invocation or one of its attempts ended, or `RUNNING` while it is still in flight.
+    r"""How an invocation or one of its attempts ended, or `RUNNING` while it is still in flight. `CANCELED` means it was stopped on request before it answered.
 
     """
     started_at: datetime
@@ -38,7 +38,7 @@ class TraceAttempt(BaseModel):
     """
 
     status: TraceStatus
-    r"""How an invocation or one of its attempts ended, or `RUNNING` while it is still in flight.
+    r"""How an invocation or one of its attempts ended, or `RUNNING` while it is still in flight. `CANCELED` means it was stopped on request before it answered.
 
     """
 

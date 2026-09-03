@@ -9,6 +9,8 @@ if TYPE_CHECKING:
     from .albusdefaulterror import AlbusDefaultError
     from .errbadrequest import ErrBadRequest, ErrBadRequestData
     from .errconflict import ErrConflict, ErrConflictData
+    from .errinsufficientcredit import ErrInsufficientCredit, ErrInsufficientCreditData
+    from .errinvocationcanceled import ErrInvocationCanceled, ErrInvocationCanceledData
     from .errinvocationfailed import ErrInvocationFailed, ErrInvocationFailedData
     from .errlocked import ErrLocked, ErrLockedData
     from .errnotfound import ErrNotFound, ErrNotFoundData
@@ -27,6 +29,10 @@ __all__ = [
     "ErrBadRequestData",
     "ErrConflict",
     "ErrConflictData",
+    "ErrInsufficientCredit",
+    "ErrInsufficientCreditData",
+    "ErrInvocationCanceled",
+    "ErrInvocationCanceledData",
     "ErrInvocationFailed",
     "ErrInvocationFailedData",
     "ErrLocked",
@@ -53,6 +59,10 @@ _dynamic_imports: dict[str, str] = {
     "ErrBadRequestData": ".errbadrequest",
     "ErrConflict": ".errconflict",
     "ErrConflictData": ".errconflict",
+    "ErrInsufficientCredit": ".errinsufficientcredit",
+    "ErrInsufficientCreditData": ".errinsufficientcredit",
+    "ErrInvocationCanceled": ".errinvocationcanceled",
+    "ErrInvocationCanceledData": ".errinvocationcanceled",
     "ErrInvocationFailed": ".errinvocationfailed",
     "ErrInvocationFailedData": ".errinvocationfailed",
     "ErrLocked": ".errlocked",

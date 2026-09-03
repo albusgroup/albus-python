@@ -12,6 +12,93 @@ from typing import Any, Optional
 class Memories(BaseSDK):
     r"""Read and delete what your agents remember."""
 
+    def list_memory_groups(
+        self,
+        *,
+        after: Optional[str] = None,
+        limit: Optional[int] = 100,
+    ) -> models.ListMemoryGroupsResponse:
+        r"""List memory groups
+
+        Lists the memory groups of your organization, ordered by key: every `memory.group` value an agent has run with, along with how many memories agents in the group currently read. Read a group's memories with `GET /memorygroups/{group}`.
+
+        Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present — you have reached the end when it is absent.
+
+
+        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
+
+        :param after: Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
+
+        :param limit: Maximum number of items to return.
+        """
+        url_variables = None
+        base_url = self._get_url(None, url_variables)
+
+        request = operations.ListMemoryGroupsRequest(
+            after=after,
+            limit=limit,
+        )
+
+        req = self._build_request(
+            method="GET",
+            path="/memorygroups",
+            base_url=base_url,
+            url_variables=url_variables,
+            request=request,
+            request_body_required=False,
+            request_has_path_params=False,
+            request_has_query_params=True,
+            user_agent_header="user-agent",
+            accept_header_value="application/json",
+            security=self.sdk_configuration.security,
+            allow_empty_value=None,
+            allowed_fields=["bearer_auth", "api_key"],
+            timeout_ms=self.sdk_configuration.timeout_ms,
+        )
+
+        retry_config = None
+
+        http_res = self.do_request(
+            hook_ctx=HookContext(
+                config=self.sdk_configuration,
+                base_url=base_url or "",
+                operation_id="listMemoryGroups",
+                oauth2_scopes=None,
+                security_source=get_security_from_env(
+                    self.sdk_configuration.security, models.Security
+                ),
+                tags=["Memories"],
+                extensions=None,
+            ),
+            request=req,
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
+            retry_config=None,
+        )
+
+        response_data: Any = None
+        if utils.match_response(http_res, "200", "application/json"):
+            return unmarshal_json_response(models.ListMemoryGroupsResponse, http_res)
+        if utils.match_response(http_res, "400", "application/json"):
+            response_data = unmarshal_json_response(errors.ErrBadRequestData, http_res)
+            raise errors.ErrBadRequest(response_data, http_res)
+        if utils.match_response(http_res, "401", "application/json"):
+            response_data = unmarshal_json_response(
+                errors.ErrUnauthorizedData, http_res
+            )
+            raise errors.ErrUnauthorized(response_data, http_res)
+        if utils.match_response(http_res, "4XX", "*"):
+            http_res_text = utils.stream_to_text(http_res)
+            raise errors.AlbusDefaultError(
+                "API error occurred", http_res, http_res_text
+            )
+        if utils.match_response(http_res, "5XX", "*"):
+            http_res_text = utils.stream_to_text(http_res)
+            raise errors.AlbusDefaultError(
+                "API error occurred", http_res, http_res_text
+            )
+
+        raise errors.AlbusDefaultError("Unexpected response received", http_res)
+
     def list_memories(
         self,
         *,
@@ -45,12 +132,12 @@ class Memories(BaseSDK):
 
         req = self._build_request(
             method="GET",
-            path="/memories",
+            path="/memorygroups/{group}",
             base_url=base_url,
             url_variables=url_variables,
             request=request,
             request_body_required=False,
-            request_has_path_params=False,
+            request_has_path_params=True,
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
@@ -127,12 +214,12 @@ class Memories(BaseSDK):
 
         req = self._build_request(
             method="DELETE",
-            path="/memories",
+            path="/memorygroups/{group}",
             base_url=base_url,
             url_variables=url_variables,
             request=request,
             request_body_required=False,
-            request_has_path_params=False,
+            request_has_path_params=True,
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
@@ -188,8 +275,8 @@ class Memories(BaseSDK):
     def delete_memory(
         self,
         *,
-        id: str,
         group: str,
+        id: str,
     ):
         r"""Delete one memory
 
@@ -198,21 +285,22 @@ class Memories(BaseSDK):
 
         If set, this operation will use either `bearer_auth` or `api_key` from the global security.
 
-        :param id: The memory's identifier, as returned by `GET /memories`.
         :param group: The memory group to read or delete — the `memory.group` value the agents sharing those memories run with.
+
+        :param id: The memory's identifier, as returned by `GET /memorygroups/{group}`.
 
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
 
         request = operations.DeleteMemoryRequest(
-            id=id,
             group=group,
+            id=id,
         )
 
         req = self._build_request(
             method="DELETE",
-            path="/memories/{id}",
+            path="/memorygroups/{group}/memories/{id}",
             base_url=base_url,
             url_variables=url_variables,
             request=request,
@@ -277,6 +365,93 @@ class Memories(BaseSDK):
 class AsyncMemories(AsyncBaseSDK):
     r"""Read and delete what your agents remember."""
 
+    async def list_memory_groups(
+        self,
+        *,
+        after: Optional[str] = None,
+        limit: Optional[int] = 100,
+    ) -> models.ListMemoryGroupsResponse:
+        r"""List memory groups
+
+        Lists the memory groups of your organization, ordered by key: every `memory.group` value an agent has run with, along with how many memories agents in the group currently read. Read a group's memories with `GET /memorygroups/{group}`.
+
+        Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present — you have reached the end when it is absent.
+
+
+        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
+
+        :param after: Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
+
+        :param limit: Maximum number of items to return.
+        """
+        url_variables = None
+        base_url = self._get_url(None, url_variables)
+
+        request = operations.ListMemoryGroupsRequest(
+            after=after,
+            limit=limit,
+        )
+
+        req = self._build_request_async(
+            method="GET",
+            path="/memorygroups",
+            base_url=base_url,
+            url_variables=url_variables,
+            request=request,
+            request_body_required=False,
+            request_has_path_params=False,
+            request_has_query_params=True,
+            user_agent_header="user-agent",
+            accept_header_value="application/json",
+            security=self.sdk_configuration.security,
+            allow_empty_value=None,
+            allowed_fields=["bearer_auth", "api_key"],
+            timeout_ms=self.sdk_configuration.timeout_ms,
+        )
+
+        retry_config = None
+
+        http_res = await self.do_request_async(
+            hook_ctx=HookContext(
+                config=self.sdk_configuration,
+                base_url=base_url or "",
+                operation_id="listMemoryGroups",
+                oauth2_scopes=None,
+                security_source=get_security_from_env(
+                    self.sdk_configuration.security, models.Security
+                ),
+                tags=["Memories"],
+                extensions=None,
+            ),
+            request=req,
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
+            retry_config=None,
+        )
+
+        response_data: Any = None
+        if utils.match_response(http_res, "200", "application/json"):
+            return unmarshal_json_response(models.ListMemoryGroupsResponse, http_res)
+        if utils.match_response(http_res, "400", "application/json"):
+            response_data = unmarshal_json_response(errors.ErrBadRequestData, http_res)
+            raise errors.ErrBadRequest(response_data, http_res)
+        if utils.match_response(http_res, "401", "application/json"):
+            response_data = unmarshal_json_response(
+                errors.ErrUnauthorizedData, http_res
+            )
+            raise errors.ErrUnauthorized(response_data, http_res)
+        if utils.match_response(http_res, "4XX", "*"):
+            http_res_text = await utils.stream_to_text_async(http_res)
+            raise errors.AlbusDefaultError(
+                "API error occurred", http_res, http_res_text
+            )
+        if utils.match_response(http_res, "5XX", "*"):
+            http_res_text = await utils.stream_to_text_async(http_res)
+            raise errors.AlbusDefaultError(
+                "API error occurred", http_res, http_res_text
+            )
+
+        raise errors.AlbusDefaultError("Unexpected response received", http_res)
+
     async def list_memories(
         self,
         *,
@@ -310,12 +485,12 @@ class AsyncMemories(AsyncBaseSDK):
 
         req = self._build_request_async(
             method="GET",
-            path="/memories",
+            path="/memorygroups/{group}",
             base_url=base_url,
             url_variables=url_variables,
             request=request,
             request_body_required=False,
-            request_has_path_params=False,
+            request_has_path_params=True,
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
@@ -392,12 +567,12 @@ class AsyncMemories(AsyncBaseSDK):
 
         req = self._build_request_async(
             method="DELETE",
-            path="/memories",
+            path="/memorygroups/{group}",
             base_url=base_url,
             url_variables=url_variables,
             request=request,
             request_body_required=False,
-            request_has_path_params=False,
+            request_has_path_params=True,
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
@@ -453,8 +628,8 @@ class AsyncMemories(AsyncBaseSDK):
     async def delete_memory(
         self,
         *,
-        id: str,
         group: str,
+        id: str,
     ):
         r"""Delete one memory
 
@@ -463,21 +638,22 @@ class AsyncMemories(AsyncBaseSDK):
 
         If set, this operation will use either `bearer_auth` or `api_key` from the global security.
 
-        :param id: The memory's identifier, as returned by `GET /memories`.
         :param group: The memory group to read or delete — the `memory.group` value the agents sharing those memories run with.
+
+        :param id: The memory's identifier, as returned by `GET /memorygroups/{group}`.
 
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
 
         request = operations.DeleteMemoryRequest(
-            id=id,
             group=group,
+            id=id,
         )
 
         req = self._build_request_async(
             method="DELETE",
-            path="/memories/{id}",
+            path="/memorygroups/{group}/memories/{id}",
             base_url=base_url,
             url_variables=url_variables,
             request=request,

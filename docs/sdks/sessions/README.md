@@ -10,6 +10,7 @@ Run and inspect agent sessions.
 * [get_session](#get_session) - Get a session with its messages
 * [run_session](#run_session) - Run or resume a session
 * [delete_session](#delete_session) - Delete a session
+* [cancel_session](#cancel_session) - Cancel a session's running invocation
 * [get_session_audit](#get_session_audit) - List a session's audit log
 
 ## list_sessions
@@ -220,16 +221,18 @@ asyncio.run(main())
 
 ### Errors
 
-| Error Type                 | Status Code                | Content Type               |
-| -------------------------- | -------------------------- | -------------------------- |
-| errors.ErrBadRequest       | 400                        | application/json           |
-| errors.ErrUnauthorized     | 401                        | application/json           |
-| errors.ErrConflict         | 409                        | application/json           |
-| errors.ErrLocked           | 423                        | application/json           |
-| errors.ErrQuotaExceeded    | 429                        | application/json           |
-| errors.ErrInvocationFailed | 502                        | application/json           |
-| errors.ErrTimeout          | 504                        | application/json           |
-| errors.AlbusDefaultError   | 4XX, 5XX                   | \*/\*                      |
+| Error Type                   | Status Code                  | Content Type                 |
+| ---------------------------- | ---------------------------- | ---------------------------- |
+| errors.ErrBadRequest         | 400                          | application/json             |
+| errors.ErrUnauthorized       | 401                          | application/json             |
+| errors.ErrInsufficientCredit | 402                          | application/json             |
+| errors.ErrConflict           | 409                          | application/json             |
+| errors.ErrInvocationCanceled | 410                          | application/json             |
+| errors.ErrLocked             | 423                          | application/json             |
+| errors.ErrQuotaExceeded      | 429                          | application/json             |
+| errors.ErrInvocationFailed   | 502                          | application/json             |
+| errors.ErrTimeout            | 504                          | application/json             |
+| errors.AlbusDefaultError     | 4XX, 5XX                     | \*/\*                        |
 
 ## delete_session
 
@@ -288,6 +291,73 @@ asyncio.run(main())
 | ------------------------ | ------------------------ | ------------------------ |
 | errors.ErrUnauthorized   | 401                      | application/json         |
 | errors.ErrNotFound       | 404                      | application/json         |
+| errors.AlbusDefaultError | 4XX, 5XX                 | \*/\*                    |
+
+## cancel_session
+
+Requests cancellation of the invocation currently running for the session. Cancellation is asynchronous: the call returns once the request is accepted, and the invocation resolves as canceled shortly after, unlocking the session for new invocations. A request waiting on the invocation receives its terminal outcome. Returns 409 when the session has no invocation running.
+
+
+### Example Usage
+
+<!-- UsageSnippet language="python" operationID="cancelSession" method="post" path="/sessions/{id}/cancel" -->
+```python
+# Synchronous Example
+from albus_sdk import Albus, models
+import os
+
+
+with Albus(
+    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+) as albus:
+
+    res = albus.sessions.cancel_session(id="<id>")
+
+    # Handle response
+    print(res)
+```
+
+</br>
+
+An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
+
+```python
+# Asynchronous Example
+from albus_sdk import AsyncAlbus, models
+import asyncio
+import os
+
+async def main():
+
+    async with AsyncAlbus(
+        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+    ) as albus:
+
+        res = await albus.sessions.cancel_session(id="<id>")
+
+        # Handle response
+        print(res)
+
+asyncio.run(main())
+```
+
+### Parameters
+
+| Parameter                                                                                                  | Type                                                                                                       | Required                                                                                                   | Description                                                                                                |
+| ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `id`                                                                                                       | *str*                                                                                                      | :heavy_check_mark:                                                                                         | Client-provided session identifier. Use the same value across requests to continue the same agent session. |
+
+### Response
+
+**[models.CancelSessionResponse](../../models/cancelsessionresponse.md)**
+
+### Errors
+
+| Error Type               | Status Code              | Content Type             |
+| ------------------------ | ------------------------ | ------------------------ |
+| errors.ErrUnauthorized   | 401                      | application/json         |
+| errors.ErrNotFound       | 404                      | application/json         |
+| errors.ErrConflict       | 409                      | application/json         |
 | errors.AlbusDefaultError | 4XX, 5XX                 | \*/\*                    |
 
 ## get_session_audit

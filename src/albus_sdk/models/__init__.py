@@ -13,6 +13,10 @@ if TYPE_CHECKING:
     from .auditevent import AuditEvent, AuditEventType, AuditEventTypedDict
     from .authenticatedapikey import AuthenticatedAPIKey, AuthenticatedAPIKeyTypedDict
     from .authenticateduser import AuthenticatedUser, AuthenticatedUserTypedDict
+    from .cancelsessionresponse import (
+        CancelSessionResponse,
+        CancelSessionResponseTypedDict,
+    )
     from .createinviterequest import (
         CreateInviteRequest,
         CreateInviteRequestRole,
@@ -32,6 +36,10 @@ if TYPE_CHECKING:
         ListMemoriesResponse,
         ListMemoriesResponseTypedDict,
     )
+    from .listmemorygroupsresponse import (
+        ListMemoryGroupsResponse,
+        ListMemoryGroupsResponseTypedDict,
+    )
     from .listmodelsresponse import ListModelsResponse, ListModelsResponseTypedDict
     from .listsecretsresponse import ListSecretsResponse, ListSecretsResponseTypedDict
     from .listsessionsresponse import (
@@ -43,6 +51,7 @@ if TYPE_CHECKING:
     from .mcpserver import MCPServer, MCPServerTypedDict
     from .memory import Memory, MemoryStatus, MemoryTypedDict
     from .memoryconfig import Generation, MemoryConfig, MemoryConfigTypedDict
+    from .memorygroup import MemoryGroup, MemoryGroupTypedDict
     from .model import Model, ModelTypedDict
     from .modelmeta import ModelMeta, ModelMetaTypedDict
     from .organizationmembership import (
@@ -93,6 +102,8 @@ __all__ = [
     "AuthenticatedAPIKeyTypedDict",
     "AuthenticatedUser",
     "AuthenticatedUserTypedDict",
+    "CancelSessionResponse",
+    "CancelSessionResponseTypedDict",
     "CreateInviteRequest",
     "CreateInviteRequestRole",
     "CreateInviteRequestTypedDict",
@@ -113,6 +124,8 @@ __all__ = [
     "ListAuditEventsResponseTypedDict",
     "ListMemoriesResponse",
     "ListMemoriesResponseTypedDict",
+    "ListMemoryGroupsResponse",
+    "ListMemoryGroupsResponseTypedDict",
     "ListModelsResponse",
     "ListModelsResponseTypedDict",
     "ListSecretsResponse",
@@ -128,6 +141,8 @@ __all__ = [
     "Memory",
     "MemoryConfig",
     "MemoryConfigTypedDict",
+    "MemoryGroup",
+    "MemoryGroupTypedDict",
     "MemoryStatus",
     "MemoryTypedDict",
     "Model",
@@ -201,6 +216,8 @@ _dynamic_imports: dict[str, str] = {
     "AuthenticatedAPIKeyTypedDict": ".authenticatedapikey",
     "AuthenticatedUser": ".authenticateduser",
     "AuthenticatedUserTypedDict": ".authenticateduser",
+    "CancelSessionResponse": ".cancelsessionresponse",
+    "CancelSessionResponseTypedDict": ".cancelsessionresponse",
     "CreateInviteRequest": ".createinviterequest",
     "CreateInviteRequestRole": ".createinviterequest",
     "CreateInviteRequestTypedDict": ".createinviterequest",
@@ -220,6 +237,8 @@ _dynamic_imports: dict[str, str] = {
     "ListAuditEventsResponseTypedDict": ".listauditeventsresponse",
     "ListMemoriesResponse": ".listmemoriesresponse",
     "ListMemoriesResponseTypedDict": ".listmemoriesresponse",
+    "ListMemoryGroupsResponse": ".listmemorygroupsresponse",
+    "ListMemoryGroupsResponseTypedDict": ".listmemorygroupsresponse",
     "ListModelsResponse": ".listmodelsresponse",
     "ListModelsResponseTypedDict": ".listmodelsresponse",
     "ListSecretsResponse": ".listsecretsresponse",
@@ -238,6 +257,8 @@ _dynamic_imports: dict[str, str] = {
     "Generation": ".memoryconfig",
     "MemoryConfig": ".memoryconfig",
     "MemoryConfigTypedDict": ".memoryconfig",
+    "MemoryGroup": ".memorygroup",
+    "MemoryGroupTypedDict": ".memorygroup",
     "Model": ".model",
     "ModelTypedDict": ".model",
     "ModelMeta": ".modelmeta",

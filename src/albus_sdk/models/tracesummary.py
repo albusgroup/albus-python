@@ -19,7 +19,7 @@ class TraceSummaryTypedDict(TypedDict):
     session_id: str
     r"""The session this invocation belongs to."""
     status: TraceStatus
-    r"""How an invocation or one of its attempts ended, or `RUNNING` while it is still in flight.
+    r"""How an invocation or one of its attempts ended, or `RUNNING` while it is still in flight. `CANCELED` means it was stopped on request before it answered.
 
     """
     spans_expired: bool
@@ -54,7 +54,7 @@ class TraceSummary(BaseModel):
     r"""The session this invocation belongs to."""
 
     status: TraceStatus
-    r"""How an invocation or one of its attempts ended, or `RUNNING` while it is still in flight.
+    r"""How an invocation or one of its attempts ended, or `RUNNING` while it is still in flight. `CANCELED` means it was stopped on request before it answered.
 
     """
 

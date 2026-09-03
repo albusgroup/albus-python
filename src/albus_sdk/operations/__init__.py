@@ -5,6 +5,7 @@ from typing import Any, TYPE_CHECKING
 from albus_sdk.utils.dynamic_imports import lazy_getattr, lazy_dir
 
 if TYPE_CHECKING:
+    from .cancelsession import CancelSessionRequest, CancelSessionRequestTypedDict
     from .deletememory import DeleteMemoryRequest, DeleteMemoryRequestTypedDict
     from .deletememorygroup import (
         DeleteMemoryGroupRequest,
@@ -30,6 +31,10 @@ if TYPE_CHECKING:
         GetTraceResponseTypedDict,
     )
     from .listmemories import ListMemoriesRequest, ListMemoriesRequestTypedDict
+    from .listmemorygroups import (
+        ListMemoryGroupsRequest,
+        ListMemoryGroupsRequestTypedDict,
+    )
     from .listtraces import ListTracesRequest, ListTracesRequestTypedDict
     from .runsession import (
         RunSessionRequest,
@@ -41,6 +46,8 @@ if TYPE_CHECKING:
 
 __all__ = [
     "Attempts",
+    "CancelSessionRequest",
+    "CancelSessionRequestTypedDict",
     "DeleteMemoryGroupRequest",
     "DeleteMemoryGroupRequestTypedDict",
     "DeleteMemoryRequest",
@@ -69,6 +76,8 @@ __all__ = [
     "GetTraceResponseTypedDict",
     "ListMemoriesRequest",
     "ListMemoriesRequestTypedDict",
+    "ListMemoryGroupsRequest",
+    "ListMemoryGroupsRequestTypedDict",
     "ListTracesRequest",
     "ListTracesRequestTypedDict",
     "RunSessionRequest",
@@ -80,6 +89,8 @@ __all__ = [
 ]
 
 _dynamic_imports: dict[str, str] = {
+    "CancelSessionRequest": ".cancelsession",
+    "CancelSessionRequestTypedDict": ".cancelsession",
     "DeleteMemoryRequest": ".deletememory",
     "DeleteMemoryRequestTypedDict": ".deletememory",
     "DeleteMemoryGroupRequest": ".deletememorygroup",
@@ -109,6 +120,8 @@ _dynamic_imports: dict[str, str] = {
     "GetTraceResponseTypedDict": ".gettrace",
     "ListMemoriesRequest": ".listmemories",
     "ListMemoriesRequestTypedDict": ".listmemories",
+    "ListMemoryGroupsRequest": ".listmemorygroups",
+    "ListMemoryGroupsRequestTypedDict": ".listmemorygroups",
     "ListTracesRequest": ".listtraces",
     "ListTracesRequestTypedDict": ".listtraces",
     "RunSessionRequest": ".runsession",

@@ -6,9 +6,79 @@ Read and delete what your agents remember.
 
 ### Available Operations
 
+* [list_memory_groups](#list_memory_groups) - List memory groups
 * [list_memories](#list_memories) - List a group's memories
 * [delete_memory_group](#delete_memory_group) - Delete a group's memories
 * [delete_memory](#delete_memory) - Delete one memory
+
+## list_memory_groups
+
+Lists the memory groups of your organization, ordered by key: every `memory.group` value an agent has run with, along with how many memories agents in the group currently read. Read a group's memories with `GET /memorygroups/{group}`.
+
+Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present — you have reached the end when it is absent.
+
+
+### Example Usage
+
+<!-- UsageSnippet language="python" operationID="listMemoryGroups" method="get" path="/memorygroups" -->
+```python
+# Synchronous Example
+from albus_sdk import Albus, models
+import os
+
+
+with Albus(
+    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+) as albus:
+
+    res = albus.memories.list_memory_groups(limit=100)
+
+    # Handle response
+    print(res)
+```
+
+</br>
+
+An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
+
+```python
+# Asynchronous Example
+from albus_sdk import AsyncAlbus, models
+import asyncio
+import os
+
+async def main():
+
+    async with AsyncAlbus(
+        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+    ) as albus:
+
+        res = await albus.memories.list_memory_groups(limit=100)
+
+        # Handle response
+        print(res)
+
+asyncio.run(main())
+```
+
+### Parameters
+
+| Parameter                                                                                                                           | Type                                                                                                                                | Required                                                                                                                            | Description                                                                                                                         |
+| ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `after`                                                                                                                             | *Optional[str]*                                                                                                                     | :heavy_minus_sign:                                                                                                                  | Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.<br/> |
+| `limit`                                                                                                                             | *Optional[int]*                                                                                                                     | :heavy_minus_sign:                                                                                                                  | Maximum number of items to return.                                                                                                  |
+
+### Response
+
+**[models.ListMemoryGroupsResponse](../../models/listmemorygroupsresponse.md)**
+
+### Errors
+
+| Error Type               | Status Code              | Content Type             |
+| ------------------------ | ------------------------ | ------------------------ |
+| errors.ErrBadRequest     | 400                      | application/json         |
+| errors.ErrUnauthorized   | 401                      | application/json         |
+| errors.AlbusDefaultError | 4XX, 5XX                 | \*/\*                    |
 
 ## list_memories
 
@@ -19,7 +89,7 @@ Page with `after` and `limit`: pass the response's `next_cursor` as the next req
 
 ### Example Usage
 
-<!-- UsageSnippet language="python" operationID="listMemories" method="get" path="/memories" -->
+<!-- UsageSnippet language="python" operationID="listMemories" method="get" path="/memorygroups/{group}" -->
 ```python
 # Synchronous Example
 from albus_sdk import Albus, models
@@ -87,7 +157,7 @@ Deletes every memory of one memory group. Agents bound to the group remember not
 
 ### Example Usage
 
-<!-- UsageSnippet language="python" operationID="deleteMemoryGroup" method="delete" path="/memories" -->
+<!-- UsageSnippet language="python" operationID="deleteMemoryGroup" method="delete" path="/memorygroups/{group}" -->
 ```python
 # Synchronous Example
 from albus_sdk import Albus, models
@@ -147,7 +217,7 @@ Deletes one memory of a memory group. Agents bound to the group stop reading it,
 
 ### Example Usage
 
-<!-- UsageSnippet language="python" operationID="deleteMemory" method="delete" path="/memories/{id}" -->
+<!-- UsageSnippet language="python" operationID="deleteMemory" method="delete" path="/memorygroups/{group}/memories/{id}" -->
 ```python
 # Synchronous Example
 from albus_sdk import Albus, models
@@ -158,7 +228,7 @@ with Albus(
     access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
-    albus.memories.delete_memory(id="<id>", group="<value>")
+    albus.memories.delete_memory(group="<value>", id="<id>")
 
     # Use the SDK ...
 ```
@@ -179,7 +249,7 @@ async def main():
         access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
-        await albus.memories.delete_memory(id="<id>", group="<value>")
+        await albus.memories.delete_memory(group="<value>", id="<id>")
 
         # Use the SDK ...
 
@@ -190,8 +260,8 @@ asyncio.run(main())
 
 | Parameter                                                                                                  | Type                                                                                                       | Required                                                                                                   | Description                                                                                                |
 | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `id`                                                                                                       | *str*                                                                                                      | :heavy_check_mark:                                                                                         | The memory's identifier, as returned by `GET /memories`.                                                   |
 | `group`                                                                                                    | *str*                                                                                                      | :heavy_check_mark:                                                                                         | The memory group to read or delete — the `memory.group` value the agents sharing those memories run with.<br/> |
+| `id`                                                                                                       | *str*                                                                                                      | :heavy_check_mark:                                                                                         | The memory's identifier, as returned by `GET /memorygroups/{group}`.<br/>                                  |
 
 ### Errors
 

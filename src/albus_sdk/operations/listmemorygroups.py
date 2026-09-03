@@ -2,17 +2,13 @@
 
 from __future__ import annotations
 from albus_sdk.types import BaseModel, UNSET_SENTINEL
-from albus_sdk.utils import FieldMetadata, PathParamMetadata, QueryParamMetadata
+from albus_sdk.utils import FieldMetadata, QueryParamMetadata
 from pydantic import model_serializer
 from typing import Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class ListMemoriesRequestTypedDict(TypedDict):
-    group: str
-    r"""The memory group to read or delete — the `memory.group` value the agents sharing those memories run with.
-
-    """
+class ListMemoryGroupsRequestTypedDict(TypedDict):
     after: NotRequired[str]
     r"""Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
 
@@ -21,14 +17,7 @@ class ListMemoriesRequestTypedDict(TypedDict):
     r"""Maximum number of items to return."""
 
 
-class ListMemoriesRequest(BaseModel):
-    group: Annotated[
-        str, FieldMetadata(path=PathParamMetadata(style="simple", explode=False))
-    ]
-    r"""The memory group to read or delete — the `memory.group` value the agents sharing those memories run with.
-
-    """
-
+class ListMemoryGroupsRequest(BaseModel):
     after: Annotated[
         Optional[str],
         FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),

@@ -341,12 +341,27 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrLocked"
+        "402":
+          description: The organization has no credit balance remaining
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrInsufficientCredit"
         "429":
           description: The organization has reached its invocation quota
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrQuotaExceeded"
+        "410":
+          description: >
+            The invocation was canceled instead of producing a response (only
+            possible while waiting for a response, or when replaying a
+            canceled invocation).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrInvocationCanceled"
         "502":
           description: >
             The invocation failed instead of producing a response (only
@@ -385,6 +400,50 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrNotFound"
+
+  /sessions/{id}/cancel:
+    parameters:
+      - $ref: "#/components/parameters/SessionID"
+    post:
+      operationId: cancelSession
+      summary: Cancel a session's running invocation
+      description: >
+        Requests cancellation of the invocation currently running for the
+        session. Cancellation is asynchronous: the call returns once the
+        request is accepted, and the invocation resolves as canceled shortly
+        after, unlocking the session for new invocations. A request waiting on
+        the invocation receives its terminal outcome. Returns 409 when the
+        session has no invocation running.
+      tags:
+        - Sessions
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      responses:
+        "202":
+          description: Cancellation requested
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CancelSessionResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrNotFound"
+        "409":
+          description: No invocation is currently running for this session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrConflict"
 
   /sessions/{id}/audit:
     parameters:
@@ -888,7 +947,49 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrNotFound"
 
-  /memories:
+  /memorygroups:
+    get:
+      operationId: listMemoryGroups
+      summary: List memory groups
+      description: >
+        Lists the memory groups of your organization, ordered by key: every
+        `memory.group` value an agent has run with, along with how many
+        memories agents in the group currently read. Read a group's memories
+        with `GET /memorygroups/{group}`.
+
+
+        Page with `after` and `limit`: pass the response's `next_cursor` as the
+        next request's `after`, and keep requesting while `next_cursor` is
+        present — you have reached the end when it is absent.
+      tags:
+        - Memories
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - $ref: "#/components/parameters/AfterCursor"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListMemoryGroupsResponse"
+        "400":
+          description: Invalid cursor
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrBadRequest"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+
+  /memorygroups/{group}:
     get:
       operationId: listMemories
       summary: List a group's memories
@@ -960,7 +1061,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrUnauthorized"
 
-  /memories/{id}:
+  /memorygroups/{group}/memories/{id}:
     delete:
       operationId: deleteMemory
       summary: Delete one memory
@@ -974,8 +1075,8 @@ paths:
         - bearerAuth: []
         - apiKey: []
       parameters:
-        - $ref: "#/components/parameters/MemoryID"
         - $ref: "#/components/parameters/MemoryGroup"
+        - $ref: "#/components/parameters/MemoryID"
       responses:
         "204":
           description: Deleted
@@ -1171,7 +1272,7 @@ components:
         maxLength: 255
     MemoryGroup:
       name: group
-      in: query
+      in: path
       required: true
       description: >
         The memory group to read or delete — the `memory.group` value the
@@ -1184,7 +1285,8 @@ components:
       name: id
       in: path
       required: true
-      description: The memory's identifier, as returned by `GET /memories`.
+      description: >
+        The memory's identifier, as returned by `GET /memorygroups/{group}`.
       schema:
         type: string
         minLength: 1
@@ -1462,6 +1564,35 @@ components:
           type: string
           description: Human-readable error message
           example: "organization invocation quota exceeded"
+
+    ErrInsufficientCredit:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Human-readable error message
+          example: "organization has no credit balance remaining"
+
+    CancelSessionResponse:
+      type: object
+      required:
+        - invocation_key
+      properties:
+        invocation_key:
+          type: string
+          description: The key of the invocation being canceled.
+
+    ErrInvocationCanceled:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Human-readable explanation
+          example: "the invocation was canceled"
 
     ErrInvocationFailed:
       type: object
@@ -1991,7 +2122,7 @@ components:
         id:
           type: string
           description: >
-            Identifier of this memory; pass it to `DELETE /memories/{id}`.
+            Identifier of this memory; pass it to `DELETE /memorygroups/{group}/memories/{id}`.
         content:
           type: string
           description: The fact remembered, as the agent stated it.
@@ -2026,15 +2157,50 @@ components:
           description: >
             Cursor for the next page. Pass it as `after` to fetch the following
             memories. Omitted when there are no more memories.
+    MemoryGroup:
+      type: object
+      required:
+        - key
+        - active_memories
+        - created_at
+      properties:
+        key:
+          type: string
+          description: >
+            The group's name — the `memory.group` value agents sharing its
+            memories run with. Read its memories at `GET /memorygroups/{group}`.
+        active_memories:
+          type: integer
+          format: int64
+          description: Number of memories agents in the group currently read.
+        created_at:
+          type: string
+          format: date-time
+          description: When an agent first ran with this group.
+    ListMemoryGroupsResponse:
+      type: object
+      required:
+        - memory_groups
+      properties:
+        memory_groups:
+          type: array
+          items:
+            $ref: "#/components/schemas/MemoryGroup"
+        next_cursor:
+          type: string
+          description: >
+            Cursor for the next page. Pass it as `after` to fetch the following
+            groups. Omitted when there are no more groups.
 
     # Traces API (top-level /traces)
 
     TraceStatus:
       type: string
-      enum: [RUNNING, SUCCEEDED, FAILED]
+      enum: [RUNNING, SUCCEEDED, FAILED, CANCELED]
       description: >
         How an invocation or one of its attempts ended, or `RUNNING` while it
-        is still in flight.
+        is still in flight. `CANCELED` means it was stopped on request before
+        it answered.
 
     TokenUsage:
       type: object
@@ -2310,8 +2476,9 @@ components:
               allOf:
                 - $ref: "#/components/schemas/TraceFailure"
               description: >
-                Why the invocation failed. Present only when `status` is
-                `FAILED`, and readable past the retention window, since it
+                Why the invocation ended without answering. Present only when
+                `status` is `FAILED` or `CANCELED`, and readable past the
+                retention window, since it
                 comes from the invocation rather than its spans. Read it here
                 rather than from `GET /traces`, which reports only that an
                 invocation failed — listing a page of reasons costs a lookup

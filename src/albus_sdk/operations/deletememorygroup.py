@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from albus_sdk.types import BaseModel
-from albus_sdk.utils import FieldMetadata, QueryParamMetadata
+from albus_sdk.utils import FieldMetadata, PathParamMetadata
 from typing_extensions import Annotated, TypedDict
 
 
@@ -15,7 +15,7 @@ class DeleteMemoryGroupRequestTypedDict(TypedDict):
 
 class DeleteMemoryGroupRequest(BaseModel):
     group: Annotated[
-        str, FieldMetadata(query=QueryParamMetadata(style="form", explode=True))
+        str, FieldMetadata(path=PathParamMetadata(style="simple", explode=False))
     ]
     r"""The memory group to read or delete — the `memory.group` value the agents sharing those memories run with.
 

@@ -284,9 +284,19 @@ class Sessions(BaseSDK):
                 errors.ErrUnauthorizedData, http_res
             )
             raise errors.ErrUnauthorized(response_data, http_res)
+        if utils.match_response(http_res, "402", "application/json"):
+            response_data = unmarshal_json_response(
+                errors.ErrInsufficientCreditData, http_res
+            )
+            raise errors.ErrInsufficientCredit(response_data, http_res)
         if utils.match_response(http_res, "409", "application/json"):
             response_data = unmarshal_json_response(errors.ErrConflictData, http_res)
             raise errors.ErrConflict(response_data, http_res)
+        if utils.match_response(http_res, "410", "application/json"):
+            response_data = unmarshal_json_response(
+                errors.ErrInvocationCanceledData, http_res
+            )
+            raise errors.ErrInvocationCanceled(response_data, http_res)
         if utils.match_response(http_res, "423", "application/json"):
             response_data = unmarshal_json_response(errors.ErrLockedData, http_res)
             raise errors.ErrLocked(response_data, http_res)
@@ -381,6 +391,90 @@ class Sessions(BaseSDK):
         if utils.match_response(http_res, "404", "application/json"):
             response_data = unmarshal_json_response(errors.ErrNotFoundData, http_res)
             raise errors.ErrNotFound(response_data, http_res)
+        if utils.match_response(http_res, "4XX", "*"):
+            http_res_text = utils.stream_to_text(http_res)
+            raise errors.AlbusDefaultError(
+                "API error occurred", http_res, http_res_text
+            )
+        if utils.match_response(http_res, "5XX", "*"):
+            http_res_text = utils.stream_to_text(http_res)
+            raise errors.AlbusDefaultError(
+                "API error occurred", http_res, http_res_text
+            )
+
+        raise errors.AlbusDefaultError("Unexpected response received", http_res)
+
+    def cancel_session(
+        self,
+        *,
+        id: str,
+    ) -> models.CancelSessionResponse:
+        r"""Cancel a session's running invocation
+
+        Requests cancellation of the invocation currently running for the session. Cancellation is asynchronous: the call returns once the request is accepted, and the invocation resolves as canceled shortly after, unlocking the session for new invocations. A request waiting on the invocation receives its terminal outcome. Returns 409 when the session has no invocation running.
+
+
+        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
+
+        :param id: Client-provided session identifier. Use the same value across requests to continue the same agent session.
+        """
+        url_variables = None
+        base_url = self._get_url(None, url_variables)
+
+        request = operations.CancelSessionRequest(
+            id=id,
+        )
+
+        req = self._build_request(
+            method="POST",
+            path="/sessions/{id}/cancel",
+            base_url=base_url,
+            url_variables=url_variables,
+            request=request,
+            request_body_required=False,
+            request_has_path_params=True,
+            request_has_query_params=True,
+            user_agent_header="user-agent",
+            accept_header_value="application/json",
+            security=self.sdk_configuration.security,
+            allow_empty_value=None,
+            allowed_fields=["bearer_auth", "api_key"],
+            timeout_ms=self.sdk_configuration.timeout_ms,
+        )
+
+        retry_config = None
+
+        http_res = self.do_request(
+            hook_ctx=HookContext(
+                config=self.sdk_configuration,
+                base_url=base_url or "",
+                operation_id="cancelSession",
+                oauth2_scopes=None,
+                security_source=get_security_from_env(
+                    self.sdk_configuration.security, models.Security
+                ),
+                tags=["Sessions"],
+                extensions=None,
+            ),
+            request=req,
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
+            retry_config=None,
+        )
+
+        response_data: Any = None
+        if utils.match_response(http_res, "202", "application/json"):
+            return unmarshal_json_response(models.CancelSessionResponse, http_res)
+        if utils.match_response(http_res, "401", "application/json"):
+            response_data = unmarshal_json_response(
+                errors.ErrUnauthorizedData, http_res
+            )
+            raise errors.ErrUnauthorized(response_data, http_res)
+        if utils.match_response(http_res, "404", "application/json"):
+            response_data = unmarshal_json_response(errors.ErrNotFoundData, http_res)
+            raise errors.ErrNotFound(response_data, http_res)
+        if utils.match_response(http_res, "409", "application/json"):
+            response_data = unmarshal_json_response(errors.ErrConflictData, http_res)
+            raise errors.ErrConflict(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
             raise errors.AlbusDefaultError(
@@ -761,9 +855,19 @@ class AsyncSessions(AsyncBaseSDK):
                 errors.ErrUnauthorizedData, http_res
             )
             raise errors.ErrUnauthorized(response_data, http_res)
+        if utils.match_response(http_res, "402", "application/json"):
+            response_data = unmarshal_json_response(
+                errors.ErrInsufficientCreditData, http_res
+            )
+            raise errors.ErrInsufficientCredit(response_data, http_res)
         if utils.match_response(http_res, "409", "application/json"):
             response_data = unmarshal_json_response(errors.ErrConflictData, http_res)
             raise errors.ErrConflict(response_data, http_res)
+        if utils.match_response(http_res, "410", "application/json"):
+            response_data = unmarshal_json_response(
+                errors.ErrInvocationCanceledData, http_res
+            )
+            raise errors.ErrInvocationCanceled(response_data, http_res)
         if utils.match_response(http_res, "423", "application/json"):
             response_data = unmarshal_json_response(errors.ErrLockedData, http_res)
             raise errors.ErrLocked(response_data, http_res)
@@ -858,6 +962,90 @@ class AsyncSessions(AsyncBaseSDK):
         if utils.match_response(http_res, "404", "application/json"):
             response_data = unmarshal_json_response(errors.ErrNotFoundData, http_res)
             raise errors.ErrNotFound(response_data, http_res)
+        if utils.match_response(http_res, "4XX", "*"):
+            http_res_text = await utils.stream_to_text_async(http_res)
+            raise errors.AlbusDefaultError(
+                "API error occurred", http_res, http_res_text
+            )
+        if utils.match_response(http_res, "5XX", "*"):
+            http_res_text = await utils.stream_to_text_async(http_res)
+            raise errors.AlbusDefaultError(
+                "API error occurred", http_res, http_res_text
+            )
+
+        raise errors.AlbusDefaultError("Unexpected response received", http_res)
+
+    async def cancel_session(
+        self,
+        *,
+        id: str,
+    ) -> models.CancelSessionResponse:
+        r"""Cancel a session's running invocation
+
+        Requests cancellation of the invocation currently running for the session. Cancellation is asynchronous: the call returns once the request is accepted, and the invocation resolves as canceled shortly after, unlocking the session for new invocations. A request waiting on the invocation receives its terminal outcome. Returns 409 when the session has no invocation running.
+
+
+        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
+
+        :param id: Client-provided session identifier. Use the same value across requests to continue the same agent session.
+        """
+        url_variables = None
+        base_url = self._get_url(None, url_variables)
+
+        request = operations.CancelSessionRequest(
+            id=id,
+        )
+
+        req = self._build_request_async(
+            method="POST",
+            path="/sessions/{id}/cancel",
+            base_url=base_url,
+            url_variables=url_variables,
+            request=request,
+            request_body_required=False,
+            request_has_path_params=True,
+            request_has_query_params=True,
+            user_agent_header="user-agent",
+            accept_header_value="application/json",
+            security=self.sdk_configuration.security,
+            allow_empty_value=None,
+            allowed_fields=["bearer_auth", "api_key"],
+            timeout_ms=self.sdk_configuration.timeout_ms,
+        )
+
+        retry_config = None
+
+        http_res = await self.do_request_async(
+            hook_ctx=HookContext(
+                config=self.sdk_configuration,
+                base_url=base_url or "",
+                operation_id="cancelSession",
+                oauth2_scopes=None,
+                security_source=get_security_from_env(
+                    self.sdk_configuration.security, models.Security
+                ),
+                tags=["Sessions"],
+                extensions=None,
+            ),
+            request=req,
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
+            retry_config=None,
+        )
+
+        response_data: Any = None
+        if utils.match_response(http_res, "202", "application/json"):
+            return unmarshal_json_response(models.CancelSessionResponse, http_res)
+        if utils.match_response(http_res, "401", "application/json"):
+            response_data = unmarshal_json_response(
+                errors.ErrUnauthorizedData, http_res
+            )
+            raise errors.ErrUnauthorized(response_data, http_res)
+        if utils.match_response(http_res, "404", "application/json"):
+            response_data = unmarshal_json_response(errors.ErrNotFoundData, http_res)
+            raise errors.ErrNotFound(response_data, http_res)
+        if utils.match_response(http_res, "409", "application/json"):
+            response_data = unmarshal_json_response(errors.ErrConflictData, http_res)
+            raise errors.ErrConflict(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
             raise errors.AlbusDefaultError(

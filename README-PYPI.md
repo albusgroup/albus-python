@@ -326,6 +326,7 @@ asyncio.run(main())
 
 ### [Memories](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/memories/README.md)
 
+* [list_memory_groups](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/memories/README.md#list_memory_groups) - List memory groups
 * [list_memories](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/memories/README.md#list_memories) - List a group's memories
 * [delete_memory_group](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/memories/README.md#delete_memory_group) - Delete a group's memories
 * [delete_memory](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/memories/README.md#delete_memory) - Delete one memory
@@ -348,6 +349,7 @@ asyncio.run(main())
 * [get_session](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/sessions/README.md#get_session) - Get a session with its messages
 * [run_session](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/sessions/README.md#run_session) - Run or resume a session
 * [delete_session](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/sessions/README.md#delete_session) - Delete a session
+* [cancel_session](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/sessions/README.md#cancel_session) - Cancel a session's running invocation
 * [get_session_audit](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/sessions/README.md#get_session_audit) - List a session's audit log
 
 ### [Tokens](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/tokens/README.md)
@@ -464,7 +466,7 @@ asyncio.run(main())
 * [`AlbusError`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/albuserror.py): The base class for HTTP error responses.
   * [`ErrUnauthorized`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errunauthorized.py): Status code `401`. *
 
-<details><summary>Less common errors (14)</summary>
+<details><summary>Less common errors (16)</summary>
 
 <br />
 
@@ -475,15 +477,17 @@ asyncio.run(main())
 
 
 **Inherit from [`AlbusError`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/albuserror.py)**:
-* [`ErrNotFound`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errnotfound.py): Status code `404`. Applicable to 13 of 26 methods.*
-* [`ErrBadRequest`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errbadrequest.py): Status code `400`. Applicable to 11 of 26 methods.*
-* [`ErrConflict`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errconflict.py): Status code `409`. Applicable to 2 of 26 methods.*
-* [`ErrLocked`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errlocked.py): Another invocation is currently running for this session. Status code `423`. Applicable to 1 of 26 methods.*
-* [`ErrQuotaExceeded`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errquotaexceeded.py): The organization has reached its invocation quota. Status code `429`. Applicable to 1 of 26 methods.*
-* [`ErrInvocationFailed`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errinvocationfailed.py): The invocation failed instead of producing a response (only possible while waiting for a response, or when replaying a failed invocation). The body carries the failure kind and detail. Status code `502`. Applicable to 1 of 26 methods.*
-* [`ErrUnavailable`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errunavailable.py): The invocation's spans could not be read. Retry the request; the invocation and its spans are unaffected. Status code `503`. Applicable to 1 of 26 methods.*
-* [`HealthResponseError`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/healthresponseerror.py): Service is healthy. Status code `503`. Applicable to 1 of 26 methods.*
-* [`ErrTimeout`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errtimeout.py): Timed out waiting for the assistant response. Status code `504`. Applicable to 1 of 26 methods.*
+* [`ErrNotFound`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errnotfound.py): Status code `404`. Applicable to 14 of 28 methods.*
+* [`ErrBadRequest`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errbadrequest.py): Status code `400`. Applicable to 12 of 28 methods.*
+* [`ErrConflict`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errconflict.py): Status code `409`. Applicable to 3 of 28 methods.*
+* [`ErrInsufficientCredit`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errinsufficientcredit.py): The organization has no credit balance remaining. Status code `402`. Applicable to 1 of 28 methods.*
+* [`ErrInvocationCanceled`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errinvocationcanceled.py): The invocation was canceled instead of producing a response (only possible while waiting for a response, or when replaying a canceled invocation). Status code `410`. Applicable to 1 of 28 methods.*
+* [`ErrLocked`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errlocked.py): Another invocation is currently running for this session. Status code `423`. Applicable to 1 of 28 methods.*
+* [`ErrQuotaExceeded`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errquotaexceeded.py): The organization has reached its invocation quota. Status code `429`. Applicable to 1 of 28 methods.*
+* [`ErrInvocationFailed`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errinvocationfailed.py): The invocation failed instead of producing a response (only possible while waiting for a response, or when replaying a failed invocation). The body carries the failure kind and detail. Status code `502`. Applicable to 1 of 28 methods.*
+* [`ErrUnavailable`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errunavailable.py): The invocation's spans could not be read. Retry the request; the invocation and its spans are unaffected. Status code `503`. Applicable to 1 of 28 methods.*
+* [`HealthResponseError`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/healthresponseerror.py): Service is healthy. Status code `503`. Applicable to 1 of 28 methods.*
+* [`ErrTimeout`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errtimeout.py): Timed out waiting for the assistant response. Status code `504`. Applicable to 1 of 28 methods.*
 * [`ResponseValidationError`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/responsevalidationerror.py): Type mismatch between the response data and the expected Pydantic model. Provides access to the Pydantic validation error via the `cause` attribute.
 
 </details>

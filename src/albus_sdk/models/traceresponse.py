@@ -22,7 +22,7 @@ class TraceResponseTypedDict(TypedDict):
     session_id: str
     r"""The session this invocation belongs to."""
     status: TraceStatus
-    r"""How an invocation or one of its attempts ended, or `RUNNING` while it is still in flight.
+    r"""How an invocation or one of its attempts ended, or `RUNNING` while it is still in flight. `CANCELED` means it was stopped on request before it answered.
 
     """
     spans_expired: bool
@@ -52,7 +52,7 @@ class TraceResponseTypedDict(TypedDict):
 
     """
     failure: NotRequired[TraceFailureTypedDict]
-    r"""Why the invocation failed. Present only when `status` is `FAILED`, and readable past the retention window, since it comes from the invocation rather than its spans. Read it here rather than from `GET /traces`, which reports only that an invocation failed — listing a page of reasons costs a lookup per invocation on it.
+    r"""Why the invocation ended without answering. Present only when `status` is `FAILED` or `CANCELED`, and readable past the retention window, since it comes from the invocation rather than its spans. Read it here rather than from `GET /traces`, which reports only that an invocation failed — listing a page of reasons costs a lookup per invocation on it.
 
     """
     attempts: NotRequired[List[TraceAttemptTypedDict]]
@@ -77,7 +77,7 @@ class TraceResponse(BaseModel):
     r"""The session this invocation belongs to."""
 
     status: TraceStatus
-    r"""How an invocation or one of its attempts ended, or `RUNNING` while it is still in flight.
+    r"""How an invocation or one of its attempts ended, or `RUNNING` while it is still in flight. `CANCELED` means it was stopped on request before it answered.
 
     """
 
@@ -115,7 +115,7 @@ class TraceResponse(BaseModel):
     """
 
     failure: Optional[TraceFailure] = None
-    r"""Why the invocation failed. Present only when `status` is `FAILED`, and readable past the retention window, since it comes from the invocation rather than its spans. Read it here rather than from `GET /traces`, which reports only that an invocation failed — listing a page of reasons costs a lookup per invocation on it.
+    r"""Why the invocation ended without answering. Present only when `status` is `FAILED` or `CANCELED`, and readable past the retention window, since it comes from the invocation rather than its spans. Read it here rather than from `GET /traces`, which reports only that an invocation failed — listing a page of reasons costs a lookup per invocation on it.
 
     """
 
