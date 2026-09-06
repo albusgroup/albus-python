@@ -23,10 +23,12 @@ import weakref
 if TYPE_CHECKING:
     from albus_sdk.agents import Agents, AsyncAgents
     from albus_sdk.auth import AsyncAuth, Auth
+    from albus_sdk.billing import AsyncBilling, Billing
     from albus_sdk.health import AsyncHealth, Health
     from albus_sdk.invites import AsyncInvites, Invites
     from albus_sdk.memories import AsyncMemories, Memories
     from albus_sdk.models_ import AsyncModels, Models
+    from albus_sdk.organization_sdk import AsyncOrganizationSDK, OrganizationSDK
     from albus_sdk.secrets import AsyncSecrets, Secrets
     from albus_sdk.sessions import AsyncSessions, Sessions
     from albus_sdk.tokens import AsyncTokens, Tokens
@@ -42,6 +44,9 @@ class Albus(BaseSDK):
     r"""Run and inspect agent sessions."""
     traces: "Traces"
     r"""Find your agent invocations and read what they did."""
+    organization: "OrganizationSDK"
+    r"""View and manage the organization you are acting in."""
+    invites: "Invites"
     tokens: "Tokens"
     r"""Manage organization API keys."""
     agents: "Agents"
@@ -54,24 +59,28 @@ class Albus(BaseSDK):
     r"""Check service availability."""
     auth: "Auth"
     r"""Identify the authenticated user."""
-    invites: "Invites"
+    billing: "Billing"
+    r"""Buy the prepaid credits agent sessions run on."""
     _sub_sdk_map = {
         "secrets": ("albus_sdk.secrets", "Secrets"),
         "sessions": ("albus_sdk.sessions", "Sessions"),
         "traces": ("albus_sdk.traces", "Traces"),
+        "organization": ("albus_sdk.organization_sdk", "OrganizationSDK"),
+        "invites": ("albus_sdk.invites", "Invites"),
         "tokens": ("albus_sdk.tokens", "Tokens"),
         "agents": ("albus_sdk.agents", "Agents"),
         "memories": ("albus_sdk.memories", "Memories"),
         "models": ("albus_sdk.models_", "Models"),
         "health": ("albus_sdk.health", "Health"),
         "auth": ("albus_sdk.auth", "Auth"),
-        "invites": ("albus_sdk.invites", "Invites"),
+        "billing": ("albus_sdk.billing", "Billing"),
     }
 
     def __init__(
         self,
         api_key: Optional[str] = None,
         access_token: Optional[str] = None,
+        x_albus_organization: Optional[str] = None,
         server_idx: Optional[int] = None,
         url_params: Optional[Dict[str, str]] = None,
         server_url: Optional[str] = None,
@@ -82,6 +91,7 @@ class Albus(BaseSDK):
     ) -> None:
         r"""Instantiates the SDK configuring it with the provided parameters.
 
+        :param x_albus_organization: Configures the x_albus_organization parameter for all supported operations
         :param server_idx: The index of the server to use for all methods
         :param server_url: The server URL to use for all methods
         :param url_params: Parameters to optionally template the server URL with
@@ -114,6 +124,12 @@ class Albus(BaseSDK):
             if url_params is not None:
                 server_url = utils.template_url(server_url, url_params)
 
+        _globals = models_.internal.Globals(
+            x_albus_organization=utils.get_global_from_env(
+                x_albus_organization, "ALBUS_X_ALBUS_ORGANIZATION", str
+            ),
+        )
+
         BaseSDK.__init__(
             self,
             SDKConfiguration(
@@ -121,6 +137,7 @@ class Albus(BaseSDK):
                 client_supplied=client_supplied,
                 async_client=None,
                 async_client_supplied=False,
+                globals=_globals,
                 security=security,
                 server_url=server_url,
                 server_idx=server_idx,
@@ -205,6 +222,9 @@ class AsyncAlbus(AsyncBaseSDK):
     r"""Run and inspect agent sessions."""
     traces: "AsyncTraces"
     r"""Find your agent invocations and read what they did."""
+    organization: "AsyncOrganizationSDK"
+    r"""View and manage the organization you are acting in."""
+    invites: "AsyncInvites"
     tokens: "AsyncTokens"
     r"""Manage organization API keys."""
     agents: "AsyncAgents"
@@ -217,24 +237,28 @@ class AsyncAlbus(AsyncBaseSDK):
     r"""Check service availability."""
     auth: "AsyncAuth"
     r"""Identify the authenticated user."""
-    invites: "AsyncInvites"
+    billing: "AsyncBilling"
+    r"""Buy the prepaid credits agent sessions run on."""
     _sub_sdk_map = {
         "secrets": ("albus_sdk.secrets", "AsyncSecrets"),
         "sessions": ("albus_sdk.sessions", "AsyncSessions"),
         "traces": ("albus_sdk.traces", "AsyncTraces"),
+        "organization": ("albus_sdk.organization_sdk", "AsyncOrganizationSDK"),
+        "invites": ("albus_sdk.invites", "AsyncInvites"),
         "tokens": ("albus_sdk.tokens", "AsyncTokens"),
         "agents": ("albus_sdk.agents", "AsyncAgents"),
         "memories": ("albus_sdk.memories", "AsyncMemories"),
         "models": ("albus_sdk.models_", "AsyncModels"),
         "health": ("albus_sdk.health", "AsyncHealth"),
         "auth": ("albus_sdk.auth", "AsyncAuth"),
-        "invites": ("albus_sdk.invites", "AsyncInvites"),
+        "billing": ("albus_sdk.billing", "AsyncBilling"),
     }
 
     def __init__(
         self,
         api_key: Optional[str] = None,
         access_token: Optional[str] = None,
+        x_albus_organization: Optional[str] = None,
         server_idx: Optional[int] = None,
         url_params: Optional[Dict[str, str]] = None,
         server_url: Optional[str] = None,
@@ -245,6 +269,7 @@ class AsyncAlbus(AsyncBaseSDK):
     ) -> None:
         r"""Instantiates the SDK configuring it with the provided parameters.
 
+        :param x_albus_organization: Configures the x_albus_organization parameter for all supported operations
         :param server_idx: The index of the server to use for all methods
         :param server_url: The server URL to use for all methods
         :param url_params: Parameters to optionally template the server URL with
@@ -275,6 +300,12 @@ class AsyncAlbus(AsyncBaseSDK):
             if url_params is not None:
                 server_url = utils.template_url(server_url, url_params)
 
+        _globals = models_.internal.Globals(
+            x_albus_organization=utils.get_global_from_env(
+                x_albus_organization, "ALBUS_X_ALBUS_ORGANIZATION", str
+            ),
+        )
+
         AsyncBaseSDK.__init__(
             self,
             SDKConfiguration(
@@ -282,6 +313,7 @@ class AsyncAlbus(AsyncBaseSDK):
                 client_supplied=False,
                 async_client=async_client,
                 async_client_supplied=async_client_supplied,
+                globals=_globals,
                 security=security,
                 server_url=server_url,
                 server_idx=server_idx,

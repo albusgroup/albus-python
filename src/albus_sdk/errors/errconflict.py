@@ -11,6 +11,8 @@ from typing import Optional
 class ErrConflictData(BaseModel):
     message: str
     r"""Human-readable error message"""
+    code: Optional[str] = None
+    r"""Machine-readable reason (e.g. \"last_admin\")."""
 
 
 @dataclass(unsafe_hash=True)

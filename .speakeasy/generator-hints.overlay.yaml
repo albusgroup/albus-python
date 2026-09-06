@@ -1,0 +1,19 @@
+overlay: 1.0.0
+info:
+  title: Generator hints the public spec does not carry
+  version: 1.0.0
+actions:
+  - target: "$"
+    description: Make X-Albus-Organization a client-level option instead of a per-call argument.
+    update:
+      x-speakeasy-globals:
+        parameters:
+          - $ref: "#/components/parameters/OrganizationHeader"
+  - target: "$.components.parameters.OrganizationHeader"
+    description: Hide the header from method signatures; the client option supplies it.
+    update:
+      x-speakeasy-globals-hidden: true
+  - target: "$.components.parameters.IdempotencyKey"
+    description: Name the parameter for the invocation it identifies.
+    update:
+      x-speakeasy-name-override: invocation_key

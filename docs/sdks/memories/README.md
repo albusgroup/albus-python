@@ -28,6 +28,7 @@ import os
 
 
 with Albus(
+    x_albus_organization="<value>",
     access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
@@ -50,6 +51,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
+        x_albus_organization="<value>",
         access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
@@ -82,7 +84,7 @@ asyncio.run(main())
 
 ## list_memories
 
-Lists the memories of one memory group, newest first: both the memories agents currently read and those a later memory has replaced. A group nothing has been remembered in yet is an empty list, not an error.
+Lists the memories of one memory group that agents currently read, newest first. Memories a later memory has replaced are not returned. A group nothing has been remembered in yet is an empty list, not an error.
 
 Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present — you have reached the end when it is absent.
 
@@ -97,6 +99,7 @@ import os
 
 
 with Albus(
+    x_albus_organization="<value>",
     access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
@@ -119,6 +122,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
+        x_albus_organization="<value>",
         access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
@@ -165,6 +169,7 @@ import os
 
 
 with Albus(
+    x_albus_organization="<value>",
     access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
@@ -186,6 +191,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
+        x_albus_organization="<value>",
         access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
@@ -225,6 +231,7 @@ import os
 
 
 with Albus(
+    x_albus_organization="<value>",
     access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
@@ -246,6 +253,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
+        x_albus_organization="<value>",
         access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 

@@ -53,7 +53,7 @@ async def async_sdk_with_handler(
 
 def test_package_exposes_version() -> None:
     assert albus_sdk.VERSION == albus_sdk.__version__
-    assert albus_sdk.VERSION == "0.12.0"
+    assert albus_sdk.VERSION == "0.14.0"
 
 
 def test_default_production_url_and_sync_operation() -> None:
@@ -71,7 +71,7 @@ def test_default_production_url_and_sync_operation() -> None:
 
 def test_organization_key_authentication() -> None:
     def handler(request: httpx.Request) -> httpx.Response:
-        assert str(request.url) == "https://albus.sh/api/sessions"
+        assert str(request.url) == "https://albus.sh/api/sessions?limit=25"
         assert request.headers["authorization"] == "Bearer organization-key"
 
         return httpx.Response(200, json={"sessions": []})

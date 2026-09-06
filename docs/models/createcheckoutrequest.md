@@ -1,0 +1,10 @@
+# CreateCheckoutRequest
+
+
+## Fields
+
+| Field                                                                                   | Type                                                                                    | Required                                                                                | Description                                                                             |
+| --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `amount_usd`                                                                            | *int*                                                                                   | :heavy_check_mark:                                                                      | Whole US dollars of credit to buy (e.g. 20).                                            |
+| `success_url`                                                                           | *str*                                                                                   | :heavy_check_mark:                                                                      | Where the buyer's browser goes after paying. Must be https (or http on localhost).<br/> |
+| `cancel_url`                                                                            | *str*                                                                                   | :heavy_check_mark:                                                                      | Where the buyer's browser goes if they back out. Must be https (or http on localhost).<br/> |

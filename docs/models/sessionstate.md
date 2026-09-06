@@ -1,14 +1,15 @@
-# State
+# SessionState
 
-Lifecycle state of the session.
+Lifecycle state of the session: `RUNNING` while an invocation is in flight, otherwise how its latest invocation ended.
+
 
 ## Example Usage
 
 ```python
-from albus_sdk.models import State
+from albus_sdk.models import SessionState
 
 # Open enum: unrecognized values are captured as UnrecognizedStr
-value: State = "RUNNING"
+value: SessionState = "RUNNING"
 ```
 
 

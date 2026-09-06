@@ -22,6 +22,7 @@ workflow:
                 - location: openapi/openapi.yaml
             overlays:
                 - location: .speakeasy/run-session-timeout.overlay.yaml
+                - location: .speakeasy/generator-hints.overlay.yaml
             output: .speakeasy/out.openapi.yaml
     targets:
         albus:

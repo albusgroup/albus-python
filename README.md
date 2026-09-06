@@ -212,6 +212,7 @@ import os
 
 
 with Albus(
+    x_albus_organization="<value>",
     access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
@@ -234,6 +235,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
+        x_albus_organization="<value>",
         access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
@@ -267,6 +269,7 @@ import os
 
 with Albus(
     access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+    x_albus_organization="<value>",
 ) as albus:
 
     res = albus.secrets.list_secrets()
@@ -289,6 +292,7 @@ async def main():
 
     async with AsyncAlbus(
         access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+        x_albus_organization="<value>",
     ) as albus:
 
         res = await albus.secrets.list_secrets()
@@ -316,13 +320,21 @@ asyncio.run(main())
 
 * [whoami](docs/sdks/auth/README.md#whoami) - Get the authenticated caller
 
+### [Billing](docs/sdks/billing/README.md)
+
+* [create_checkout](docs/sdks/billing/README.md#create_checkout) - Buy prepaid credits
+* [get_credit_balance](docs/sdks/billing/README.md#get_credit_balance) - Read your credit balance
+* [list_credit_ledger](docs/sdks/billing/README.md#list_credit_ledger) - List your credit history
+
 ### [Health](docs/sdks/health/README.md)
 
 * [health](docs/sdks/health/README.md#health) - Health check endpoint
 
 ### [Invites](docs/sdks/invites/README.md)
 
+* [list_invites](docs/sdks/invites/README.md#list_invites) - List pending invitations
 * [create_invite](docs/sdks/invites/README.md#create_invite) - Invite a user by email
+* [revoke_invite](docs/sdks/invites/README.md#revoke_invite) - Revoke a pending invitation
 
 ### [Memories](docs/sdks/memories/README.md)
 
@@ -335,6 +347,14 @@ asyncio.run(main())
 
 * [list_models](docs/sdks/models/README.md#list_models) - List models
 
+### [Organization](docs/sdks/organizationsdk/README.md)
+
+* [get_organization](docs/sdks/organizationsdk/README.md#get_organization) - Get the organization the request acts in
+* [update_organization](docs/sdks/organizationsdk/README.md#update_organization) - Rename the organization the request acts in
+* [list_organization_members](docs/sdks/organizationsdk/README.md#list_organization_members) - List the members of the organization the request acts in
+* [remove_organization_member](docs/sdks/organizationsdk/README.md#remove_organization_member) - Remove a member from the organization the request acts in
+* [set_organization_member_role](docs/sdks/organizationsdk/README.md#set_organization_member_role) - Set a member's role in the organization the request acts in
+
 ### [Secrets](docs/sdks/secrets/README.md)
 
 * [list_secrets](docs/sdks/secrets/README.md#list_secrets) - List all secrets
@@ -345,7 +365,7 @@ asyncio.run(main())
 
 ### [Sessions](docs/sdks/sessions/README.md)
 
-* [list_sessions](docs/sdks/sessions/README.md#list_sessions) - List all sessions
+* [list_sessions](docs/sdks/sessions/README.md#list_sessions) - List sessions
 * [get_session](docs/sdks/sessions/README.md#get_session) - Get a session with its messages
 * [run_session](docs/sdks/sessions/README.md#run_session) - Run or resume a session
 * [delete_session](docs/sdks/sessions/README.md#delete_session) - Delete a session
@@ -398,6 +418,7 @@ import os
 
 
 with Albus(
+    x_albus_organization="<value>",
     access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
     res = None
@@ -435,6 +456,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
+        x_albus_organization="<value>",
         access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
         res = None
@@ -477,17 +499,17 @@ asyncio.run(main())
 
 
 **Inherit from [`AlbusError`](./src/albus_sdk/errors/albuserror.py)**:
-* [`ErrNotFound`](./src/albus_sdk/errors/errnotfound.py): Status code `404`. Applicable to 14 of 28 methods.*
-* [`ErrBadRequest`](./src/albus_sdk/errors/errbadrequest.py): Status code `400`. Applicable to 12 of 28 methods.*
-* [`ErrConflict`](./src/albus_sdk/errors/errconflict.py): Status code `409`. Applicable to 3 of 28 methods.*
-* [`ErrInsufficientCredit`](./src/albus_sdk/errors/errinsufficientcredit.py): The organization has no credit balance remaining. Status code `402`. Applicable to 1 of 28 methods.*
-* [`ErrInvocationCanceled`](./src/albus_sdk/errors/errinvocationcanceled.py): The invocation was canceled instead of producing a response (only possible while waiting for a response, or when replaying a canceled invocation). Status code `410`. Applicable to 1 of 28 methods.*
-* [`ErrLocked`](./src/albus_sdk/errors/errlocked.py): Another invocation is currently running for this session. Status code `423`. Applicable to 1 of 28 methods.*
-* [`ErrQuotaExceeded`](./src/albus_sdk/errors/errquotaexceeded.py): The organization has reached its invocation quota. Status code `429`. Applicable to 1 of 28 methods.*
-* [`ErrInvocationFailed`](./src/albus_sdk/errors/errinvocationfailed.py): The invocation failed instead of producing a response (only possible while waiting for a response, or when replaying a failed invocation). The body carries the failure kind and detail. Status code `502`. Applicable to 1 of 28 methods.*
-* [`ErrUnavailable`](./src/albus_sdk/errors/errunavailable.py): The invocation's spans could not be read. Retry the request; the invocation and its spans are unaffected. Status code `503`. Applicable to 1 of 28 methods.*
-* [`HealthResponseError`](./src/albus_sdk/errors/healthresponseerror.py): Service is healthy. Status code `503`. Applicable to 1 of 28 methods.*
-* [`ErrTimeout`](./src/albus_sdk/errors/errtimeout.py): Timed out waiting for the assistant response. Status code `504`. Applicable to 1 of 28 methods.*
+* [`ErrBadRequest`](./src/albus_sdk/errors/errbadrequest.py): Status code `400`. Applicable to 19 of 38 methods.*
+* [`ErrNotFound`](./src/albus_sdk/errors/errnotfound.py): Status code `404`. Applicable to 17 of 38 methods.*
+* [`ErrForbidden`](./src/albus_sdk/errors/errforbidden.py): Forbidden - the caller is not an admin. Status code `403`. Applicable to 9 of 38 methods.*
+* [`ErrConflict`](./src/albus_sdk/errors/errconflict.py): Status code `409`. Applicable to 5 of 38 methods.*
+* [`ErrUnavailable`](./src/albus_sdk/errors/errunavailable.py): Status code `503`. Applicable to 2 of 38 methods.*
+* [`ErrInsufficientCredit`](./src/albus_sdk/errors/errinsufficientcredit.py): The organization has no credit balance remaining. Status code `402`. Applicable to 1 of 38 methods.*
+* [`ErrInvocationCanceled`](./src/albus_sdk/errors/errinvocationcanceled.py): The invocation was canceled instead of producing a response (only possible while waiting for a response, or when replaying a canceled invocation). Status code `410`. Applicable to 1 of 38 methods.*
+* [`ErrLocked`](./src/albus_sdk/errors/errlocked.py): Another invocation is currently running for this session. Status code `423`. Applicable to 1 of 38 methods.*
+* [`ErrInvocationFailed`](./src/albus_sdk/errors/errinvocationfailed.py): The invocation failed instead of producing a response (only possible while waiting for a response, or when replaying a failed invocation). The body carries the failure kind and detail. Status code `502`. Applicable to 1 of 38 methods.*
+* [`HealthResponseError`](./src/albus_sdk/errors/healthresponseerror.py): Service is healthy. Status code `503`. Applicable to 1 of 38 methods.*
+* [`ErrTimeout`](./src/albus_sdk/errors/errtimeout.py): Timed out waiting for the assistant response. Status code `504`. Applicable to 1 of 38 methods.*
 * [`ResponseValidationError`](./src/albus_sdk/errors/responsevalidationerror.py): Type mismatch between the response data and the expected Pydantic model. Provides access to the Pydantic validation error via the `cause` attribute.
 
 </details>
@@ -517,6 +539,7 @@ import os
 
 with Albus(
     server_idx=0,
+    x_albus_organization="<value>",
     access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
@@ -540,6 +563,7 @@ async def main():
 
     async with AsyncAlbus(
         server_idx=0,
+        x_albus_organization="<value>",
         access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
@@ -562,6 +586,7 @@ import os
 
 with Albus(
     server_url="http://localhost:8080",
+    x_albus_organization="<value>",
     access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
@@ -585,6 +610,7 @@ async def main():
 
     async with AsyncAlbus(
         server_url="http://localhost:8080",
+        x_albus_organization="<value>",
         access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
@@ -691,6 +717,7 @@ import os
 def main():
 
     with Albus(
+        x_albus_organization="<value>",
         access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
         # Rest of application here...
@@ -700,6 +727,7 @@ def main():
 async def amain():
 
     async with AsyncAlbus(
+        x_albus_organization="<value>",
         access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
         # Rest of application here...

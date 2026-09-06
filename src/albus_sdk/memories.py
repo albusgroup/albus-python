@@ -50,6 +50,9 @@ class Memories(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.ListMemoryGroupsGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],
@@ -108,7 +111,7 @@ class Memories(BaseSDK):
     ) -> models.ListMemoriesResponse:
         r"""List a group's memories
 
-        Lists the memories of one memory group, newest first: both the memories agents currently read and those a later memory has replaced. A group nothing has been remembered in yet is an empty list, not an error.
+        Lists the memories of one memory group that agents currently read, newest first. Memories a later memory has replaced are not returned. A group nothing has been remembered in yet is an empty list, not an error.
 
         Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present — you have reached the end when it is absent.
 
@@ -141,6 +144,9 @@ class Memories(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.ListMemoriesGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],
@@ -223,6 +229,9 @@ class Memories(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.DeleteMemoryGroupGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],
@@ -309,6 +318,9 @@ class Memories(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.DeleteMemoryGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],
@@ -403,6 +415,9 @@ class AsyncMemories(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.ListMemoryGroupsGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],
@@ -461,7 +476,7 @@ class AsyncMemories(AsyncBaseSDK):
     ) -> models.ListMemoriesResponse:
         r"""List a group's memories
 
-        Lists the memories of one memory group, newest first: both the memories agents currently read and those a later memory has replaced. A group nothing has been remembered in yet is an empty list, not an error.
+        Lists the memories of one memory group that agents currently read, newest first. Memories a later memory has replaced are not returned. A group nothing has been remembered in yet is an empty list, not an error.
 
         Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present — you have reached the end when it is absent.
 
@@ -494,6 +509,9 @@ class AsyncMemories(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.ListMemoriesGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],
@@ -576,6 +594,9 @@ class AsyncMemories(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.DeleteMemoryGroupGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],
@@ -662,6 +683,9 @@ class AsyncMemories(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.DeleteMemoryGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],

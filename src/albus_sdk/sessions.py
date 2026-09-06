@@ -6,6 +6,7 @@ from albus_sdk._hooks import HookContext
 from albus_sdk.types import OptionalNullable, UNSET
 from albus_sdk.utils import get_security_from_env
 from albus_sdk.utils.unmarshal_json_response import unmarshal_json_response
+from datetime import datetime
 from typing import Any, Optional, Union
 
 
@@ -14,25 +15,72 @@ class Sessions(BaseSDK):
 
     def list_sessions(
         self,
+        *,
+        agent_name: Optional[str] = None,
+        agent_revision: Optional[str] = None,
+        status: Optional[models.SessionState] = None,
+        invocation_key: Optional[str] = None,
+        since: Optional[datetime] = None,
+        until: Optional[datetime] = None,
+        after: Optional[str] = None,
+        limit: Optional[int] = 25,
     ) -> models.ListSessionsResponse:
-        r"""List all sessions
+        r"""List sessions
+
+        Lists your organization's sessions, most recently used first. Filter by agent name, agent revision, invocation state, time window, or an invocation it ran: a session matches when any of its invocations does, and a filtered listing is ordered by each session's most recent matching invocation. A filter that matches nothing returns an empty page rather than an error.
+
+        Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present — you have reached the end when it is absent. A page can hold fewer sessions than `limit`, or none at all, and still have a `next_cursor`; a short page is not the end of the results.
+
+        A listing covers the window given by `since` and `until`, and omitting `since` searches the last 31 days. The window is fixed when the first page is requested, so paging with `after` keeps returning results from the window that page used: `after` carries that window and the filters it was made with, so send it with no filters, or with every filter repeated exactly, and expect a `400` otherwise.
+
 
         If set, this operation will use either `bearer_auth` or `api_key` from the global security.
+
+        :param agent_name: Return only sessions that ran this agent (e.g. \"support-triage\").
+
+        :param agent_revision: Return only sessions that ran this exact agent revision (e.g. \"a1b2c3d4\"). Requires `agent_name`; a revision without an agent name is a `400`.
+
+        :param status: Return only sessions with an invocation that ended this way, or is `RUNNING` now. `DONE` matches a successful invocation.
+
+        :param invocation_key: Return only the session that ran this invocation, whether it is still running or has ended.
+
+        :param since: Return only sessions with an invocation that started at or after this time. Without `since` or `until`, the listing covers sessions used in the last 31 days; pass it to search further back.
+
+        :param until: Return only sessions with an invocation that started at or before this time. Defaults to now, and must be after `since`; an earlier `until` is a `400`.
+
+        :param after: Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
+
+        :param limit: Maximum number of sessions to return. A page can be shorter, so page while `next_cursor` is present.
 
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
+
+        request = operations.ListSessionsRequest(
+            agent_name=agent_name,
+            agent_revision=agent_revision,
+            status=status,
+            invocation_key=invocation_key,
+            since=since,
+            until=until,
+            after=after,
+            limit=limit,
+        )
+
         req = self._build_request(
             method="GET",
             path="/sessions",
             base_url=base_url,
             url_variables=url_variables,
-            request=None,
+            request=request,
             request_body_required=False,
             request_has_path_params=False,
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.ListSessionsGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],
@@ -61,6 +109,9 @@ class Sessions(BaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return unmarshal_json_response(models.ListSessionsResponse, http_res)
+        if utils.match_response(http_res, "400", "application/json"):
+            response_data = unmarshal_json_response(errors.ErrBadRequestData, http_res)
+            raise errors.ErrBadRequest(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
             response_data = unmarshal_json_response(
                 errors.ErrUnauthorizedData, http_res
@@ -118,6 +169,9 @@ class Sessions(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.GetSessionGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],
@@ -231,6 +285,9 @@ class Sessions(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.RunSessionGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.body, False, False, "json", models.RunSessionRequest
@@ -300,11 +357,6 @@ class Sessions(BaseSDK):
         if utils.match_response(http_res, "423", "application/json"):
             response_data = unmarshal_json_response(errors.ErrLockedData, http_res)
             raise errors.ErrLocked(response_data, http_res)
-        if utils.match_response(http_res, "429", "application/json"):
-            response_data = unmarshal_json_response(
-                errors.ErrQuotaExceededData, http_res
-            )
-            raise errors.ErrQuotaExceeded(response_data, http_res)
         if utils.match_response(http_res, "502", "application/json"):
             response_data = unmarshal_json_response(
                 errors.ErrInvocationFailedData, http_res
@@ -355,6 +407,9 @@ class Sessions(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.DeleteSessionGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],
@@ -436,6 +491,9 @@ class Sessions(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.CancelSessionGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],
@@ -527,6 +585,9 @@ class Sessions(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.GetSessionAuditGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],
@@ -585,25 +646,72 @@ class AsyncSessions(AsyncBaseSDK):
 
     async def list_sessions(
         self,
+        *,
+        agent_name: Optional[str] = None,
+        agent_revision: Optional[str] = None,
+        status: Optional[models.SessionState] = None,
+        invocation_key: Optional[str] = None,
+        since: Optional[datetime] = None,
+        until: Optional[datetime] = None,
+        after: Optional[str] = None,
+        limit: Optional[int] = 25,
     ) -> models.ListSessionsResponse:
-        r"""List all sessions
+        r"""List sessions
+
+        Lists your organization's sessions, most recently used first. Filter by agent name, agent revision, invocation state, time window, or an invocation it ran: a session matches when any of its invocations does, and a filtered listing is ordered by each session's most recent matching invocation. A filter that matches nothing returns an empty page rather than an error.
+
+        Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present — you have reached the end when it is absent. A page can hold fewer sessions than `limit`, or none at all, and still have a `next_cursor`; a short page is not the end of the results.
+
+        A listing covers the window given by `since` and `until`, and omitting `since` searches the last 31 days. The window is fixed when the first page is requested, so paging with `after` keeps returning results from the window that page used: `after` carries that window and the filters it was made with, so send it with no filters, or with every filter repeated exactly, and expect a `400` otherwise.
+
 
         If set, this operation will use either `bearer_auth` or `api_key` from the global security.
+
+        :param agent_name: Return only sessions that ran this agent (e.g. \"support-triage\").
+
+        :param agent_revision: Return only sessions that ran this exact agent revision (e.g. \"a1b2c3d4\"). Requires `agent_name`; a revision without an agent name is a `400`.
+
+        :param status: Return only sessions with an invocation that ended this way, or is `RUNNING` now. `DONE` matches a successful invocation.
+
+        :param invocation_key: Return only the session that ran this invocation, whether it is still running or has ended.
+
+        :param since: Return only sessions with an invocation that started at or after this time. Without `since` or `until`, the listing covers sessions used in the last 31 days; pass it to search further back.
+
+        :param until: Return only sessions with an invocation that started at or before this time. Defaults to now, and must be after `since`; an earlier `until` is a `400`.
+
+        :param after: Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
+
+        :param limit: Maximum number of sessions to return. A page can be shorter, so page while `next_cursor` is present.
 
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
+
+        request = operations.ListSessionsRequest(
+            agent_name=agent_name,
+            agent_revision=agent_revision,
+            status=status,
+            invocation_key=invocation_key,
+            since=since,
+            until=until,
+            after=after,
+            limit=limit,
+        )
+
         req = self._build_request_async(
             method="GET",
             path="/sessions",
             base_url=base_url,
             url_variables=url_variables,
-            request=None,
+            request=request,
             request_body_required=False,
             request_has_path_params=False,
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.ListSessionsGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],
@@ -632,6 +740,9 @@ class AsyncSessions(AsyncBaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return unmarshal_json_response(models.ListSessionsResponse, http_res)
+        if utils.match_response(http_res, "400", "application/json"):
+            response_data = unmarshal_json_response(errors.ErrBadRequestData, http_res)
+            raise errors.ErrBadRequest(response_data, http_res)
         if utils.match_response(http_res, "401", "application/json"):
             response_data = unmarshal_json_response(
                 errors.ErrUnauthorizedData, http_res
@@ -689,6 +800,9 @@ class AsyncSessions(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.GetSessionGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],
@@ -802,6 +916,9 @@ class AsyncSessions(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.RunSessionGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.body, False, False, "json", models.RunSessionRequest
@@ -871,11 +988,6 @@ class AsyncSessions(AsyncBaseSDK):
         if utils.match_response(http_res, "423", "application/json"):
             response_data = unmarshal_json_response(errors.ErrLockedData, http_res)
             raise errors.ErrLocked(response_data, http_res)
-        if utils.match_response(http_res, "429", "application/json"):
-            response_data = unmarshal_json_response(
-                errors.ErrQuotaExceededData, http_res
-            )
-            raise errors.ErrQuotaExceeded(response_data, http_res)
         if utils.match_response(http_res, "502", "application/json"):
             response_data = unmarshal_json_response(
                 errors.ErrInvocationFailedData, http_res
@@ -926,6 +1038,9 @@ class AsyncSessions(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.DeleteSessionGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],
@@ -1007,6 +1122,9 @@ class AsyncSessions(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.CancelSessionGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],
@@ -1098,6 +1216,9 @@ class AsyncSessions(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.GetSessionAuditGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],

@@ -25,6 +25,7 @@ import os
 
 
 with Albus(
+    x_albus_organization="<value>",
     access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
@@ -47,6 +48,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
+        x_albus_organization="<value>",
         access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
@@ -60,8 +62,9 @@ asyncio.run(main())
 
 ### Parameters
 
-| Parameter                                                           | Type                                                                | Required                                                            | Description                                                         |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| Parameter                                                             | Type                                                                  | Required                                                              | Description                                                           |
+| --------------------------------------------------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `request`                                                             | [operations.ListTokensRequest](../../operations/listtokensrequest.md) | :heavy_check_mark:                                                    | The request object to use for the request.                            |
 
 ### Response
 
@@ -76,7 +79,7 @@ asyncio.run(main())
 
 ## create_token
 
-Create an API token. The token value is returned only in this response.
+Requires the admin role.
 
 ### Example Usage
 
@@ -88,6 +91,7 @@ import os
 
 
 with Albus(
+    x_albus_organization="<value>",
     access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
@@ -110,6 +114,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
+        x_albus_organization="<value>",
         access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
@@ -136,6 +141,7 @@ asyncio.run(main())
 | Error Type               | Status Code              | Content Type             |
 | ------------------------ | ------------------------ | ------------------------ |
 | errors.ErrUnauthorized   | 401                      | application/json         |
+| errors.ErrForbidden      | 403                      | application/json         |
 | errors.AlbusDefaultError | 4XX, 5XX                 | \*/\*                    |
 
 ## get_token
@@ -152,6 +158,7 @@ import os
 
 
 with Albus(
+    x_albus_organization="<value>",
     access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
@@ -174,6 +181,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
+        x_albus_organization="<value>",
         access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
@@ -205,7 +213,7 @@ asyncio.run(main())
 
 ## delete_token
 
-Revoke an API token by ID
+Requires the admin role.
 
 ### Example Usage
 
@@ -217,6 +225,7 @@ import os
 
 
 with Albus(
+    x_albus_organization="<value>",
     access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
@@ -238,6 +247,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
+        x_albus_organization="<value>",
         access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
@@ -259,5 +269,6 @@ asyncio.run(main())
 | Error Type               | Status Code              | Content Type             |
 | ------------------------ | ------------------------ | ------------------------ |
 | errors.ErrUnauthorized   | 401                      | application/json         |
+| errors.ErrForbidden      | 403                      | application/json         |
 | errors.ErrNotFound       | 404                      | application/json         |
 | errors.AlbusDefaultError | 4XX, 5XX                 | \*/\*                    |

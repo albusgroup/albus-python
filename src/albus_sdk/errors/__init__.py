@@ -9,12 +9,12 @@ if TYPE_CHECKING:
     from .albusdefaulterror import AlbusDefaultError
     from .errbadrequest import ErrBadRequest, ErrBadRequestData
     from .errconflict import ErrConflict, ErrConflictData
+    from .errforbidden import ErrForbidden, ErrForbiddenData
     from .errinsufficientcredit import ErrInsufficientCredit, ErrInsufficientCreditData
     from .errinvocationcanceled import ErrInvocationCanceled, ErrInvocationCanceledData
     from .errinvocationfailed import ErrInvocationFailed, ErrInvocationFailedData
     from .errlocked import ErrLocked, ErrLockedData
     from .errnotfound import ErrNotFound, ErrNotFoundData
-    from .errquotaexceeded import ErrQuotaExceeded, ErrQuotaExceededData
     from .errtimeout import ErrTimeout, ErrTimeoutData
     from .errunauthorized import ErrUnauthorized, ErrUnauthorizedData
     from .errunavailable import ErrUnavailable, ErrUnavailableData
@@ -29,6 +29,8 @@ __all__ = [
     "ErrBadRequestData",
     "ErrConflict",
     "ErrConflictData",
+    "ErrForbidden",
+    "ErrForbiddenData",
     "ErrInsufficientCredit",
     "ErrInsufficientCreditData",
     "ErrInvocationCanceled",
@@ -39,8 +41,6 @@ __all__ = [
     "ErrLockedData",
     "ErrNotFound",
     "ErrNotFoundData",
-    "ErrQuotaExceeded",
-    "ErrQuotaExceededData",
     "ErrTimeout",
     "ErrTimeoutData",
     "ErrUnauthorized",
@@ -59,6 +59,8 @@ _dynamic_imports: dict[str, str] = {
     "ErrBadRequestData": ".errbadrequest",
     "ErrConflict": ".errconflict",
     "ErrConflictData": ".errconflict",
+    "ErrForbidden": ".errforbidden",
+    "ErrForbiddenData": ".errforbidden",
     "ErrInsufficientCredit": ".errinsufficientcredit",
     "ErrInsufficientCreditData": ".errinsufficientcredit",
     "ErrInvocationCanceled": ".errinvocationcanceled",
@@ -69,8 +71,6 @@ _dynamic_imports: dict[str, str] = {
     "ErrLockedData": ".errlocked",
     "ErrNotFound": ".errnotfound",
     "ErrNotFoundData": ".errnotfound",
-    "ErrQuotaExceeded": ".errquotaexceeded",
-    "ErrQuotaExceededData": ".errquotaexceeded",
     "ErrTimeout": ".errtimeout",
     "ErrTimeoutData": ".errtimeout",
     "ErrUnauthorized": ".errunauthorized",

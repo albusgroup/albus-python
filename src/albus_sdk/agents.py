@@ -3,10 +3,10 @@
 from .basesdk import AsyncBaseSDK, BaseSDK
 from albus_sdk import errors, models, operations, utils
 from albus_sdk._hooks import HookContext
-from albus_sdk.types import OptionalNullable, UNSET
+from albus_sdk.types import BaseModel, OptionalNullable, UNSET
 from albus_sdk.utils import get_security_from_env
 from albus_sdk.utils.unmarshal_json_response import unmarshal_json_response
-from typing import Any, Optional
+from typing import Any, Mapping, Optional, Union, cast
 
 
 class Agents(BaseSDK):
@@ -14,6 +14,10 @@ class Agents(BaseSDK):
 
     def list_agents(
         self,
+        *,
+        request: Union[
+            operations.ListAgentsRequest, operations.ListAgentsRequestTypedDict
+        ] = operations.ListAgentsRequest(),
     ) -> models.ListAgentsResponse:
         r"""List agents
 
@@ -22,20 +26,29 @@ class Agents(BaseSDK):
 
         If set, this operation will use either `bearer_auth` or `api_key` from the global security.
 
+        :param request: The request object to send.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
+
+        if not isinstance(request, BaseModel):
+            request = utils.unmarshal(request, operations.ListAgentsRequest)
+        request = cast(operations.ListAgentsRequest, request)
+
         req = self._build_request(
             method="GET",
             path="/agents",
             base_url=base_url,
             url_variables=url_variables,
-            request=None,
+            request=request,
             request_body_required=False,
             request_has_path_params=False,
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.ListAgentsGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],
@@ -114,6 +127,9 @@ class Agents(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.GetAgentGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],
@@ -198,6 +214,9 @@ class Agents(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.GetAgentRevisionGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],
@@ -253,6 +272,10 @@ class AsyncAgents(AsyncBaseSDK):
 
     async def list_agents(
         self,
+        *,
+        request: Union[
+            operations.ListAgentsRequest, operations.ListAgentsRequestTypedDict
+        ] = operations.ListAgentsRequest(),
     ) -> models.ListAgentsResponse:
         r"""List agents
 
@@ -261,20 +284,29 @@ class AsyncAgents(AsyncBaseSDK):
 
         If set, this operation will use either `bearer_auth` or `api_key` from the global security.
 
+        :param request: The request object to send.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
+
+        if not isinstance(request, BaseModel):
+            request = utils.unmarshal(request, operations.ListAgentsRequest)
+        request = cast(operations.ListAgentsRequest, request)
+
         req = self._build_request_async(
             method="GET",
             path="/agents",
             base_url=base_url,
             url_variables=url_variables,
-            request=None,
+            request=request,
             request_body_required=False,
             request_has_path_params=False,
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.ListAgentsGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],
@@ -353,6 +385,9 @@ class AsyncAgents(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.GetAgentGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],
@@ -437,6 +472,9 @@ class AsyncAgents(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.GetAgentRevisionGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],

@@ -11,41 +11,26 @@ CreateInviteRequestRole = Literal[
     "admin",
     "member",
 ]
-r"""Role to grant the invitee. Defaults to admin when inviting to a new organization and member when inviting into an existing one.
-
-"""
+r"""Role to grant the invitee."""
 
 
 class CreateInviteRequestTypedDict(TypedDict):
     email: str
     r"""Email address of the person to invite."""
     role: NotRequired[CreateInviteRequestRole]
-    r"""Role to grant the invitee. Defaults to admin when inviting to a new organization and member when inviting into an existing one.
-
-    """
-    organization_id: NotRequired[str]
-    r"""Organization to invite the user into (e.g. \"42\"). Omit to create a new organization for the user on their first sign-in.
-
-    """
+    r"""Role to grant the invitee."""
 
 
 class CreateInviteRequest(BaseModel):
     email: str
     r"""Email address of the person to invite."""
 
-    role: Optional[CreateInviteRequestRole] = None
-    r"""Role to grant the invitee. Defaults to admin when inviting to a new organization and member when inviting into an existing one.
-
-    """
-
-    organization_id: Optional[str] = None
-    r"""Organization to invite the user into (e.g. \"42\"). Omit to create a new organization for the user on their first sign-in.
-
-    """
+    role: Optional[CreateInviteRequestRole] = "member"
+    r"""Role to grant the invitee."""
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = set(["role", "organization_id"])
+        optional_fields = set(["role"])
         serialized = handler(self)
         m = {}
 

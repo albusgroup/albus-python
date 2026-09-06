@@ -13,6 +13,8 @@ tags:
     description: Inspect the agents that have run in your organization.
   - name: Auth
     description: Identify the authenticated user.
+  - name: Billing
+    description: Buy the prepaid credits agent sessions run on.
   - name: Health
     description: Check service availability.
   - name: Memories
@@ -23,6 +25,8 @@ tags:
     description: Manage secrets available to agent sessions.
   - name: Sessions
     description: Run and inspect agent sessions.
+  - name: Organization
+    description: View and manage the organization you are acting in.
   - name: Tokens
     description: Manage organization API keys.
   - name: Traces
@@ -40,6 +44,8 @@ paths:
       security:
         - bearerAuth: []
         - apiKey: []
+      parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
       responses:
         "200":
           description: OK
@@ -61,6 +67,8 @@ paths:
       security:
         - bearerAuth: []
         - apiKey: []
+      parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
       requestBody:
         required: true
         content:
@@ -96,6 +104,7 @@ paths:
         - bearerAuth: []
         - apiKey: []
       parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
         - name: name
           in: path
           required: true
@@ -129,6 +138,7 @@ paths:
         - bearerAuth: []
         - apiKey: []
       parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
         - name: name
           in: path
           required: true
@@ -174,6 +184,7 @@ paths:
         - bearerAuth: []
         - apiKey: []
       parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
         - name: name
           in: path
           required: true
@@ -197,12 +208,79 @@ paths:
   /sessions:
     get:
       operationId: listSessions
-      summary: List all sessions
+      summary: List sessions
+      description: >
+        Lists your organization's sessions, most recently used first. Filter by agent name, agent revision, invocation state, time window, or an invocation it ran: a session matches when any of its invocations does, and a filtered listing is ordered by each session's most recent matching invocation. A filter that matches nothing returns an empty page rather than an error.
+
+
+        Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present — you have reached the end when it is absent. A page can hold fewer sessions than `limit`, or none at all, and still have a `next_cursor`; a short page is not the end of the results.
+
+
+        A listing covers the window given by `since` and `until`, and omitting `since` searches the last 31 days. The window is fixed when the first page is requested, so paging with `after` keeps returning results from the window that page used: `after` carries that window and the filters it was made with, so send it with no filters, or with every filter repeated exactly, and expect a `400` otherwise.
+
       tags:
         - Sessions
       security:
         - bearerAuth: []
         - apiKey: []
+      parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
+        - name: agent_name
+          in: query
+          required: false
+          description: >
+            Return only sessions that ran this agent (e.g. "support-triage").
+
+          schema:
+            type: string
+            maxLength: 255
+        - name: agent_revision
+          in: query
+          required: false
+          description: >
+            Return only sessions that ran this exact agent revision (e.g. "a1b2c3d4"). Requires `agent_name`; a revision without an agent name is a `400`.
+
+          schema:
+            type: string
+            maxLength: 255
+        - name: status
+          in: query
+          required: false
+          description: >
+            Return only sessions with an invocation that ended this way, or is `RUNNING` now. `DONE` matches a successful invocation.
+
+          schema:
+            $ref: "#/components/schemas/SessionState"
+        - name: invocation_key
+          in: query
+          required: false
+          description: >
+            Return only the session that ran this invocation, whether it is still running or has ended.
+
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 255
+        - name: since
+          in: query
+          required: false
+          description: >
+            Return only sessions with an invocation that started at or after this time. Without `since` or `until`, the listing covers sessions used in the last 31 days; pass it to search further back.
+
+          schema:
+            type: string
+            format: date-time
+        - name: until
+          in: query
+          required: false
+          description: >
+            Return only sessions with an invocation that started at or before this time. Defaults to now, and must be after `since`; an earlier `until` is a `400`.
+
+          schema:
+            type: string
+            format: date-time
+        - $ref: "#/components/parameters/AfterCursor"
+        - $ref: "#/components/parameters/SessionLimit"
       responses:
         "200":
           description: OK
@@ -210,6 +288,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ListSessionsResponse"
+        "400":
+          description: Invalid cursor or filter
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrBadRequest"
         "401":
           description: Unauthorized
           content:
@@ -231,6 +315,7 @@ paths:
         - bearerAuth: []
         - apiKey: []
       parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
         - $ref: "#/components/parameters/AfterCursor"
         - $ref: "#/components/parameters/Limit"
       responses:
@@ -273,6 +358,7 @@ paths:
         - bearerAuth: []
         - apiKey: []
       parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
         - $ref: "#/components/parameters/IdempotencyKey"
         - $ref: "#/components/parameters/WaitTimeoutSeconds"
       requestBody:
@@ -325,12 +411,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrInsufficientCredit"
-        "429":
-          description: The organization has reached its invocation quota
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrQuotaExceeded"
         "410":
           description: >
             The invocation was canceled instead of producing a response (only possible while waiting for a response, or when replaying a canceled invocation).
@@ -362,6 +442,8 @@ paths:
       security:
         - bearerAuth: []
         - apiKey: []
+      parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
       responses:
         "204":
           description: Deleted
@@ -391,6 +473,8 @@ paths:
       security:
         - bearerAuth: []
         - apiKey: []
+      parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
       responses:
         "202":
           description: Cancellation requested
@@ -431,6 +515,7 @@ paths:
         - bearerAuth: []
         - apiKey: []
       parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
         - $ref: "#/components/parameters/AfterCursor"
         - $ref: "#/components/parameters/Limit"
       responses:
@@ -477,6 +562,7 @@ paths:
         - bearerAuth: []
         - apiKey: []
       parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
         - name: agent_name
           in: query
           required: false
@@ -583,6 +669,7 @@ paths:
         - bearerAuth: []
         - apiKey: []
       parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
         - name: payloads
           in: query
           required: false
@@ -644,6 +731,327 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrUnavailable"
+  /organization:
+    get:
+      operationId: getOrganization
+      summary: Get the organization the request acts in
+      tags:
+        - Organization
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+    patch:
+      operationId: updateOrganization
+      summary: Rename the organization the request acts in
+      description: Requires the admin role.
+      tags:
+        - Organization
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateOrganizationRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+        "400":
+          description: Bad request (invalid name)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrBadRequest"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+        "403":
+          description: Forbidden - the caller is not an admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrForbidden"
+  /organization/members:
+    get:
+      operationId: listOrganizationMembers
+      summary: List the members of the organization the request acts in
+      tags:
+        - Organization
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListOrganizationMembersResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+        "403":
+          description: Forbidden - the caller is not an admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrForbidden"
+  /organization/members/{user_id}:
+    delete:
+      operationId: removeOrganizationMember
+      summary: Remove a member from the organization the request acts in
+      description: >
+        Requires the admin role. The last admin cannot be removed.
+
+      tags:
+        - Organization
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
+        - $ref: "#/components/parameters/MemberUserID"
+      responses:
+        "204":
+          description: Removed
+        "400":
+          description: Bad request (invalid user_id)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrBadRequest"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+        "403":
+          description: Forbidden - the caller is not an admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrForbidden"
+        "404":
+          description: Not a member of the organization
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrNotFound"
+        "409":
+          description: The member is the organization's last admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrConflict"
+  /organization/members/{user_id}/role:
+    put:
+      operationId: setOrganizationMemberRole
+      summary: Set a member's role in the organization the request acts in
+      description: >
+        Requires the admin role. The last admin cannot be demoted.
+
+      tags:
+        - Organization
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
+        - $ref: "#/components/parameters/MemberUserID"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetOrganizationMemberRoleRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationMember"
+        "400":
+          description: Bad request (invalid user_id or role)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrBadRequest"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+        "403":
+          description: Forbidden - the caller is not an admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrForbidden"
+        "404":
+          description: Not a member of the organization
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrNotFound"
+        "409":
+          description: The member is the organization's last admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrConflict"
+  /organization/invites:
+    get:
+      operationId: listInvites
+      summary: List pending invitations
+      description: >
+        Lists the unexpired invitations into your organization. Requires the admin role.
+
+      tags:
+        - Invites
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListInvitesResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+        "403":
+          description: Forbidden - the caller is not an admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrForbidden"
+    post:
+      operationId: createInvite
+      summary: Invite a user by email
+      description: >
+        Invites an email address into your organization. The invitation is redeemed automatically the next time the invitee signs in with that email, and expires after 14 days. Requires the admin role.
+
+      tags:
+        - Invites
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateInviteRequest"
+      responses:
+        "200":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invite"
+        "400":
+          description: Bad request (invalid email or role)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrBadRequest"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+        "403":
+          description: Forbidden - the caller is not an admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrForbidden"
+        "409":
+          description: An invitation for this email already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrConflict"
+  /organization/invites/{id}:
+    delete:
+      operationId: revokeInvite
+      summary: Revoke a pending invitation
+      description: Requires the admin role.
+      tags:
+        - Invites
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
+        - name: id
+          in: path
+          required: true
+          description: The invitation identifier.
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Revoked
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+        "403":
+          description: Forbidden - the caller is not an admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrForbidden"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrNotFound"
   /tokens:
     get:
       operationId: listTokens
@@ -652,6 +1060,8 @@ paths:
         - Tokens
       security:
         - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
       responses:
         "200":
           description: OK
@@ -668,10 +1078,13 @@ paths:
     post:
       operationId: createToken
       summary: Create an API token. The token value is returned only in this response.
+      description: Requires the admin role.
       tags:
         - Tokens
       security:
         - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
       requestBody:
         required: true
         content:
@@ -691,6 +1104,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrUnauthorized"
+        "403":
+          description: Forbidden - the caller is not an admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrForbidden"
   /tokens/{id}:
     get:
       operationId: getToken
@@ -700,6 +1119,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
         - name: id
           in: path
           required: true
@@ -728,11 +1148,13 @@ paths:
     delete:
       operationId: deleteToken
       summary: Revoke an API token by ID
+      description: Requires the admin role.
       tags:
         - Tokens
       security:
         - bearerAuth: []
       parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
         - name: id
           in: path
           required: true
@@ -748,6 +1170,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrUnauthorized"
+        "403":
+          description: Forbidden - the caller is not an admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrForbidden"
         "404":
           description: Not found
           content:
@@ -766,6 +1194,8 @@ paths:
       security:
         - bearerAuth: []
         - apiKey: []
+      parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
       responses:
         "200":
           description: OK
@@ -798,6 +1228,8 @@ paths:
       security:
         - bearerAuth: []
         - apiKey: []
+      parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
       responses:
         "200":
           description: OK
@@ -842,6 +1274,8 @@ paths:
       security:
         - bearerAuth: []
         - apiKey: []
+      parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
       responses:
         "200":
           description: OK
@@ -877,6 +1311,7 @@ paths:
         - bearerAuth: []
         - apiKey: []
       parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
         - $ref: "#/components/parameters/AfterCursor"
         - $ref: "#/components/parameters/Limit"
       responses:
@@ -903,7 +1338,7 @@ paths:
       operationId: listMemories
       summary: List a group's memories
       description: >
-        Lists the memories of one memory group, newest first: both the memories agents currently read and those a later memory has replaced. A group nothing has been remembered in yet is an empty list, not an error.
+        Lists the memories of one memory group that agents currently read, newest first. Memories a later memory has replaced are not returned. A group nothing has been remembered in yet is an empty list, not an error.
 
 
         Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present — you have reached the end when it is absent.
@@ -914,6 +1349,7 @@ paths:
         - bearerAuth: []
         - apiKey: []
       parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
         - $ref: "#/components/parameters/MemoryGroup"
         - $ref: "#/components/parameters/AfterCursor"
         - $ref: "#/components/parameters/Limit"
@@ -948,6 +1384,7 @@ paths:
         - bearerAuth: []
         - apiKey: []
       parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
         - $ref: "#/components/parameters/MemoryGroup"
       responses:
         "204":
@@ -977,6 +1414,7 @@ paths:
         - bearerAuth: []
         - apiKey: []
       parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
         - $ref: "#/components/parameters/MemoryGroup"
         - $ref: "#/components/parameters/MemoryID"
       responses:
@@ -1012,6 +1450,8 @@ paths:
       security:
         - bearerAuth: []
         - apiKey: []
+      parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
       responses:
         "200":
           description: OK
@@ -1058,6 +1498,8 @@ paths:
       security:
         - bearerAuth: []
         - apiKey: []
+      parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
       responses:
         "200":
           description: OK
@@ -1071,32 +1513,34 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrUnauthorized"
-  /invites:
+  /billing/checkout:
     post:
-      operationId: createInvite
-      summary: Invite a user by email
+      operationId: createCheckout
+      summary: Buy prepaid credits
       description: >
-        Creates a pending invitation for an email address. Omit organization_id to invite the user as the founder of a new organization that is created on their first sign-in; provide it to invite them into an existing organization. The invitation is redeemed automatically the first time the invitee signs in with that email.
+        Starts a credit purchase for your organization. Returns the URL of a payment page to send the buyer's browser to; the credits are added to your balance once the payment completes there.
 
       tags:
-        - Invites
+        - Billing
       security:
         - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateInviteRequest"
+              $ref: "#/components/schemas/CreateCheckoutRequest"
       responses:
         "200":
-          description: Created
+          description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Invite"
+                $ref: "#/components/schemas/CreateCheckoutResponse"
         "400":
-          description: Bad request (invalid email or role)
+          description: Bad request (invalid amount or URL)
           content:
             application/json:
               schema:
@@ -1107,12 +1551,80 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrUnauthorized"
-        "409":
-          description: An invitation for this email already exists
+        "503":
+          description: Credit purchases are not available on this deployment
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrConflict"
+                $ref: "#/components/schemas/ErrUnavailable"
+  /billing/balance:
+    get:
+      operationId: getCreditBalance
+      summary: Read your credit balance
+      description: >
+        Returns your organization's current prepaid credit balance in USD.
+
+      tags:
+        - Billing
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreditBalanceResponse"
+        "400":
+          description: Bad request (no active organization)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrBadRequest"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+  /billing/ledger:
+    get:
+      operationId: listCreditLedger
+      summary: List your credit history
+      description: >
+        Lists your organization's credit ledger, newest first: purchases, grants, usage charges, and adjustments, each with the signed USD amount it moved the balance by. Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present.
+
+      tags:
+        - Billing
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
+        - $ref: "#/components/parameters/AfterCursor"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListCreditLedgerResponse"
+        "400":
+          description: Bad request (invalid cursor or limit)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrBadRequest"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
 components:
   securitySchemes:
     bearerAuth:
@@ -1124,6 +1636,23 @@ components:
       scheme: bearer
       description: Org-scoped API key issued via POST /tokens
   parameters:
+    OrganizationHeader:
+      name: X-Albus-Organization
+      in: header
+      required: false
+      description: >
+        The id of the organization the request acts on, which must be one the caller belongs to. Defaults to the organization the caller joined first. Ignored for API keys, which are bound to one organization.
+
+      schema:
+        type: string
+      x-speakeasy-globals-hidden: true
+    MemberUserID:
+      name: user_id
+      in: path
+      required: true
+      description: The member's user identifier.
+      schema:
+        type: string
     SessionID:
       name: id
       in: path
@@ -1138,7 +1667,6 @@ components:
       name: Idempotency-Key
       in: header
       required: false
-      x-speakeasy-name-override: invocation_key
       description: >
         Optional but strongly encouraged. The key naming this invocation of the session, unique within your organization: reuse the same value to safely retry a request, read the invocation back with `GET /traces/{invocation_key}`, and use a new value to start a new invocation. When omitted, the server generates a key for the invocation and returns it in the Idempotency-Key response header, but the request is not retry-safe.
 
@@ -1146,6 +1674,7 @@ components:
         type: string
         minLength: 1
         maxLength: 255
+      x-speakeasy-name-override: invocation_key
     InvocationKey:
       name: invocation_key
       in: path
@@ -1210,6 +1739,18 @@ components:
         minimum: 1
         maximum: 100
         default: 10
+    SessionLimit:
+      name: limit
+      in: query
+      required: false
+      description: >
+        Maximum number of sessions to return. A page can be shorter, so page while `next_cursor` is present.
+
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 25
     TraceSpanLimit:
       name: limit
       in: query
@@ -1262,6 +1803,7 @@ components:
       required:
         - user_id
         - email
+        - active_organization
         - organizations
       properties:
         user_id:
@@ -1281,15 +1823,13 @@ components:
           type: array
           items:
             type: string
-          description: >
-            Roles in the active organization (present only when a single organization is in scope).
-
+          description: Roles in the active organization.
           example: ["admin"]
         active_organization:
           allOf:
             - $ref: "#/components/schemas/OrganizationMembership"
           description: >
-            The organization this session is scoped to. Present when the user belongs to exactly one organization; absent when they belong to several and none is selected yet.
+            The organization the request acts on: the one named by the X-Albus-Organization header, or the one the user joined first.
 
         organizations:
           type: array
@@ -1352,20 +1892,16 @@ components:
           enum:
             - admin
             - member
-          description: >
-            Role to grant the invitee. Defaults to admin when inviting to a new organization and member when inviting into an existing one.
-
-        organization_id:
-          type: string
-          description: >
-            Organization to invite the user into (e.g. "42"). Omit to create a new organization for the user on their first sign-in.
-
+          default: member
+          description: Role to grant the invitee.
     Invite:
       type: object
       required:
         - id
         - email
         - role
+        - expires_at
+        - created_at
       properties:
         id:
           type: string
@@ -1376,11 +1912,112 @@ components:
         role:
           type: string
           description: Role the invitee will be granted
-        organization_id:
+        expires_at:
           type: string
-          description: >
-            Organization the invitee will join. Absent when the invitation creates a new organization on first sign-in.
-
+          format: date-time
+          description: When the invitation stops being redeemable
+        created_at:
+          type: string
+          format: date-time
+          description: When the invitation was created
+    ListInvitesResponse:
+      type: object
+      required:
+        - invites
+      properties:
+        invites:
+          type: array
+          items:
+            $ref: "#/components/schemas/Invite"
+    Organization:
+      type: object
+      required:
+        - id
+        - name
+        - created_at
+      properties:
+        id:
+          type: string
+          description: Organization identifier
+          example: "42"
+        name:
+          type: string
+          description: Organization display name
+          example: "Acme Corp"
+        created_at:
+          type: string
+          format: date-time
+          description: When the organization was created.
+    UpdateOrganizationRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: New organization display name.
+          example: "Acme Corp"
+    Role:
+      type: string
+      enum: [admin, member]
+      description: A member's role in an organization.
+    OrganizationMember:
+      type: object
+      required:
+        - user_id
+        - email
+        - name
+        - role
+        - joined_at
+      properties:
+        user_id:
+          type: string
+          description: User identifier
+          example: "42"
+        email:
+          type: string
+          description: Email address
+        name:
+          type: string
+          description: Display name
+        role:
+          $ref: "#/components/schemas/Role"
+        joined_at:
+          type: string
+          format: date-time
+          description: When the user joined the organization.
+    ListOrganizationMembersResponse:
+      type: object
+      required:
+        - members
+      properties:
+        members:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrganizationMember"
+    SetOrganizationMemberRoleRequest:
+      type: object
+      required:
+        - role
+      properties:
+        role:
+          $ref: "#/components/schemas/Role"
+    ErrForbidden:
+      type: object
+      required:
+        - message
+        - code
+      properties:
+        message:
+          type: string
+          description: Human-readable error message
+          example: "this action requires the admin role"
+        code:
+          type: string
+          description: Machine-readable reason (e.g. "forbidden_not_admin").
+          example: "forbidden_not_admin"
     ErrUnauthorized:
       type: object
       required:
@@ -1417,6 +2054,10 @@ components:
           type: string
           description: Human-readable error message
           example: "Idempotency key reused with a different request body"
+        code:
+          type: string
+          description: Machine-readable reason (e.g. "last_admin").
+          example: "last_admin"
     ErrLocked:
       type: object
       required:
@@ -1426,15 +2067,6 @@ components:
           type: string
           description: Human-readable error message
           example: "Another invocation is currently running for this session"
-    ErrQuotaExceeded:
-      type: object
-      required:
-        - message
-      properties:
-        message:
-          type: string
-          description: Human-readable error message
-          example: "organization invocation quota exceeded"
     ErrInsufficientCredit:
       type: object
       required:
@@ -1444,6 +2076,89 @@ components:
           type: string
           description: Human-readable error message
           example: "organization has no credit balance remaining"
+    CreateCheckoutRequest:
+      type: object
+      required:
+        - amount_usd
+        - success_url
+        - cancel_url
+      properties:
+        amount_usd:
+          type: integer
+          format: int64
+          minimum: 5
+          maximum: 10000
+          description: Whole US dollars of credit to buy (e.g. 20).
+        success_url:
+          type: string
+          description: >
+            Where the buyer's browser goes after paying. Must be https (or http on localhost).
+
+        cancel_url:
+          type: string
+          description: >
+            Where the buyer's browser goes if they back out. Must be https (or http on localhost).
+
+    CreateCheckoutResponse:
+      type: object
+      required:
+        - url
+      properties:
+        url:
+          type: string
+          description: The payment page to send the buyer's browser to.
+    CreditBalanceResponse:
+      type: object
+      required:
+        - balance_usd
+      properties:
+        balance_usd:
+          type: string
+          description: >
+            Your current credit balance as a decimal USD string (e.g. "14.99"). Negative when overdrawn.
+
+    CreditLedgerEntry:
+      type: object
+      required:
+        - kind
+        - amount_usd
+        - reference
+        - created_at
+      properties:
+        kind:
+          type: string
+          enum: [purchase, grant, usage_burn, adjustment]
+          description: >
+            What moved the balance: a paid purchase, an operator grant, a usage charge, or a manual adjustment.
+
+        amount_usd:
+          type: string
+          description: >
+            The signed decimal USD amount the entry moved the balance by: positive for money in, negative for usage charged.
+
+        reference:
+          type: string
+          description: >
+            Identifies what the entry paid for or charged (e.g. the payment for a purchase, the metering window for a usage charge).
+
+        created_at:
+          type: string
+          format: date-time
+          description: When the entry was recorded.
+    ListCreditLedgerResponse:
+      type: object
+      required:
+        - entries
+      properties:
+        entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreditLedgerEntry"
+        next_cursor:
+          type: string
+          description: >
+            Cursor for the next page. Pass it as `after` to fetch the following entries. Omitted when there are no more entries.
+
     CancelSessionResponse:
       type: object
       required:
@@ -1791,9 +2506,7 @@ components:
           pattern: "^[0-9a-zA-Z._:-]+$"
           description: Client-provided session identifier.
         state:
-          type: string
-          enum: [RUNNING, DONE, FAILED, CANCELED]
-          description: Lifecycle state of the session.
+          $ref: "#/components/schemas/SessionState"
         current_invocation_key:
           type: string
           description: >
@@ -1817,6 +2530,12 @@ components:
         updated_at:
           type: string
           format: date-time
+    SessionState:
+      type: string
+      enum: [RUNNING, DONE, FAILED, CANCELED]
+      description: >
+        Lifecycle state of the session: `RUNNING` while an invocation is in flight, otherwise how its latest invocation ended.
+
     SessionMessage:
       type: object
       required:
@@ -1951,10 +2670,8 @@ components:
           description: The fact remembered, as the agent stated it.
         status:
           type: string
-          enum: [active, invalidated]
-          description: >
-            `active` while agents read this memory, `invalidated` once a later memory replaced it.
-
+          enum: [active]
+          description: Always `active`; only memories agents read are listed.
         created_at:
           type: string
           format: date-time
@@ -2301,6 +3018,14 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Session"
+          description: >
+            This page of sessions: most recently used first, or by most recent matching invocation when filtered. It can hold fewer than `limit`, or none at all, while `next_cursor` is present.
+
+        next_cursor:
+          type: string
+          description: >
+            Cursor for the next page. Pass it as `after`, with no filters or with every filter this listing used repeated exactly, to fetch the following sessions. Present whenever there may be more sessions, however few this page returned; omitted only once there are none left.
+
     Token:
       type: object
       description: API token metadata. Never includes the token value.
@@ -2391,3 +3116,6 @@ components:
         created_at:
           type: string
           format: date-time
+x-speakeasy-globals:
+  parameters:
+    - $ref: "#/components/parameters/OrganizationHeader"

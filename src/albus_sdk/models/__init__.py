@@ -17,6 +17,14 @@ if TYPE_CHECKING:
         CancelSessionResponse,
         CancelSessionResponseTypedDict,
     )
+    from .createcheckoutrequest import (
+        CreateCheckoutRequest,
+        CreateCheckoutRequestTypedDict,
+    )
+    from .createcheckoutresponse import (
+        CreateCheckoutResponse,
+        CreateCheckoutResponseTypedDict,
+    )
     from .createinviterequest import (
         CreateInviteRequest,
         CreateInviteRequestRole,
@@ -25,6 +33,11 @@ if TYPE_CHECKING:
     from .createsecretrequest import CreateSecretRequest, CreateSecretRequestTypedDict
     from .createtokenrequest import CreateTokenRequest, CreateTokenRequestTypedDict
     from .createtokenresponse import CreateTokenResponse, CreateTokenResponseTypedDict
+    from .creditbalanceresponse import (
+        CreditBalanceResponse,
+        CreditBalanceResponseTypedDict,
+    )
+    from .creditledgerentry import CreditLedgerEntry, CreditLedgerEntryTypedDict, Kind
     from .healthresponse import HealthResponse, HealthResponseTypedDict
     from .invite import Invite, InviteTypedDict
     from .listagentsresponse import ListAgentsResponse, ListAgentsResponseTypedDict
@@ -32,6 +45,11 @@ if TYPE_CHECKING:
         ListAuditEventsResponse,
         ListAuditEventsResponseTypedDict,
     )
+    from .listcreditledgerresponse import (
+        ListCreditLedgerResponse,
+        ListCreditLedgerResponseTypedDict,
+    )
+    from .listinvitesresponse import ListInvitesResponse, ListInvitesResponseTypedDict
     from .listmemoriesresponse import (
         ListMemoriesResponse,
         ListMemoriesResponseTypedDict,
@@ -41,6 +59,10 @@ if TYPE_CHECKING:
         ListMemoryGroupsResponseTypedDict,
     )
     from .listmodelsresponse import ListModelsResponse, ListModelsResponseTypedDict
+    from .listorganizationmembersresponse import (
+        ListOrganizationMembersResponse,
+        ListOrganizationMembersResponseTypedDict,
+    )
     from .listsecretsresponse import ListSecretsResponse, ListSecretsResponseTypedDict
     from .listsessionsresponse import (
         ListSessionsResponse,
@@ -54,22 +76,30 @@ if TYPE_CHECKING:
     from .memorygroup import MemoryGroup, MemoryGroupTypedDict
     from .model import Model, ModelTypedDict
     from .modelmeta import ModelMeta, ModelMetaTypedDict
+    from .organization import Organization, OrganizationTypedDict
+    from .organizationmember import OrganizationMember, OrganizationMemberTypedDict
     from .organizationmembership import (
         OrganizationMembership,
         OrganizationMembershipTypedDict,
     )
     from .provider import Provider, ProviderTypedDict
+    from .role import Role
     from .runsessionrequest import RunSessionRequest, RunSessionRequestTypedDict
     from .runsessionresponse import RunSessionResponse, RunSessionResponseTypedDict
     from .secret import Secret, SecretTypedDict
     from .security import Security, SecurityTypedDict
-    from .session import Session, SessionTypedDict, State
+    from .session import Session, SessionTypedDict
     from .sessionmessage import (
         SessionMessage,
         SessionMessageRole,
         SessionMessageTypedDict,
     )
     from .sessionresponse import SessionResponse, SessionResponseTypedDict
+    from .sessionstate import SessionState
+    from .setorganizationmemberrolerequest import (
+        SetOrganizationMemberRoleRequest,
+        SetOrganizationMemberRoleRequestTypedDict,
+    )
     from .terminaltool import TerminalTool, TerminalToolTypedDict
     from .token import Token, TokenTypedDict
     from .tokenusage import TokenUsage, TokenUsageTypedDict
@@ -80,9 +110,14 @@ if TYPE_CHECKING:
     from .tracespan import TraceSpan, TraceSpanStatus, TraceSpanType, TraceSpanTypedDict
     from .tracestatus import TraceStatus
     from .tracesummary import TraceSummary, TraceSummaryTypedDict
+    from .updateorganizationrequest import (
+        UpdateOrganizationRequest,
+        UpdateOrganizationRequestTypedDict,
+    )
     from .updatesecretrequest import UpdateSecretRequest, UpdateSecretRequestTypedDict
     from .websearchtool import WebSearchTool, WebSearchToolTypedDict
     from .whoamiresponse import WhoamiResponse, WhoamiResponseTypedDict
+    from . import internal
 
 __all__ = [
     "Agent",
@@ -104,6 +139,10 @@ __all__ = [
     "AuthenticatedUserTypedDict",
     "CancelSessionResponse",
     "CancelSessionResponseTypedDict",
+    "CreateCheckoutRequest",
+    "CreateCheckoutRequestTypedDict",
+    "CreateCheckoutResponse",
+    "CreateCheckoutResponseTypedDict",
     "CreateInviteRequest",
     "CreateInviteRequestRole",
     "CreateInviteRequestTypedDict",
@@ -113,21 +152,32 @@ __all__ = [
     "CreateTokenRequestTypedDict",
     "CreateTokenResponse",
     "CreateTokenResponseTypedDict",
+    "CreditBalanceResponse",
+    "CreditBalanceResponseTypedDict",
+    "CreditLedgerEntry",
+    "CreditLedgerEntryTypedDict",
     "Generation",
     "HealthResponse",
     "HealthResponseTypedDict",
     "Invite",
     "InviteTypedDict",
+    "Kind",
     "ListAgentsResponse",
     "ListAgentsResponseTypedDict",
     "ListAuditEventsResponse",
     "ListAuditEventsResponseTypedDict",
+    "ListCreditLedgerResponse",
+    "ListCreditLedgerResponseTypedDict",
+    "ListInvitesResponse",
+    "ListInvitesResponseTypedDict",
     "ListMemoriesResponse",
     "ListMemoriesResponseTypedDict",
     "ListMemoryGroupsResponse",
     "ListMemoryGroupsResponseTypedDict",
     "ListModelsResponse",
     "ListModelsResponseTypedDict",
+    "ListOrganizationMembersResponse",
+    "ListOrganizationMembersResponseTypedDict",
     "ListSecretsResponse",
     "ListSecretsResponseTypedDict",
     "ListSessionsResponse",
@@ -149,10 +199,15 @@ __all__ = [
     "ModelMeta",
     "ModelMetaTypedDict",
     "ModelTypedDict",
+    "Organization",
+    "OrganizationMember",
+    "OrganizationMemberTypedDict",
     "OrganizationMembership",
     "OrganizationMembershipTypedDict",
+    "OrganizationTypedDict",
     "Provider",
     "ProviderTypedDict",
+    "Role",
     "RunSessionRequest",
     "RunSessionRequestTypedDict",
     "RunSessionResponse",
@@ -167,8 +222,10 @@ __all__ = [
     "SessionMessageTypedDict",
     "SessionResponse",
     "SessionResponseTypedDict",
+    "SessionState",
     "SessionTypedDict",
-    "State",
+    "SetOrganizationMemberRoleRequest",
+    "SetOrganizationMemberRoleRequestTypedDict",
     "TerminalTool",
     "TerminalToolTypedDict",
     "Token",
@@ -190,6 +247,8 @@ __all__ = [
     "TraceStatus",
     "TraceSummary",
     "TraceSummaryTypedDict",
+    "UpdateOrganizationRequest",
+    "UpdateOrganizationRequestTypedDict",
     "UpdateSecretRequest",
     "UpdateSecretRequestTypedDict",
     "WebSearchTool",
@@ -218,6 +277,10 @@ _dynamic_imports: dict[str, str] = {
     "AuthenticatedUserTypedDict": ".authenticateduser",
     "CancelSessionResponse": ".cancelsessionresponse",
     "CancelSessionResponseTypedDict": ".cancelsessionresponse",
+    "CreateCheckoutRequest": ".createcheckoutrequest",
+    "CreateCheckoutRequestTypedDict": ".createcheckoutrequest",
+    "CreateCheckoutResponse": ".createcheckoutresponse",
+    "CreateCheckoutResponseTypedDict": ".createcheckoutresponse",
     "CreateInviteRequest": ".createinviterequest",
     "CreateInviteRequestRole": ".createinviterequest",
     "CreateInviteRequestTypedDict": ".createinviterequest",
@@ -227,6 +290,11 @@ _dynamic_imports: dict[str, str] = {
     "CreateTokenRequestTypedDict": ".createtokenrequest",
     "CreateTokenResponse": ".createtokenresponse",
     "CreateTokenResponseTypedDict": ".createtokenresponse",
+    "CreditBalanceResponse": ".creditbalanceresponse",
+    "CreditBalanceResponseTypedDict": ".creditbalanceresponse",
+    "CreditLedgerEntry": ".creditledgerentry",
+    "CreditLedgerEntryTypedDict": ".creditledgerentry",
+    "Kind": ".creditledgerentry",
     "HealthResponse": ".healthresponse",
     "HealthResponseTypedDict": ".healthresponse",
     "Invite": ".invite",
@@ -235,12 +303,18 @@ _dynamic_imports: dict[str, str] = {
     "ListAgentsResponseTypedDict": ".listagentsresponse",
     "ListAuditEventsResponse": ".listauditeventsresponse",
     "ListAuditEventsResponseTypedDict": ".listauditeventsresponse",
+    "ListCreditLedgerResponse": ".listcreditledgerresponse",
+    "ListCreditLedgerResponseTypedDict": ".listcreditledgerresponse",
+    "ListInvitesResponse": ".listinvitesresponse",
+    "ListInvitesResponseTypedDict": ".listinvitesresponse",
     "ListMemoriesResponse": ".listmemoriesresponse",
     "ListMemoriesResponseTypedDict": ".listmemoriesresponse",
     "ListMemoryGroupsResponse": ".listmemorygroupsresponse",
     "ListMemoryGroupsResponseTypedDict": ".listmemorygroupsresponse",
     "ListModelsResponse": ".listmodelsresponse",
     "ListModelsResponseTypedDict": ".listmodelsresponse",
+    "ListOrganizationMembersResponse": ".listorganizationmembersresponse",
+    "ListOrganizationMembersResponseTypedDict": ".listorganizationmembersresponse",
     "ListSecretsResponse": ".listsecretsresponse",
     "ListSecretsResponseTypedDict": ".listsecretsresponse",
     "ListSessionsResponse": ".listsessionsresponse",
@@ -263,10 +337,15 @@ _dynamic_imports: dict[str, str] = {
     "ModelTypedDict": ".model",
     "ModelMeta": ".modelmeta",
     "ModelMetaTypedDict": ".modelmeta",
+    "Organization": ".organization",
+    "OrganizationTypedDict": ".organization",
+    "OrganizationMember": ".organizationmember",
+    "OrganizationMemberTypedDict": ".organizationmember",
     "OrganizationMembership": ".organizationmembership",
     "OrganizationMembershipTypedDict": ".organizationmembership",
     "Provider": ".provider",
     "ProviderTypedDict": ".provider",
+    "Role": ".role",
     "RunSessionRequest": ".runsessionrequest",
     "RunSessionRequestTypedDict": ".runsessionrequest",
     "RunSessionResponse": ".runsessionresponse",
@@ -277,12 +356,14 @@ _dynamic_imports: dict[str, str] = {
     "SecurityTypedDict": ".security",
     "Session": ".session",
     "SessionTypedDict": ".session",
-    "State": ".session",
     "SessionMessage": ".sessionmessage",
     "SessionMessageRole": ".sessionmessage",
     "SessionMessageTypedDict": ".sessionmessage",
     "SessionResponse": ".sessionresponse",
     "SessionResponseTypedDict": ".sessionresponse",
+    "SessionState": ".sessionstate",
+    "SetOrganizationMemberRoleRequest": ".setorganizationmemberrolerequest",
+    "SetOrganizationMemberRoleRequestTypedDict": ".setorganizationmemberrolerequest",
     "TerminalTool": ".terminaltool",
     "TerminalToolTypedDict": ".terminaltool",
     "Token": ".token",
@@ -304,6 +385,8 @@ _dynamic_imports: dict[str, str] = {
     "TraceStatus": ".tracestatus",
     "TraceSummary": ".tracesummary",
     "TraceSummaryTypedDict": ".tracesummary",
+    "UpdateOrganizationRequest": ".updateorganizationrequest",
+    "UpdateOrganizationRequestTypedDict": ".updateorganizationrequest",
     "UpdateSecretRequest": ".updatesecretrequest",
     "UpdateSecretRequestTypedDict": ".updatesecretrequest",
     "WebSearchTool": ".websearchtool",
@@ -312,12 +395,17 @@ _dynamic_imports: dict[str, str] = {
     "WhoamiResponseTypedDict": ".whoamiresponse",
 }
 
+_sub_packages = ["internal"]
+
 
 def __getattr__(attr_name: str) -> Any:
     return lazy_getattr(
-        attr_name, package=__package__, dynamic_imports=_dynamic_imports
+        attr_name,
+        package=__package__,
+        dynamic_imports=_dynamic_imports,
+        sub_packages=_sub_packages,
     )
 
 
 def __dir__():
-    return lazy_dir(dynamic_imports=_dynamic_imports)
+    return lazy_dir(dynamic_imports=_dynamic_imports, sub_packages=_sub_packages)

@@ -1,0 +1,12 @@
+# OrganizationMember
+
+
+## Fields
+
+| Field                                                                | Type                                                                 | Required                                                             | Description                                                          | Example                                                              |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `user_id`                                                            | *str*                                                                | :heavy_check_mark:                                                   | User identifier                                                      | 42                                                                   |
+| `email`                                                              | *str*                                                                | :heavy_check_mark:                                                   | Email address                                                        |                                                                      |
+| `name`                                                               | *str*                                                                | :heavy_check_mark:                                                   | Display name                                                         |                                                                      |
+| `role`                                                               | [models.Role](../models/role.md)                                     | :heavy_check_mark:                                                   | A member's role in an organization.                                  |                                                                      |
+| `joined_at`                                                          | [date](https://docs.python.org/3/library/datetime.html#date-objects) | :heavy_check_mark:                                                   | When the user joined the organization.                               |                                                                      |

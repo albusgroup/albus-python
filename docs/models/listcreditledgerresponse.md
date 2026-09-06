@@ -1,0 +1,9 @@
+# ListCreditLedgerResponse
+
+
+## Fields
+
+| Field                                                                                                                 | Type                                                                                                                  | Required                                                                                                              | Description                                                                                                           |
+| --------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `entries`                                                                                                             | List[[models.CreditLedgerEntry](../models/creditledgerentry.md)]                                                      | :heavy_check_mark:                                                                                                    | N/A                                                                                                                   |
+| `next_cursor`                                                                                                         | *Optional[str]*                                                                                                       | :heavy_minus_sign:                                                                                                    | Cursor for the next page. Pass it as `after` to fetch the following entries. Omitted when there are no more entries.<br/> |

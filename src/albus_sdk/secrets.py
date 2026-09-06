@@ -3,10 +3,10 @@
 from .basesdk import AsyncBaseSDK, BaseSDK
 from albus_sdk import errors, models, operations, utils
 from albus_sdk._hooks import HookContext
-from albus_sdk.types import OptionalNullable, UNSET
+from albus_sdk.types import BaseModel, OptionalNullable, UNSET
 from albus_sdk.utils import get_security_from_env
 from albus_sdk.utils.unmarshal_json_response import unmarshal_json_response
-from typing import Any, Optional
+from typing import Any, Mapping, Optional, Union, cast
 
 
 class Secrets(BaseSDK):
@@ -14,25 +14,38 @@ class Secrets(BaseSDK):
 
     def list_secrets(
         self,
+        *,
+        request: Union[
+            operations.ListSecretsRequest, operations.ListSecretsRequestTypedDict
+        ] = operations.ListSecretsRequest(),
     ) -> models.ListSecretsResponse:
         r"""List all secrets
 
         If set, this operation will use either `bearer_auth` or `api_key` from the global security.
 
+        :param request: The request object to send.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
+
+        if not isinstance(request, BaseModel):
+            request = utils.unmarshal(request, operations.ListSecretsRequest)
+        request = cast(operations.ListSecretsRequest, request)
+
         req = self._build_request(
             method="GET",
             path="/secrets",
             base_url=base_url,
             url_variables=url_variables,
-            request=None,
+            request=request,
             request_body_required=False,
             request_has_path_params=False,
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.ListSecretsGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],
@@ -111,6 +124,9 @@ class Secrets(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.CreateSecretGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
                 request, False, False, "json", models.CreateSecretRequest
@@ -192,6 +208,9 @@ class Secrets(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.GetSecretGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],
@@ -275,6 +294,9 @@ class Secrets(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.UpdateSecretGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.body, False, False, "json", models.UpdateSecretRequest
@@ -359,6 +381,9 @@ class Secrets(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.DeleteSecretGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],
@@ -414,25 +439,38 @@ class AsyncSecrets(AsyncBaseSDK):
 
     async def list_secrets(
         self,
+        *,
+        request: Union[
+            operations.ListSecretsRequest, operations.ListSecretsRequestTypedDict
+        ] = operations.ListSecretsRequest(),
     ) -> models.ListSecretsResponse:
         r"""List all secrets
 
         If set, this operation will use either `bearer_auth` or `api_key` from the global security.
 
+        :param request: The request object to send.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
+
+        if not isinstance(request, BaseModel):
+            request = utils.unmarshal(request, operations.ListSecretsRequest)
+        request = cast(operations.ListSecretsRequest, request)
+
         req = self._build_request_async(
             method="GET",
             path="/secrets",
             base_url=base_url,
             url_variables=url_variables,
-            request=None,
+            request=request,
             request_body_required=False,
             request_has_path_params=False,
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.ListSecretsGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],
@@ -511,6 +549,9 @@ class AsyncSecrets(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.CreateSecretGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
                 request, False, False, "json", models.CreateSecretRequest
@@ -592,6 +633,9 @@ class AsyncSecrets(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.GetSecretGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],
@@ -675,6 +719,9 @@ class AsyncSecrets(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.UpdateSecretGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.body, False, False, "json", models.UpdateSecretRequest
@@ -759,6 +806,9 @@ class AsyncSecrets(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.DeleteSecretGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],

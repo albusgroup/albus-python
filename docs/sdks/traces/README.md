@@ -28,6 +28,7 @@ import os
 
 
 with Albus(
+    x_albus_organization="<value>",
     access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
@@ -50,6 +51,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
+        x_albus_organization="<value>",
         access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
@@ -108,6 +110,7 @@ import os
 
 
 with Albus(
+    x_albus_organization="<value>",
     access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
@@ -130,6 +133,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
+        x_albus_organization="<value>",
         access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 

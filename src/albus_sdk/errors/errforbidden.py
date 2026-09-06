@@ -8,18 +8,20 @@ import httpx
 from typing import Optional
 
 
-class ErrQuotaExceededData(BaseModel):
+class ErrForbiddenData(BaseModel):
     message: str
     r"""Human-readable error message"""
+    code: str
+    r"""Machine-readable reason (e.g. \"forbidden_not_admin\")."""
 
 
 @dataclass(unsafe_hash=True)
-class ErrQuotaExceeded(AlbusError):
-    data: ErrQuotaExceededData = field(hash=False)
+class ErrForbidden(AlbusError):
+    data: ErrForbiddenData = field(hash=False)
 
     def __init__(
         self,
-        data: ErrQuotaExceededData,
+        data: ErrForbiddenData,
         raw_response: httpx.Response,
         body: Optional[str] = None,
     ):

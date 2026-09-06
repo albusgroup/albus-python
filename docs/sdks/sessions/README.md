@@ -6,7 +6,7 @@ Run and inspect agent sessions.
 
 ### Available Operations
 
-* [list_sessions](#list_sessions) - List all sessions
+* [list_sessions](#list_sessions) - List sessions
 * [get_session](#get_session) - Get a session with its messages
 * [run_session](#run_session) - Run or resume a session
 * [delete_session](#delete_session) - Delete a session
@@ -15,7 +15,12 @@ Run and inspect agent sessions.
 
 ## list_sessions
 
-List all sessions
+Lists your organization's sessions, most recently used first. Filter by agent name, agent revision, invocation state, time window, or an invocation it ran: a session matches when any of its invocations does, and a filtered listing is ordered by each session's most recent matching invocation. A filter that matches nothing returns an empty page rather than an error.
+
+Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present — you have reached the end when it is absent. A page can hold fewer sessions than `limit`, or none at all, and still have a `next_cursor`; a short page is not the end of the results.
+
+A listing covers the window given by `since` and `until`, and omitting `since` searches the last 31 days. The window is fixed when the first page is requested, so paging with `after` keeps returning results from the window that page used: `after` carries that window and the filters it was made with, so send it with no filters, or with every filter repeated exactly, and expect a `400` otherwise.
+
 
 ### Example Usage
 
@@ -27,10 +32,11 @@ import os
 
 
 with Albus(
+    x_albus_organization="<value>",
     access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
-    res = albus.sessions.list_sessions()
+    res = albus.sessions.list_sessions(limit=25)
 
     # Handle response
     print(res)
@@ -49,10 +55,11 @@ import os
 async def main():
 
     async with AsyncAlbus(
+        x_albus_organization="<value>",
         access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
-        res = await albus.sessions.list_sessions()
+        res = await albus.sessions.list_sessions(limit=25)
 
         # Handle response
         print(res)
@@ -62,8 +69,16 @@ asyncio.run(main())
 
 ### Parameters
 
-| Parameter                                                           | Type                                                                | Required                                                            | Description                                                         |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| Parameter                                                                                                                                                                                      | Type                                                                                                                                                                                           | Required                                                                                                                                                                                       | Description                                                                                                                                                                                    |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `agent_name`                                                                                                                                                                                   | *Optional[str]*                                                                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                             | Return only sessions that ran this agent (e.g. "support-triage").<br/>                                                                                                                         |
+| `agent_revision`                                                                                                                                                                               | *Optional[str]*                                                                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                             | Return only sessions that ran this exact agent revision (e.g. "a1b2c3d4"). Requires `agent_name`; a revision without an agent name is a `400`.<br/>                                            |
+| `status`                                                                                                                                                                                       | [Optional[models.SessionState]](../../models/sessionstate.md)                                                                                                                                  | :heavy_minus_sign:                                                                                                                                                                             | Return only sessions with an invocation that ended this way, or is `RUNNING` now. `DONE` matches a successful invocation.<br/>                                                                 |
+| `invocation_key`                                                                                                                                                                               | *Optional[str]*                                                                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                             | Return only the session that ran this invocation, whether it is still running or has ended.<br/>                                                                                               |
+| `since`                                                                                                                                                                                        | [date](https://docs.python.org/3/library/datetime.html#date-objects)                                                                                                                           | :heavy_minus_sign:                                                                                                                                                                             | Return only sessions with an invocation that started at or after this time. Without `since` or `until`, the listing covers sessions used in the last 31 days; pass it to search further back.<br/> |
+| `until`                                                                                                                                                                                        | [date](https://docs.python.org/3/library/datetime.html#date-objects)                                                                                                                           | :heavy_minus_sign:                                                                                                                                                                             | Return only sessions with an invocation that started at or before this time. Defaults to now, and must be after `since`; an earlier `until` is a `400`.<br/>                                   |
+| `after`                                                                                                                                                                                        | *Optional[str]*                                                                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                             | Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.<br/>                                                        |
+| `limit`                                                                                                                                                                                        | *Optional[int]*                                                                                                                                                                                | :heavy_minus_sign:                                                                                                                                                                             | Maximum number of sessions to return. A page can be shorter, so page while `next_cursor` is present.<br/>                                                                                      |
 
 ### Response
 
@@ -73,6 +88,7 @@ asyncio.run(main())
 
 | Error Type               | Status Code              | Content Type             |
 | ------------------------ | ------------------------ | ------------------------ |
+| errors.ErrBadRequest     | 400                      | application/json         |
 | errors.ErrUnauthorized   | 401                      | application/json         |
 | errors.AlbusDefaultError | 4XX, 5XX                 | \*/\*                    |
 
@@ -91,6 +107,7 @@ import os
 
 
 with Albus(
+    x_albus_organization="<value>",
     access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
@@ -113,6 +130,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
+        x_albus_organization="<value>",
         access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
@@ -162,6 +180,7 @@ import os
 
 
 with Albus(
+    x_albus_organization="<value>",
     access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
@@ -188,6 +207,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
+        x_albus_organization="<value>",
         access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
@@ -229,7 +249,6 @@ asyncio.run(main())
 | errors.ErrConflict           | 409                          | application/json             |
 | errors.ErrInvocationCanceled | 410                          | application/json             |
 | errors.ErrLocked             | 423                          | application/json             |
-| errors.ErrQuotaExceeded      | 429                          | application/json             |
 | errors.ErrInvocationFailed   | 502                          | application/json             |
 | errors.ErrTimeout            | 504                          | application/json             |
 | errors.AlbusDefaultError     | 4XX, 5XX                     | \*/\*                        |
@@ -248,6 +267,7 @@ import os
 
 
 with Albus(
+    x_albus_organization="<value>",
     access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
@@ -269,6 +289,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
+        x_albus_organization="<value>",
         access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
@@ -308,6 +329,7 @@ import os
 
 
 with Albus(
+    x_albus_organization="<value>",
     access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
@@ -330,6 +352,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
+        x_albus_organization="<value>",
         access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 
@@ -375,6 +398,7 @@ import os
 
 
 with Albus(
+    x_albus_organization="<value>",
     access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
 ) as albus:
 
@@ -397,6 +421,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
+        x_albus_organization="<value>",
         access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
     ) as albus:
 

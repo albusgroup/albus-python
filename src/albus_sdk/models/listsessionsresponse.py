@@ -2,14 +2,46 @@
 
 from __future__ import annotations
 from .session import Session, SessionTypedDict
-from albus_sdk.types import BaseModel
-from typing import List
-from typing_extensions import TypedDict
+from albus_sdk.types import BaseModel, UNSET_SENTINEL
+from pydantic import model_serializer
+from typing import List, Optional
+from typing_extensions import NotRequired, TypedDict
 
 
 class ListSessionsResponseTypedDict(TypedDict):
     sessions: List[SessionTypedDict]
+    r"""This page of sessions: most recently used first, or by most recent matching invocation when filtered. It can hold fewer than `limit`, or none at all, while `next_cursor` is present.
+
+    """
+    next_cursor: NotRequired[str]
+    r"""Cursor for the next page. Pass it as `after`, with no filters or with every filter this listing used repeated exactly, to fetch the following sessions. Present whenever there may be more sessions, however few this page returned; omitted only once there are none left.
+
+    """
 
 
 class ListSessionsResponse(BaseModel):
     sessions: List[Session]
+    r"""This page of sessions: most recently used first, or by most recent matching invocation when filtered. It can hold fewer than `limit`, or none at all, while `next_cursor` is present.
+
+    """
+
+    next_cursor: Optional[str] = None
+    r"""Cursor for the next page. Pass it as `after`, with no filters or with every filter this listing used repeated exactly, to fetch the following sessions. Present whenever there may be more sessions, however few this page returned; omitted only once there are none left.
+
+    """
+
+    @model_serializer(mode="wrap")
+    def serialize_model(self, handler):
+        optional_fields = set(["next_cursor"])
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias or n
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m

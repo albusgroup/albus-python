@@ -19,6 +19,40 @@ from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
+class RunSessionGlobalsTypedDict(TypedDict):
+    x_albus_organization: NotRequired[str]
+    r"""The id of the organization the request acts on, which must be one the caller belongs to. Defaults to the organization the caller joined first. Ignored for API keys, which are bound to one organization.
+
+    """
+
+
+class RunSessionGlobals(BaseModel):
+    x_albus_organization: Annotated[
+        Optional[str],
+        pydantic.Field(alias="X-Albus-Organization"),
+        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
+    ] = None
+    r"""The id of the organization the request acts on, which must be one the caller belongs to. Defaults to the organization the caller joined first. Ignored for API keys, which are bound to one organization.
+
+    """
+
+    @model_serializer(mode="wrap")
+    def serialize_model(self, handler):
+        optional_fields = set(["X-Albus-Organization"])
+        serialized = handler(self)
+        m = {}
+
+        for n, f in type(self).model_fields.items():
+            k = f.alias or n
+            val = serialized.get(k, serialized.get(n))
+
+            if val != UNSET_SENTINEL:
+                if val is not None or k not in optional_fields:
+                    m[k] = val
+
+        return m
+
+
 class RunSessionRequestTypedDict(TypedDict):
     id: str
     r"""Client-provided session identifier. Use the same value across requests to continue the same agent session."""

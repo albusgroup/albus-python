@@ -16,18 +16,16 @@ class AuthenticatedUserTypedDict(TypedDict):
     r"""Unique user identifier"""
     email: str
     r"""User's email address"""
+    active_organization: OrganizationMembershipTypedDict
+    r"""The organization the request acts on: the one named by the X-Albus-Organization header, or the one the user joined first.
+
+    """
     organizations: List[OrganizationMembershipTypedDict]
     r"""Every organization the user belongs to, with their roles."""
     name: NotRequired[str]
     r"""User's display name"""
     roles: NotRequired[List[str]]
-    r"""Roles in the active organization (present only when a single organization is in scope).
-
-    """
-    active_organization: NotRequired[OrganizationMembershipTypedDict]
-    r"""The organization this session is scoped to. Present when the user belongs to exactly one organization; absent when they belong to several and none is selected yet.
-
-    """
+    r"""Roles in the active organization."""
     issued_at: NotRequired[int]
     r"""Token issue timestamp (Unix epoch)"""
     expires_at: NotRequired[int]
@@ -41,6 +39,11 @@ class AuthenticatedUser(BaseModel):
     email: str
     r"""User's email address"""
 
+    active_organization: OrganizationMembership
+    r"""The organization the request acts on: the one named by the X-Albus-Organization header, or the one the user joined first.
+
+    """
+
     organizations: List[OrganizationMembership]
     r"""Every organization the user belongs to, with their roles."""
 
@@ -48,14 +51,7 @@ class AuthenticatedUser(BaseModel):
     r"""User's display name"""
 
     roles: Optional[List[str]] = None
-    r"""Roles in the active organization (present only when a single organization is in scope).
-
-    """
-
-    active_organization: Optional[OrganizationMembership] = None
-    r"""The organization this session is scoped to. Present when the user belongs to exactly one organization; absent when they belong to several and none is selected yet.
-
-    """
+    r"""Roles in the active organization."""
 
     issued_at: Optional[int] = None
     r"""Token issue timestamp (Unix epoch)"""
@@ -65,9 +61,7 @@ class AuthenticatedUser(BaseModel):
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = set(
-            ["name", "roles", "active_organization", "issued_at", "expires_at"]
-        )
+        optional_fields = set(["name", "roles", "issued_at", "expires_at"])
         serialized = handler(self)
         m = {}
 

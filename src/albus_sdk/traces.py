@@ -78,6 +78,9 @@ class Traces(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.ListTracesGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],
@@ -185,6 +188,9 @@ class Traces(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.GetTraceGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],
@@ -312,6 +318,9 @@ class AsyncTraces(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.ListTracesGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],
@@ -419,6 +428,9 @@ class AsyncTraces(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
+            _globals=operations.GetTraceGlobals(
+                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
+            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
             allowed_fields=["bearer_auth", "api_key"],

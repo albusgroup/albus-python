@@ -1,7 +1,6 @@
 # CreateInviteRequestRole
 
-Role to grant the invitee. Defaults to admin when inviting to a new organization and member when inviting into an existing one.
-
+Role to grant the invitee.
 
 ## Example Usage
 

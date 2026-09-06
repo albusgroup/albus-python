@@ -1,0 +1,10 @@
+# Organization
+
+
+## Fields
+
+| Field                                                                | Type                                                                 | Required                                                             | Description                                                          | Example                                                              |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `id`                                                                 | *str*                                                                | :heavy_check_mark:                                                   | Organization identifier                                              | 42                                                                   |
+| `name`                                                               | *str*                                                                | :heavy_check_mark:                                                   | Organization display name                                            | Acme Corp                                                            |
+| `created_at`                                                         | [date](https://docs.python.org/3/library/datetime.html#date-objects) | :heavy_check_mark:                                                   | When the organization was created.                                   |                                                                      |
