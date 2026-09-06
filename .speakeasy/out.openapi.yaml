@@ -2356,6 +2356,31 @@ components:
           description: >
             Provider serving this model (e.g. "gemini", or "open_weight" for open-weight models).
 
+        pricing:
+          $ref: "#/components/schemas/ModelPricing"
+    ModelPricing:
+      type: object
+      description: >
+        What the model currently costs, as decimal USD strings per one million tokens (e.g. "1.25"). Absent when the model is not yet priced.
+
+      required:
+        - input_usd_per_mtok
+        - cached_input_usd_per_mtok
+        - output_usd_per_mtok
+        - thoughts_usd_per_mtok
+      properties:
+        input_usd_per_mtok:
+          type: string
+          description: Price per million input tokens.
+        cached_input_usd_per_mtok:
+          type: string
+          description: Price per million cached input tokens.
+        output_usd_per_mtok:
+          type: string
+          description: Price per million output tokens.
+        thoughts_usd_per_mtok:
+          type: string
+          description: Price per million reasoning (thinking) tokens.
     ListModelsResponse:
       type: object
       required:

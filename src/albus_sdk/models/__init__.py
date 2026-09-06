@@ -76,6 +76,7 @@ if TYPE_CHECKING:
     from .memorygroup import MemoryGroup, MemoryGroupTypedDict
     from .model import Model, ModelTypedDict
     from .modelmeta import ModelMeta, ModelMetaTypedDict
+    from .modelpricing import ModelPricing, ModelPricingTypedDict
     from .organization import Organization, OrganizationTypedDict
     from .organizationmember import OrganizationMember, OrganizationMemberTypedDict
     from .organizationmembership import (
@@ -198,6 +199,8 @@ __all__ = [
     "Model",
     "ModelMeta",
     "ModelMetaTypedDict",
+    "ModelPricing",
+    "ModelPricingTypedDict",
     "ModelTypedDict",
     "Organization",
     "OrganizationMember",
@@ -337,6 +340,8 @@ _dynamic_imports: dict[str, str] = {
     "ModelTypedDict": ".model",
     "ModelMeta": ".modelmeta",
     "ModelMetaTypedDict": ".modelmeta",
+    "ModelPricing": ".modelpricing",
+    "ModelPricingTypedDict": ".modelpricing",
     "Organization": ".organization",
     "OrganizationTypedDict": ".organization",
     "OrganizationMember": ".organizationmember",
