@@ -87,10 +87,22 @@ SDK_SERVER_SELECTION = {
 
 """: "",
     "                server_idx=server_idx,\n": "",
-    "        if api_key is None:\n": "        if not api_key:\n",
+    "        api_key: Optional[Union[Optional[str], Callable[[], Optional[str]]]] = None,\n": (
+        "        api_key: Optional[str] = None,\n"
+    ),
+    """        security: Any = None
+        if api_key is None:
+            security = None
+        elif callable(api_key):
+            # pylint: disable=unnecessary-lambda-assignment
+            security = lambda: models_.Security(api_key=api_key())
+        else:
+            security = models_.Security(api_key=api_key)
+""": """        security = models_.Security(api_key=api_key) if api_key else None
+""",
     "from albus_sdk import models as models_, utils\n": "from albus_sdk import models as models_\n",
     "from typing import Any, Callable, Dict, Optional, TYPE_CHECKING, Union, cast\n": (
-        "from typing import Any, Callable, Optional, TYPE_CHECKING, Union, cast\n"
+        "from typing import Optional, TYPE_CHECKING, cast\n"
     ),
 }
 
@@ -307,7 +319,8 @@ def remove_unused_imports(content: str) -> str:
 def normalize_sdk_constructors() -> None:
     """The SDK has one server, so the generated selection parameters go.
 
-    An empty api_key means no api_key, so the environment and the stored
+    api_key is a string: the generated per-request callback form goes, and
+    an empty api_key means no api_key, so the environment and the stored
     browser session still apply.
     """
     path = OPERATION_DIRECTORY / "sdk.py"

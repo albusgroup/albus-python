@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from inspect import signature
 import json
 from pathlib import Path
+from typing import Optional
 
 import httpx
 import pytest
@@ -55,7 +56,7 @@ async def async_sdk_with_handler(
 
 def test_package_exposes_version() -> None:
     assert albus_sdk.VERSION == albus_sdk.__version__
-    assert albus_sdk.VERSION == "0.16.0"
+    assert albus_sdk.VERSION == "0.16.1"
 
 
 def test_default_production_url_and_sync_operation() -> None:
@@ -156,6 +157,11 @@ def test_constructor_accepts_only_api_key_for_authentication() -> None:
             TypeError, match=f"unexpected keyword argument '{argument}'"
         ):
             Albus(**{argument: "value"})
+
+    for sdk in (Albus, AsyncAlbus):
+        parameter = signature(sdk).parameters["api_key"]
+        assert parameter.annotation == Optional[str]
+        assert parameter.default is None
 
 
 def test_api_key_environment_fallback(

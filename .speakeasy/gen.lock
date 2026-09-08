@@ -4,13 +4,13 @@ management:
   docVersion: 1.0.0
   speakeasyVersion: 1.791.0
   generationVersion: 2.924.0
-  releaseVersion: 0.16.0
+  releaseVersion: 0.16.1
   repoURL: https://github.com/albusgroup/albus-python
   installationURL: https://github.com/albusgroup/albus-python.git
 persistentEdits:
-  generation_id: 798b143a-bfdb-4036-a161-1c9273f6d15e
-  pristine_commit_hash: b2b8a336c3207d3955d22808637878ae70984927
-  pristine_tree_hash: 5db946902d8b2e49bb1943c0529356b820d81f95
+  generation_id: ec18ed87-9174-4737-bfb7-82c0e73bde48
+  pristine_commit_hash: 571e0cf3235a97d4610e4ab6fbe28aedd9d7ea98
+  pristine_tree_hash: 0130a8f71e62c7a80b6fde1c9336a316ce45cde3
 features:
   python:
     additionalDependencies: 1.1.0
@@ -555,8 +555,8 @@ trackedFiles:
     pristine_git_object: c00200cfd072e9febac5d6be783da1925d11dac0
   pyproject.toml:
     id: 5d07e7d72637
-    last_write_checksum: sha1:c028fea64ffcbc9f1688f32daf52117920fd4c8a
-    pristine_git_object: b3b91f0e2e8c88bc060436b079002e0ee4a63f34
+    last_write_checksum: sha1:e6ba22c679ac253f44fb113d14bdba26a0dff4b2
+    pristine_git_object: 4db776339a674e321dac72ec96f926b5216f656f
   scripts/prepare_readme.py:
     id: e0c5957a6035
     last_write_checksum: sha1:87ae869992e135551fddfe7224d27c36a6e6f6a1
@@ -583,8 +583,8 @@ trackedFiles:
     pristine_git_object: cbf6440ec13211554ee2cecd1ae5c961400cb297
   src/albus_sdk/_version.py:
     id: ce551781b317
-    last_write_checksum: sha1:021a96fe9e242d240b177ef8b1e6f05ffa17f8e9
-    pristine_git_object: ce63aba622f94e015cf9bd2da41e59406b82d808
+    last_write_checksum: sha1:a02511292bb72554162bcf9ca85bdc58c8ac04a1
+    pristine_git_object: 34e537742ef42980b20c0ca9c2bc4d611c27dfa6
   src/albus_sdk/agents.py:
     id: db42fb5fa8b3
     last_write_checksum: sha1:7fd04c81cd63ab3a9cd6dd388366c4ec9fc1e118

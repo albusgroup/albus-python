@@ -17,7 +17,7 @@ from albus_sdk.types import OptionalNullable, UNSET
 import httpx
 import importlib
 import sys
-from typing import Any, Callable, Optional, TYPE_CHECKING, Union, cast
+from typing import Optional, TYPE_CHECKING, cast
 import weakref
 
 if TYPE_CHECKING:
@@ -78,7 +78,7 @@ class Albus(BaseSDK):
 
     def __init__(
         self,
-        api_key: Optional[Union[Optional[str], Callable[[], Optional[str]]]] = None,
+        api_key: Optional[str] = None,
         server_url: Optional[str] = None,
         client: Optional[HttpClient] = None,
         retry_config: OptionalNullable[RetryConfig] = UNSET,
@@ -105,14 +105,7 @@ class Albus(BaseSDK):
         if debug_logger is None:
             debug_logger = get_default_logger()
 
-        security: Any = None
-        if not api_key:
-            security = None
-        elif callable(api_key):
-            # pylint: disable=unnecessary-lambda-assignment
-            security = lambda: models_.Security(api_key=api_key())
-        else:
-            security = models_.Security(api_key=api_key)
+        security = models_.Security(api_key=api_key) if api_key else None
 
         BaseSDK.__init__(
             self,
@@ -238,7 +231,7 @@ class AsyncAlbus(AsyncBaseSDK):
 
     def __init__(
         self,
-        api_key: Optional[Union[Optional[str], Callable[[], Optional[str]]]] = None,
+        api_key: Optional[str] = None,
         server_url: Optional[str] = None,
         async_client: Optional[AsyncHttpClient] = None,
         retry_config: OptionalNullable[RetryConfig] = UNSET,
@@ -263,14 +256,7 @@ class AsyncAlbus(AsyncBaseSDK):
             type(async_client), AsyncHttpClient
         ), "The provided async_client must implement the AsyncHttpClient protocol."
 
-        security: Any = None
-        if not api_key:
-            security = None
-        elif callable(api_key):
-            # pylint: disable=unnecessary-lambda-assignment
-            security = lambda: models_.Security(api_key=api_key())
-        else:
-            security = models_.Security(api_key=api_key)
+        security = models_.Security(api_key=api_key) if api_key else None
 
         AsyncBaseSDK.__init__(
             self,
