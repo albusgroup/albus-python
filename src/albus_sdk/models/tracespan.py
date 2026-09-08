@@ -51,9 +51,9 @@ class TraceSpanTypedDict(TypedDict):
 
     """
     started_at: datetime
-    r"""When the span began."""
+    r"""An RFC 3339 timestamp with millisecond precision."""
     ended_at: datetime
-    r"""When the span finished."""
+    r"""An RFC 3339 timestamp with millisecond precision."""
     parent_id: NotRequired[str]
     r"""Id of the span this one belongs to: for a model call or a tool call, this span's id without its last segment; for a step, the invocation itself — an attempt is not a span. Absent only for the invocation. It is present even when the span it names is not in this response: the invocation is published once it has ended and a step once that step has ended, so a still-running invocation has spans whose parent is not there yet, which is not an error. Treat a parent you cannot find as one you do not have.
 
@@ -129,10 +129,10 @@ class TraceSpan(BaseModel):
     """
 
     started_at: datetime
-    r"""When the span began."""
+    r"""An RFC 3339 timestamp with millisecond precision."""
 
     ended_at: datetime
-    r"""When the span finished."""
+    r"""An RFC 3339 timestamp with millisecond precision."""
 
     parent_id: Optional[str] = None
     r"""Id of the span this one belongs to: for a model call or a tool call, this span's id without its last segment; for a step, the invocation itself — an attempt is not a span. Absent only for the invocation. It is present even when the span it names is not in this response: the invocation is published once it has ended and a step once that step has ended, so a still-running invocation has spans whose parent is not there yet, which is not an error. Treat a parent you cannot find as one you do not have.

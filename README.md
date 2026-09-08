@@ -67,8 +67,7 @@ long-polls, so construct the client with a `timeout_ms` above the longest
 wait — it is a client-wide setting, and the underlying HTTP client otherwise
 gives up after its own 5-second default.
 
-User and token operations use a user bearer token. `AsyncAlbus` exposes the same
-operations as coroutines:
+`AsyncAlbus` exposes the same operations as coroutines:
 
 ```python
 import asyncio
@@ -79,7 +78,7 @@ from albus_sdk import AsyncAlbus, models
 
 async def main() -> None:
     async with AsyncAlbus(
-        access_token=os.environ["ALBUS_BEARER_AUTH"],
+        api_key=os.environ["ALBUS_API_KEY"],
     ) as albus:
         response = await albus.auth.whoami()
         print(response)
@@ -88,10 +87,11 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-Secret operations accept either credential. The SDK also reads
-`ALBUS_API_KEY` and `ALBUS_BEARER_AUTH` directly from the environment, so
-`Albus()` is sufficient when the appropriate variable is set. Production
-requests use `https://albus.sh/api` by default.
+`api_key` is the only credential. When it is not passed, the SDK reads
+`ALBUS_API_KEY` from the environment; when that is unset too, it sends
+requests as the user signed in with `albus login`, acting in the organization
+that session selected. `Albus()` is therefore sufficient on a machine with
+either configured. Production requests use `https://albus.sh/api` by default.
 
 <!-- Start Summary [summary] -->
 ## Summary
@@ -207,13 +207,12 @@ Generally, the SDK will work well with most IDEs out of the box. However, when u
 
 ```python
 # Synchronous Example
-from albus_sdk import Albus, models
+from albus_sdk import Albus
 import os
 
 
 with Albus(
-    x_albus_organization="<value>",
-    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+    api_key=os.getenv("ALBUS_API_KEY", ""),
 ) as albus:
 
     res = albus.secrets.list_secrets()
@@ -228,15 +227,14 @@ An Async SDK client can also be used to make asynchronous requests by importing 
 
 ```python
 # Asynchronous Example
-from albus_sdk import AsyncAlbus, models
+from albus_sdk import AsyncAlbus
 import asyncio
 import os
 
 async def main():
 
     async with AsyncAlbus(
-        x_albus_organization="<value>",
-        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+        api_key=os.getenv("ALBUS_API_KEY", ""),
     ) as albus:
 
         res = await albus.secrets.list_secrets()
@@ -253,23 +251,21 @@ asyncio.run(main())
 
 ### Per-Client Security Schemes
 
-This SDK supports the following security schemes globally:
+This SDK supports the following security scheme globally:
 
-| Name          | Type | Scheme      | Environment Variable |
-| ------------- | ---- | ----------- | -------------------- |
-| `bearer_auth` | http | HTTP Bearer | `ALBUS_BEARER_AUTH`  |
-| `api_key`     | http | HTTP Bearer | `ALBUS_API_KEY`      |
+| Name      | Type | Scheme      | Environment Variable |
+| --------- | ---- | ----------- | -------------------- |
+| `api_key` | http | HTTP Bearer | `ALBUS_API_KEY`      |
 
-Pass an organization API key with `api_key`, or a user access token with `access_token`. The SDK sends the corresponding bearer credential for every operation that supports it. For example:
+To authenticate with the API the `api_key` parameter must be set when initializing the SDK client instance. For example:
 ```python
 # Synchronous Example
-from albus_sdk import Albus, models
+from albus_sdk import Albus
 import os
 
 
 with Albus(
-    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
-    x_albus_organization="<value>",
+    api_key=os.getenv("ALBUS_API_KEY", ""),
 ) as albus:
 
     res = albus.secrets.list_secrets()
@@ -284,15 +280,14 @@ An Async SDK client can also be used to make asynchronous requests by importing 
 
 ```python
 # Asynchronous Example
-from albus_sdk import AsyncAlbus, models
+from albus_sdk import AsyncAlbus
 import asyncio
 import os
 
 async def main():
 
     async with AsyncAlbus(
-        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
-        x_albus_organization="<value>",
+        api_key=os.getenv("ALBUS_API_KEY", ""),
     ) as albus:
 
         res = await albus.secrets.list_secrets()
@@ -313,8 +308,8 @@ asyncio.run(main())
 ### [Agents](docs/sdks/agents/README.md)
 
 * [list_agents](docs/sdks/agents/README.md#list_agents) - List agents
-* [get_agent](docs/sdks/agents/README.md#get_agent) - Get an agent by name
-* [get_agent_revision](docs/sdks/agents/README.md#get_agent_revision) - Get a specific revision of an agent
+* [get_agent](docs/sdks/agents/README.md#get_agent) - Get an agent
+* [get_agent_revision](docs/sdks/agents/README.md#get_agent_revision) - Get an agent revision
 
 ### [Auth](docs/sdks/auth/README.md)
 
@@ -328,7 +323,7 @@ asyncio.run(main())
 
 ### [Health](docs/sdks/health/README.md)
 
-* [health](docs/sdks/health/README.md#health) - Health check endpoint
+* [health](docs/sdks/health/README.md#health) - Check service health
 
 ### [Invites](docs/sdks/invites/README.md)
 
@@ -349,19 +344,19 @@ asyncio.run(main())
 
 ### [Organization](docs/sdks/organizationsdk/README.md)
 
-* [get_organization](docs/sdks/organizationsdk/README.md#get_organization) - Get the organization the request acts in
-* [update_organization](docs/sdks/organizationsdk/README.md#update_organization) - Rename the organization the request acts in
-* [list_organization_members](docs/sdks/organizationsdk/README.md#list_organization_members) - List the members of the organization the request acts in
-* [remove_organization_member](docs/sdks/organizationsdk/README.md#remove_organization_member) - Remove a member from the organization the request acts in
-* [set_organization_member_role](docs/sdks/organizationsdk/README.md#set_organization_member_role) - Set a member's role in the organization the request acts in
+* [get_organization](docs/sdks/organizationsdk/README.md#get_organization) - Get the current organization
+* [update_organization](docs/sdks/organizationsdk/README.md#update_organization) - Rename the current organization
+* [list_organization_members](docs/sdks/organizationsdk/README.md#list_organization_members) - List organization members
+* [remove_organization_member](docs/sdks/organizationsdk/README.md#remove_organization_member) - Remove an organization member
+* [set_organization_member_role](docs/sdks/organizationsdk/README.md#set_organization_member_role) - Set an organization member's role
 
 ### [Secrets](docs/sdks/secrets/README.md)
 
-* [list_secrets](docs/sdks/secrets/README.md#list_secrets) - List all secrets
+* [list_secrets](docs/sdks/secrets/README.md#list_secrets) - List secrets
 * [create_secret](docs/sdks/secrets/README.md#create_secret) - Create a secret
-* [get_secret](docs/sdks/secrets/README.md#get_secret) - Get a secret by name
-* [update_secret](docs/sdks/secrets/README.md#update_secret) - Update a secret by name
-* [delete_secret](docs/sdks/secrets/README.md#delete_secret) - Delete a secret by name
+* [get_secret](docs/sdks/secrets/README.md#get_secret) - Get a secret
+* [update_secret](docs/sdks/secrets/README.md#update_secret) - Update a secret
+* [delete_secret](docs/sdks/secrets/README.md#delete_secret) - Delete a secret
 
 ### [Sessions](docs/sdks/sessions/README.md)
 
@@ -374,10 +369,10 @@ asyncio.run(main())
 
 ### [Tokens](docs/sdks/tokens/README.md)
 
-* [list_tokens](docs/sdks/tokens/README.md#list_tokens) - List all API tokens. Never returns token values, only metadata.
-* [create_token](docs/sdks/tokens/README.md#create_token) - Create an API token. The token value is returned only in this response.
-* [get_token](docs/sdks/tokens/README.md#get_token) - Get token metadata by ID. Never returns the token value.
-* [delete_token](docs/sdks/tokens/README.md#delete_token) - Revoke an API token by ID
+* [list_tokens](docs/sdks/tokens/README.md#list_tokens) - List API tokens
+* [create_token](docs/sdks/tokens/README.md#create_token) - Create an API token
+* [get_token](docs/sdks/tokens/README.md#get_token) - Get API token metadata
+* [delete_token](docs/sdks/tokens/README.md#delete_token) - Revoke an API token
 
 ### [Traces](docs/sdks/traces/README.md)
 
@@ -413,13 +408,12 @@ single `run_session` invocation. Omit it to inherit the SDK default; pass
 ### Example
 ```python
 # Synchronous Example
-from albus_sdk import Albus, errors, models
+from albus_sdk import Albus, errors
 import os
 
 
 with Albus(
-    x_albus_organization="<value>",
-    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+    api_key=os.getenv("ALBUS_API_KEY", ""),
 ) as albus:
     res = None
     try:
@@ -449,15 +443,14 @@ An Async SDK client can also be used to make asynchronous requests by importing 
 
 ```python
 # Asynchronous Example
-from albus_sdk import AsyncAlbus, errors, models
+from albus_sdk import AsyncAlbus, errors
 import asyncio
 import os
 
 async def main():
 
     async with AsyncAlbus(
-        x_albus_organization="<value>",
-        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+        api_key=os.getenv("ALBUS_API_KEY", ""),
     ) as albus:
         res = None
         try:
@@ -520,74 +513,18 @@ asyncio.run(main())
 <!-- Start Server Selection [server] -->
 ## Server Selection
 
-### Select Server by Index
-
-You can override the default server globally by passing a server index to the `server_idx: int` optional parameter when initializing the SDK client instance. The selected server will then be used as the default on the operations that use it. This table lists the indexes associated with the available servers:
-
-| #   | Server                  | Description              |
-| --- | ----------------------- | ------------------------ |
-| 0   | `https://albus.sh/api`  | Production server        |
-| 1   | `http://localhost:8080` | Local development server |
-
-#### Example
-
-```python
-# Synchronous Example
-from albus_sdk import Albus, models
-import os
-
-
-with Albus(
-    server_idx=0,
-    x_albus_organization="<value>",
-    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
-) as albus:
-
-    res = albus.secrets.list_secrets()
-
-    # Handle response
-    print(res)
-```
-
-</br>
-
-An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
-
-```python
-# Asynchronous Example
-from albus_sdk import AsyncAlbus, models
-import asyncio
-import os
-
-async def main():
-
-    async with AsyncAlbus(
-        server_idx=0,
-        x_albus_organization="<value>",
-        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
-    ) as albus:
-
-        res = await albus.secrets.list_secrets()
-
-        # Handle response
-        print(res)
-
-asyncio.run(main())
-```
-
 ### Override Server URL Per-Client
 
-The default server can also be overridden globally by passing a URL to the `server_url: str` optional parameter when initializing the SDK client instance. For example:
+The default server can be overridden globally by passing a URL to the `server_url: str` optional parameter when initializing the SDK client instance. For example:
 ```python
 # Synchronous Example
-from albus_sdk import Albus, models
+from albus_sdk import Albus
 import os
 
 
 with Albus(
-    server_url="http://localhost:8080",
-    x_albus_organization="<value>",
-    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+    server_url="https://albus.sh/api",
+    api_key=os.getenv("ALBUS_API_KEY", ""),
 ) as albus:
 
     res = albus.secrets.list_secrets()
@@ -602,16 +539,15 @@ An Async SDK client can also be used to make asynchronous requests by importing 
 
 ```python
 # Asynchronous Example
-from albus_sdk import AsyncAlbus, models
+from albus_sdk import AsyncAlbus
 import asyncio
 import os
 
 async def main():
 
     async with AsyncAlbus(
-        server_url="http://localhost:8080",
-        x_albus_organization="<value>",
-        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+        server_url="https://albus.sh/api",
+        api_key=os.getenv("ALBUS_API_KEY", ""),
     ) as albus:
 
         res = await albus.secrets.list_secrets()
@@ -712,13 +648,12 @@ The `Albus` and `AsyncAlbus` classes implement the context manager protocol and 
 [context-manager]: https://docs.python.org/3/reference/datamodel.html#context-managers
 
 ```python
-from albus_sdk import Albus, AsyncAlbus, models
+from albus_sdk import Albus, AsyncAlbus
 import os
 def main():
 
     with Albus(
-        x_albus_organization="<value>",
-        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+        api_key=os.getenv("ALBUS_API_KEY", ""),
     ) as albus:
         # Rest of application here...
 
@@ -727,8 +662,7 @@ def main():
 async def amain():
 
     async with AsyncAlbus(
-        x_albus_organization="<value>",
-        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+        api_key=os.getenv("ALBUS_API_KEY", ""),
     ) as albus:
         # Rest of application here...
 ```

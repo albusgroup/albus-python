@@ -4,6 +4,8 @@ from collections.abc import AsyncIterator, Callable, Iterator
 from contextlib import asynccontextmanager, contextmanager
 from datetime import datetime, timezone
 from inspect import signature
+import json
+from pathlib import Path
 
 import httpx
 import pytest
@@ -37,7 +39,7 @@ def sdk_with_handler(
 async def async_sdk_with_handler(
     handler: Handler,
     *,
-    access_token: str | None = None,
+    api_key: str | None = None,
 ) -> AsyncIterator[AsyncAlbus]:
     transport = httpx.MockTransport(handler)
     async_client = httpx.AsyncClient(transport=transport)
@@ -45,7 +47,7 @@ async def async_sdk_with_handler(
     try:
         yield AsyncAlbus(
             async_client=async_client,
-            access_token=access_token,
+            api_key=api_key,
         )
     finally:
         await async_client.aclose()
@@ -53,7 +55,7 @@ async def async_sdk_with_handler(
 
 def test_package_exposes_version() -> None:
     assert albus_sdk.VERSION == albus_sdk.__version__
-    assert albus_sdk.VERSION == "0.15.0"
+    assert albus_sdk.VERSION == "0.16.0"
 
 
 def test_default_production_url_and_sync_operation() -> None:
@@ -119,7 +121,7 @@ async def test_user_token_authentication_and_async_operation() -> None:
         httpx.AsyncClient(transport=transport) as client,
         AsyncAlbus(
             async_client=client,
-            access_token="user-token",
+            api_key="user-token",
         ) as sdk,
     ):
         response = await sdk.tokens.list_tokens()
@@ -142,12 +144,104 @@ def test_documented_error_is_typed() -> None:
     assert caught.value.status_code == 401
 
 
-def test_constructor_rejects_multiple_authentication_methods() -> None:
-    with pytest.raises(ValueError, match="api_key and access_token"):
-        Albus(api_key="organization-key", access_token="user-token")
+def test_constructor_accepts_only_api_key_for_authentication() -> None:
+    for argument in (
+        "security",
+        "access_token",
+        "x_albus_organization",
+        "server_idx",
+        "url_params",
+    ):
+        with pytest.raises(
+            TypeError, match=f"unexpected keyword argument '{argument}'"
+        ):
+            Albus(**{argument: "value"})
 
-    with pytest.raises(TypeError, match="unexpected keyword argument 'security'"):
-        Albus(security=models.Security(api_key="organization-key"))
+
+def test_api_key_environment_fallback(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("ALBUS_API_KEY", "environment-key")
+    monkeypatch.setenv("ALBUS_CONFIG_DIR", str(tmp_path))
+    write_stored_session(tmp_path, "https://albus.sh/api", "session-token", "org-1")
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.headers["authorization"] == "Bearer environment-key"
+        assert "x-albus-organization" not in request.headers
+
+        return httpx.Response(200, json={"sessions": []})
+
+    with sdk_with_handler(handler) as sdk:
+        sdk.sessions.list_sessions()
+
+
+def test_stored_session_fallback(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.delenv("ALBUS_API_KEY", raising=False)
+    monkeypatch.setenv("ALBUS_CONFIG_DIR", str(tmp_path))
+    write_stored_session(tmp_path, "https://albus.sh/api", "session-token", "org-1")
+    write_stored_session(tmp_path, "http://localhost:8080", "local-token", None)
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.headers["authorization"] == "Bearer session-token"
+        assert request.headers["x-albus-organization"] == "org-1"
+
+        return httpx.Response(200, json={"sessions": []})
+
+    with sdk_with_handler(handler) as sdk:
+        sdk.sessions.list_sessions()
+
+    with sdk_with_handler(handler, api_key="") as sdk:
+        sdk.sessions.list_sessions()
+
+    def local_handler(request: httpx.Request) -> httpx.Response:
+        assert request.headers["authorization"] == "Bearer local-token"
+        assert "x-albus-organization" not in request.headers
+
+        return httpx.Response(200, json={"sessions": []})
+
+    with httpx.Client(transport=httpx.MockTransport(local_handler)) as client:
+        Albus(
+            client=client, server_url="http://localhost:8080/"
+        ).sessions.list_sessions()
+
+
+def test_no_credential_sends_no_authorization(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.delenv("ALBUS_API_KEY", raising=False)
+    monkeypatch.setenv("ALBUS_CONFIG_DIR", str(tmp_path))
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert "authorization" not in request.headers
+
+        return httpx.Response(401, json={"message": "sign in"})
+
+    with sdk_with_handler(handler) as sdk:
+        with pytest.raises(errors.ErrUnauthorized):
+            sdk.sessions.list_sessions()
+
+
+def write_stored_session(
+    directory: Path, base_url: str, access_token: str, organization: str | None
+) -> None:
+    file = directory / "credentials.json"
+    document = (
+        json.loads(file.read_text())
+        if file.exists()
+        else {"version": 1, "credentials": {}}
+    )
+    entry: dict[str, object] = {
+        "access_token": access_token,
+        "refresh_token": None,
+        "expires_at": 4102444800.0,
+    }
+    if organization is not None:
+        entry["organization_id"] = organization
+
+    document["credentials"][base_url] = entry
+    file.write_text(json.dumps(document))
 
 
 def test_session_state_accepts_future_values() -> None:

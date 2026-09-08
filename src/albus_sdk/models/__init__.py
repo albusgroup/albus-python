@@ -118,7 +118,6 @@ if TYPE_CHECKING:
     from .updatesecretrequest import UpdateSecretRequest, UpdateSecretRequestTypedDict
     from .websearchtool import WebSearchTool, WebSearchToolTypedDict
     from .whoamiresponse import WhoamiResponse, WhoamiResponseTypedDict
-    from . import internal
 
 __all__ = [
     "Agent",
@@ -400,17 +399,12 @@ _dynamic_imports: dict[str, str] = {
     "WhoamiResponseTypedDict": ".whoamiresponse",
 }
 
-_sub_packages = ["internal"]
-
 
 def __getattr__(attr_name: str) -> Any:
     return lazy_getattr(
-        attr_name,
-        package=__package__,
-        dynamic_imports=_dynamic_imports,
-        sub_packages=_sub_packages,
+        attr_name, package=__package__, dynamic_imports=_dynamic_imports
     )
 
 
 def __dir__():
-    return lazy_dir(dynamic_imports=_dynamic_imports, sub_packages=_sub_packages)
+    return lazy_dir(dynamic_imports=_dynamic_imports)

@@ -6,27 +6,26 @@ Manage organization API keys.
 
 ### Available Operations
 
-* [list_tokens](#list_tokens) - List all API tokens. Never returns token values, only metadata.
-* [create_token](#create_token) - Create an API token. The token value is returned only in this response.
-* [get_token](#get_token) - Get token metadata by ID. Never returns the token value.
-* [delete_token](#delete_token) - Revoke an API token by ID
+* [list_tokens](#list_tokens) - List API tokens
+* [create_token](#create_token) - Create an API token
+* [get_token](#get_token) - Get API token metadata
+* [delete_token](#delete_token) - Revoke an API token
 
 ## list_tokens
 
-List all API tokens. Never returns token values, only metadata.
+Returns token metadata without token values.
 
 ### Example Usage
 
 <!-- UsageSnippet language="python" operationID="listTokens" method="get" path="/tokens" -->
 ```python
 # Synchronous Example
-from albus_sdk import Albus, models
+from albus_sdk import Albus
 import os
 
 
 with Albus(
-    x_albus_organization="<value>",
-    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+    api_key=os.getenv("ALBUS_API_KEY", ""),
 ) as albus:
 
     res = albus.tokens.list_tokens()
@@ -41,15 +40,14 @@ An Async SDK client can also be used to make asynchronous requests by importing 
 
 ```python
 # Asynchronous Example
-from albus_sdk import AsyncAlbus, models
+from albus_sdk import AsyncAlbus
 import asyncio
 import os
 
 async def main():
 
     async with AsyncAlbus(
-        x_albus_organization="<value>",
-        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+        api_key=os.getenv("ALBUS_API_KEY", ""),
     ) as albus:
 
         res = await albus.tokens.list_tokens()
@@ -62,9 +60,8 @@ asyncio.run(main())
 
 ### Parameters
 
-| Parameter                                                             | Type                                                                  | Required                                                              | Description                                                           |
-| --------------------------------------------------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `request`                                                             | [operations.ListTokensRequest](../../operations/listtokensrequest.md) | :heavy_check_mark:                                                    | The request object to use for the request.                            |
+| Parameter                                                           | Type                                                                | Required                                                            | Description                                                         |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
 
 ### Response
 
@@ -79,20 +76,20 @@ asyncio.run(main())
 
 ## create_token
 
-Requires the admin role.
+Returns the token value only in this response. Requires the admin role.
+
 
 ### Example Usage
 
 <!-- UsageSnippet language="python" operationID="createToken" method="post" path="/tokens" -->
 ```python
 # Synchronous Example
-from albus_sdk import Albus, models
+from albus_sdk import Albus
 import os
 
 
 with Albus(
-    x_albus_organization="<value>",
-    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+    api_key=os.getenv("ALBUS_API_KEY", ""),
 ) as albus:
 
     res = albus.tokens.create_token(name="<value>")
@@ -107,15 +104,14 @@ An Async SDK client can also be used to make asynchronous requests by importing 
 
 ```python
 # Asynchronous Example
-from albus_sdk import AsyncAlbus, models
+from albus_sdk import AsyncAlbus
 import asyncio
 import os
 
 async def main():
 
     async with AsyncAlbus(
-        x_albus_organization="<value>",
-        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+        api_key=os.getenv("ALBUS_API_KEY", ""),
     ) as albus:
 
         res = await albus.tokens.create_token(name="<value>")
@@ -146,20 +142,19 @@ asyncio.run(main())
 
 ## get_token
 
-Get token metadata by ID. Never returns the token value.
+Does not return the token value.
 
 ### Example Usage
 
 <!-- UsageSnippet language="python" operationID="getToken" method="get" path="/tokens/{id}" -->
 ```python
 # Synchronous Example
-from albus_sdk import Albus, models
+from albus_sdk import Albus
 import os
 
 
 with Albus(
-    x_albus_organization="<value>",
-    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+    api_key=os.getenv("ALBUS_API_KEY", ""),
 ) as albus:
 
     res = albus.tokens.get_token(id="<id>")
@@ -174,15 +169,14 @@ An Async SDK client can also be used to make asynchronous requests by importing 
 
 ```python
 # Asynchronous Example
-from albus_sdk import AsyncAlbus, models
+from albus_sdk import AsyncAlbus
 import asyncio
 import os
 
 async def main():
 
     async with AsyncAlbus(
-        x_albus_organization="<value>",
-        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+        api_key=os.getenv("ALBUS_API_KEY", ""),
     ) as albus:
 
         res = await albus.tokens.get_token(id="<id>")
@@ -197,7 +191,7 @@ asyncio.run(main())
 
 | Parameter                                                           | Type                                                                | Required                                                            | Description                                                         |
 | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| `id`                                                                | *str*                                                               | :heavy_check_mark:                                                  | The token's lookup ID (the identifier portion of the token string). |
+| `id`                                                                | *str*                                                               | :heavy_check_mark:                                                  | Lookup identifier from the token value.                             |
 
 ### Response
 
@@ -220,13 +214,12 @@ Requires the admin role.
 <!-- UsageSnippet language="python" operationID="deleteToken" method="delete" path="/tokens/{id}" -->
 ```python
 # Synchronous Example
-from albus_sdk import Albus, models
+from albus_sdk import Albus
 import os
 
 
 with Albus(
-    x_albus_organization="<value>",
-    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+    api_key=os.getenv("ALBUS_API_KEY", ""),
 ) as albus:
 
     albus.tokens.delete_token(id="<id>")
@@ -240,15 +233,14 @@ An Async SDK client can also be used to make asynchronous requests by importing 
 
 ```python
 # Asynchronous Example
-from albus_sdk import AsyncAlbus, models
+from albus_sdk import AsyncAlbus
 import asyncio
 import os
 
 async def main():
 
     async with AsyncAlbus(
-        x_albus_organization="<value>",
-        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+        api_key=os.getenv("ALBUS_API_KEY", ""),
     ) as albus:
 
         await albus.tokens.delete_token(id="<id>")
@@ -262,7 +254,7 @@ asyncio.run(main())
 
 | Parameter                                                           | Type                                                                | Required                                                            | Description                                                         |
 | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| `id`                                                                | *str*                                                               | :heavy_check_mark:                                                  | The token's lookup ID.                                              |
+| `id`                                                                | *str*                                                               | :heavy_check_mark:                                                  | Lookup identifier of the token to revoke.                           |
 
 ### Errors
 

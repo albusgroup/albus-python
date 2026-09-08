@@ -3,10 +3,10 @@
 from .basesdk import AsyncBaseSDK, BaseSDK
 from albus_sdk import errors, models, operations, utils
 from albus_sdk._hooks import HookContext
-from albus_sdk.types import BaseModel, OptionalNullable, UNSET
+from albus_sdk.types import OptionalNullable, UNSET
 from albus_sdk.utils import get_security_from_env
 from albus_sdk.utils.unmarshal_json_response import unmarshal_json_response
-from typing import Any, Mapping, Optional, Union, cast
+from typing import Any, Optional
 
 
 class Tokens(BaseSDK):
@@ -14,41 +14,27 @@ class Tokens(BaseSDK):
 
     def list_tokens(
         self,
-        *,
-        request: Union[
-            operations.ListTokensRequest, operations.ListTokensRequestTypedDict
-        ] = operations.ListTokensRequest(),
     ) -> models.ListTokensResponse:
-        r"""List all API tokens. Never returns token values, only metadata.
+        r"""List API tokens
 
-        If set, this operation will use `bearer_auth` from the global security.
+        Returns token metadata without token values.
 
-        :param request: The request object to send.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
-
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, operations.ListTokensRequest)
-        request = cast(operations.ListTokensRequest, request)
-
         req = self._build_request(
             method="GET",
             path="/tokens",
             base_url=base_url,
             url_variables=url_variables,
-            request=request,
+            request=None,
             request_body_required=False,
             request_has_path_params=False,
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.ListTokensGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -97,11 +83,10 @@ class Tokens(BaseSDK):
         *,
         name: str,
     ) -> models.CreateTokenResponse:
-        r"""Create an API token. The token value is returned only in this response.
+        r"""Create an API token
 
-        Requires the admin role.
+        Returns the token value only in this response. Requires the admin role.
 
-        If set, this operation will use `bearer_auth` from the global security.
 
         :param name:
         """
@@ -123,15 +108,11 @@ class Tokens(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.CreateTokenGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
                 request, False, False, "json", models.CreateTokenRequest
             ),
             allow_empty_value=None,
-            allowed_fields=["bearer_auth"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -183,11 +164,11 @@ class Tokens(BaseSDK):
         *,
         id: str,
     ) -> models.Token:
-        r"""Get token metadata by ID. Never returns the token value.
+        r"""Get API token metadata
 
-        If set, this operation will use `bearer_auth` from the global security.
+        Does not return the token value.
 
-        :param id: The token's lookup ID (the identifier portion of the token string).
+        :param id: Lookup identifier from the token value.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
@@ -207,12 +188,8 @@ class Tokens(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.GetTokenGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -264,13 +241,11 @@ class Tokens(BaseSDK):
         *,
         id: str,
     ):
-        r"""Revoke an API token by ID
+        r"""Revoke an API token
 
         Requires the admin role.
 
-        If set, this operation will use `bearer_auth` from the global security.
-
-        :param id: The token's lookup ID.
+        :param id: Lookup identifier of the token to revoke.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
@@ -290,12 +265,8 @@ class Tokens(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.DeleteTokenGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -351,41 +322,27 @@ class AsyncTokens(AsyncBaseSDK):
 
     async def list_tokens(
         self,
-        *,
-        request: Union[
-            operations.ListTokensRequest, operations.ListTokensRequestTypedDict
-        ] = operations.ListTokensRequest(),
     ) -> models.ListTokensResponse:
-        r"""List all API tokens. Never returns token values, only metadata.
+        r"""List API tokens
 
-        If set, this operation will use `bearer_auth` from the global security.
+        Returns token metadata without token values.
 
-        :param request: The request object to send.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
-
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, operations.ListTokensRequest)
-        request = cast(operations.ListTokensRequest, request)
-
         req = self._build_request_async(
             method="GET",
             path="/tokens",
             base_url=base_url,
             url_variables=url_variables,
-            request=request,
+            request=None,
             request_body_required=False,
             request_has_path_params=False,
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.ListTokensGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -434,11 +391,10 @@ class AsyncTokens(AsyncBaseSDK):
         *,
         name: str,
     ) -> models.CreateTokenResponse:
-        r"""Create an API token. The token value is returned only in this response.
+        r"""Create an API token
 
-        Requires the admin role.
+        Returns the token value only in this response. Requires the admin role.
 
-        If set, this operation will use `bearer_auth` from the global security.
 
         :param name:
         """
@@ -460,15 +416,11 @@ class AsyncTokens(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.CreateTokenGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
                 request, False, False, "json", models.CreateTokenRequest
             ),
             allow_empty_value=None,
-            allowed_fields=["bearer_auth"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -520,11 +472,11 @@ class AsyncTokens(AsyncBaseSDK):
         *,
         id: str,
     ) -> models.Token:
-        r"""Get token metadata by ID. Never returns the token value.
+        r"""Get API token metadata
 
-        If set, this operation will use `bearer_auth` from the global security.
+        Does not return the token value.
 
-        :param id: The token's lookup ID (the identifier portion of the token string).
+        :param id: Lookup identifier from the token value.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
@@ -544,12 +496,8 @@ class AsyncTokens(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.GetTokenGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -601,13 +549,11 @@ class AsyncTokens(AsyncBaseSDK):
         *,
         id: str,
     ):
-        r"""Revoke an API token by ID
+        r"""Revoke an API token
 
         Requires the admin role.
 
-        If set, this operation will use `bearer_auth` from the global security.
-
-        :param id: The token's lookup ID.
+        :param id: Lookup identifier of the token to revoke.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
@@ -627,12 +573,8 @@ class AsyncTokens(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.DeleteTokenGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 

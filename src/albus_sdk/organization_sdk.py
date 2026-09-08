@@ -3,10 +3,10 @@
 from .basesdk import AsyncBaseSDK, BaseSDK
 from albus_sdk import errors, models, operations, utils
 from albus_sdk._hooks import HookContext
-from albus_sdk.types import BaseModel, OptionalNullable, UNSET
+from albus_sdk.types import OptionalNullable, UNSET
 from albus_sdk.utils import get_security_from_env
 from albus_sdk.utils.unmarshal_json_response import unmarshal_json_response
-from typing import Any, Mapping, Optional, Union, cast
+from typing import Any, Optional
 
 
 class OrganizationSDK(BaseSDK):
@@ -14,42 +14,25 @@ class OrganizationSDK(BaseSDK):
 
     def get_organization(
         self,
-        *,
-        request: Union[
-            operations.GetOrganizationRequest,
-            operations.GetOrganizationRequestTypedDict,
-        ] = operations.GetOrganizationRequest(),
     ) -> models.Organization:
-        r"""Get the organization the request acts in
+        r"""Get the current organization
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
-
-        :param request: The request object to send.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
-
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, operations.GetOrganizationRequest)
-        request = cast(operations.GetOrganizationRequest, request)
-
         req = self._build_request(
             method="GET",
             path="/organization",
             base_url=base_url,
             url_variables=url_variables,
-            request=request,
+            request=None,
             request_body_required=False,
             request_has_path_params=False,
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.GetOrganizationGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -98,11 +81,9 @@ class OrganizationSDK(BaseSDK):
         *,
         name: str,
     ) -> models.Organization:
-        r"""Rename the organization the request acts in
+        r"""Rename the current organization
 
         Requires the admin role.
-
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
 
         :param name: New organization display name.
         """
@@ -124,15 +105,11 @@ class OrganizationSDK(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.UpdateOrganizationGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
                 request, False, False, "json", models.UpdateOrganizationRequest
             ),
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -184,44 +161,25 @@ class OrganizationSDK(BaseSDK):
 
     def list_organization_members(
         self,
-        *,
-        request: Union[
-            operations.ListOrganizationMembersRequest,
-            operations.ListOrganizationMembersRequestTypedDict,
-        ] = operations.ListOrganizationMembersRequest(),
     ) -> models.ListOrganizationMembersResponse:
-        r"""List the members of the organization the request acts in
+        r"""List organization members
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
-
-        :param request: The request object to send.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
-
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(
-                request, operations.ListOrganizationMembersRequest
-            )
-        request = cast(operations.ListOrganizationMembersRequest, request)
-
         req = self._build_request(
             method="GET",
             path="/organization/members",
             base_url=base_url,
             url_variables=url_variables,
-            request=request,
+            request=None,
             request_body_required=False,
             request_has_path_params=False,
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.ListOrganizationMembersGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -275,12 +233,10 @@ class OrganizationSDK(BaseSDK):
         *,
         user_id: str,
     ):
-        r"""Remove a member from the organization the request acts in
+        r"""Remove an organization member
 
         Requires the admin role. The last admin cannot be removed.
 
-
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
 
         :param user_id: The member's user identifier.
         """
@@ -302,12 +258,8 @@ class OrganizationSDK(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.RemoveOrganizationMemberGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -369,12 +321,10 @@ class OrganizationSDK(BaseSDK):
         user_id: str,
         role: models.Role,
     ) -> models.OrganizationMember:
-        r"""Set a member's role in the organization the request acts in
+        r"""Set an organization member's role
 
         Requires the admin role. The last admin cannot be demoted.
 
-
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
 
         :param user_id: The member's user identifier.
         :param role: A member's role in an organization.
@@ -400,9 +350,6 @@ class OrganizationSDK(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.SetOrganizationMemberRoleGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.body,
@@ -412,7 +359,6 @@ class OrganizationSDK(BaseSDK):
                 models.SetOrganizationMemberRoleRequest,
             ),
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -474,42 +420,25 @@ class AsyncOrganizationSDK(AsyncBaseSDK):
 
     async def get_organization(
         self,
-        *,
-        request: Union[
-            operations.GetOrganizationRequest,
-            operations.GetOrganizationRequestTypedDict,
-        ] = operations.GetOrganizationRequest(),
     ) -> models.Organization:
-        r"""Get the organization the request acts in
+        r"""Get the current organization
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
-
-        :param request: The request object to send.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
-
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, operations.GetOrganizationRequest)
-        request = cast(operations.GetOrganizationRequest, request)
-
         req = self._build_request_async(
             method="GET",
             path="/organization",
             base_url=base_url,
             url_variables=url_variables,
-            request=request,
+            request=None,
             request_body_required=False,
             request_has_path_params=False,
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.GetOrganizationGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -558,11 +487,9 @@ class AsyncOrganizationSDK(AsyncBaseSDK):
         *,
         name: str,
     ) -> models.Organization:
-        r"""Rename the organization the request acts in
+        r"""Rename the current organization
 
         Requires the admin role.
-
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
 
         :param name: New organization display name.
         """
@@ -584,15 +511,11 @@ class AsyncOrganizationSDK(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.UpdateOrganizationGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
                 request, False, False, "json", models.UpdateOrganizationRequest
             ),
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -644,44 +567,25 @@ class AsyncOrganizationSDK(AsyncBaseSDK):
 
     async def list_organization_members(
         self,
-        *,
-        request: Union[
-            operations.ListOrganizationMembersRequest,
-            operations.ListOrganizationMembersRequestTypedDict,
-        ] = operations.ListOrganizationMembersRequest(),
     ) -> models.ListOrganizationMembersResponse:
-        r"""List the members of the organization the request acts in
+        r"""List organization members
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
-
-        :param request: The request object to send.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
-
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(
-                request, operations.ListOrganizationMembersRequest
-            )
-        request = cast(operations.ListOrganizationMembersRequest, request)
-
         req = self._build_request_async(
             method="GET",
             path="/organization/members",
             base_url=base_url,
             url_variables=url_variables,
-            request=request,
+            request=None,
             request_body_required=False,
             request_has_path_params=False,
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.ListOrganizationMembersGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -735,12 +639,10 @@ class AsyncOrganizationSDK(AsyncBaseSDK):
         *,
         user_id: str,
     ):
-        r"""Remove a member from the organization the request acts in
+        r"""Remove an organization member
 
         Requires the admin role. The last admin cannot be removed.
 
-
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
 
         :param user_id: The member's user identifier.
         """
@@ -762,12 +664,8 @@ class AsyncOrganizationSDK(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.RemoveOrganizationMemberGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -829,12 +727,10 @@ class AsyncOrganizationSDK(AsyncBaseSDK):
         user_id: str,
         role: models.Role,
     ) -> models.OrganizationMember:
-        r"""Set a member's role in the organization the request acts in
+        r"""Set an organization member's role
 
         Requires the admin role. The last admin cannot be demoted.
 
-
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
 
         :param user_id: The member's user identifier.
         :param role: A member's role in an organization.
@@ -860,9 +756,6 @@ class AsyncOrganizationSDK(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.SetOrganizationMemberRoleGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.body,
@@ -872,7 +765,6 @@ class AsyncOrganizationSDK(AsyncBaseSDK):
                 models.SetOrganizationMemberRoleRequest,
             ),
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 

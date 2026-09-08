@@ -3,10 +3,10 @@
 from .basesdk import AsyncBaseSDK, BaseSDK
 from albus_sdk import errors, models, operations, utils
 from albus_sdk._hooks import HookContext
-from albus_sdk.types import BaseModel, OptionalNullable, UNSET
+from albus_sdk.types import OptionalNullable, UNSET
 from albus_sdk.utils import get_security_from_env
 from albus_sdk.utils.unmarshal_json_response import unmarshal_json_response
-from typing import Any, Mapping, Optional, Union, cast
+from typing import Any, Optional
 
 
 class Billing(BaseSDK):
@@ -21,10 +21,8 @@ class Billing(BaseSDK):
     ) -> models.CreateCheckoutResponse:
         r"""Buy prepaid credits
 
-        Starts a credit purchase for your organization. Returns the URL of a payment page to send the buyer's browser to; the credits are added to your balance once the payment completes there.
+        Creates a purchase and returns its payment URL. Credits are added when payment completes.
 
-
-        If set, this operation will use `bearer_auth` from the global security.
 
         :param amount_usd: Whole US dollars of credit to buy (e.g. 20).
         :param success_url: Where the buyer's browser goes after paying. Must be https (or http on localhost).
@@ -52,15 +50,11 @@ class Billing(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.CreateCheckoutGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
                 request, False, False, "json", models.CreateCheckoutRequest
             ),
             allow_empty_value=None,
-            allowed_fields=["bearer_auth"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -112,45 +106,28 @@ class Billing(BaseSDK):
 
     def get_credit_balance(
         self,
-        *,
-        request: Union[
-            operations.GetCreditBalanceRequest,
-            operations.GetCreditBalanceRequestTypedDict,
-        ] = operations.GetCreditBalanceRequest(),
     ) -> models.CreditBalanceResponse:
         r"""Read your credit balance
 
         Returns your organization's current prepaid credit balance in USD.
 
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
-
-        :param request: The request object to send.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
-
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, operations.GetCreditBalanceRequest)
-        request = cast(operations.GetCreditBalanceRequest, request)
-
         req = self._build_request(
             method="GET",
             path="/billing/balance",
             base_url=base_url,
             url_variables=url_variables,
-            request=request,
+            request=None,
             request_body_required=False,
             request_has_path_params=False,
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.GetCreditBalanceGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -205,12 +182,10 @@ class Billing(BaseSDK):
     ) -> models.ListCreditLedgerResponse:
         r"""List your credit history
 
-        Lists your organization's credit ledger, newest first: purchases, grants, usage charges, and adjustments, each with the signed USD amount it moved the balance by. Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present.
+        Returns purchases, grants, usage charges, and adjustments newest first, with the signed USD amount of each balance change.
 
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
-
-        :param after: Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
+        :param after: Continue after this cursor. For list responses, pass the preceding page's `next_cursor`; for session messages, pass the preceding page's last message `cursor`.
 
         :param limit: Maximum number of items to return.
         """
@@ -233,12 +208,8 @@ class Billing(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.ListCreditLedgerGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -298,10 +269,8 @@ class AsyncBilling(AsyncBaseSDK):
     ) -> models.CreateCheckoutResponse:
         r"""Buy prepaid credits
 
-        Starts a credit purchase for your organization. Returns the URL of a payment page to send the buyer's browser to; the credits are added to your balance once the payment completes there.
+        Creates a purchase and returns its payment URL. Credits are added when payment completes.
 
-
-        If set, this operation will use `bearer_auth` from the global security.
 
         :param amount_usd: Whole US dollars of credit to buy (e.g. 20).
         :param success_url: Where the buyer's browser goes after paying. Must be https (or http on localhost).
@@ -329,15 +298,11 @@ class AsyncBilling(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.CreateCheckoutGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
                 request, False, False, "json", models.CreateCheckoutRequest
             ),
             allow_empty_value=None,
-            allowed_fields=["bearer_auth"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -389,45 +354,28 @@ class AsyncBilling(AsyncBaseSDK):
 
     async def get_credit_balance(
         self,
-        *,
-        request: Union[
-            operations.GetCreditBalanceRequest,
-            operations.GetCreditBalanceRequestTypedDict,
-        ] = operations.GetCreditBalanceRequest(),
     ) -> models.CreditBalanceResponse:
         r"""Read your credit balance
 
         Returns your organization's current prepaid credit balance in USD.
 
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
-
-        :param request: The request object to send.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
-
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, operations.GetCreditBalanceRequest)
-        request = cast(operations.GetCreditBalanceRequest, request)
-
         req = self._build_request_async(
             method="GET",
             path="/billing/balance",
             base_url=base_url,
             url_variables=url_variables,
-            request=request,
+            request=None,
             request_body_required=False,
             request_has_path_params=False,
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.GetCreditBalanceGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -482,12 +430,10 @@ class AsyncBilling(AsyncBaseSDK):
     ) -> models.ListCreditLedgerResponse:
         r"""List your credit history
 
-        Lists your organization's credit ledger, newest first: purchases, grants, usage charges, and adjustments, each with the signed USD amount it moved the balance by. Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present.
+        Returns purchases, grants, usage charges, and adjustments newest first, with the signed USD amount of each balance change.
 
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
-
-        :param after: Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
+        :param after: Continue after this cursor. For list responses, pass the preceding page's `next_cursor`; for session messages, pass the preceding page's last message `cursor`.
 
         :param limit: Maximum number of items to return.
         """
@@ -510,12 +456,8 @@ class AsyncBilling(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.ListCreditLedgerGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 

@@ -3,81 +3,44 @@
 from __future__ import annotations
 from albus_sdk.models import tracestatus as models_tracestatus
 from albus_sdk.types import BaseModel, UNSET_SENTINEL
-from albus_sdk.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
+from albus_sdk.utils import FieldMetadata, QueryParamMetadata
 from datetime import datetime
-import pydantic
 from pydantic import model_serializer
 from typing import Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class ListTracesGlobalsTypedDict(TypedDict):
-    x_albus_organization: NotRequired[str]
-    r"""The id of the organization the request acts on, which must be one the caller belongs to. Defaults to the organization the caller joined first. Ignored for API keys, which are bound to one organization.
-
-    """
-
-
-class ListTracesGlobals(BaseModel):
-    x_albus_organization: Annotated[
-        Optional[str],
-        pydantic.Field(alias="X-Albus-Organization"),
-        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
-    ] = None
-    r"""The id of the organization the request acts on, which must be one the caller belongs to. Defaults to the organization the caller joined first. Ignored for API keys, which are bound to one organization.
-
-    """
-
-    @model_serializer(mode="wrap")
-    def serialize_model(self, handler):
-        optional_fields = set(["X-Albus-Organization"])
-        serialized = handler(self)
-        m = {}
-
-        for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k, serialized.get(n))
-
-            if val != UNSET_SENTINEL:
-                if val is not None or k not in optional_fields:
-                    m[k] = val
-
-        return m
-
-
 class ListTracesRequestTypedDict(TypedDict):
     agent_name: NotRequired[str]
-    r"""Return only invocations of this agent (e.g. \"support-triage\"). Invocations with no recorded agent name are not matched.
+    r"""Return only invocations of this agent (e.g. \"support-triage\").
 
     """
     agent_revision: NotRequired[str]
-    r"""Return only invocations of this exact agent revision (e.g. \"a1b2c3d4\"). Combines with `agent_name`. Invocations with no recorded revision are not matched.
+    r"""Return only invocations of this agent revision (e.g. \"a1b2c3d4\"). Combines with `agent_name`.
 
     """
     status: NotRequired[models_tracestatus.TraceStatus]
-    r"""Return only invocations with this outcome. An invocation whose spans have aged out is still matched by the outcome it recorded.
+    r"""Return only invocations with this status.
 
     """
     session_id: NotRequired[str]
-    r"""Return only invocations of this session — the session identifier you ran it with. A session you do not have is a `404`.
+    r"""Return only invocations in this session. An unknown session returns `404`.
 
     """
     since: NotRequired[datetime]
-    r"""Return only invocations that started at or after this time. Defaults to 31 days ago; pass it to search further back.
+    r"""Return only invocations that started at or after this time. Defaults to 31 days ago.
 
     """
     until: NotRequired[datetime]
-    r"""Return only invocations that started at or before this time. Defaults to now, and must be after `since`; an earlier `until` is a `400`.
+    r"""Return only invocations that started at or before this time. Defaults to now and must be after `since`.
 
     """
     after: NotRequired[str]
-    r"""Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
+    r"""Continue after this cursor. For list responses, pass the preceding page's `next_cursor`; for session messages, pass the preceding page's last message `cursor`.
 
     """
     limit: NotRequired[int]
-    r"""Maximum number of traces to return. A page can be shorter, so page while `next_cursor` is present.
-
-    """
+    r"""Maximum number of traces to return."""
 
 
 class ListTracesRequest(BaseModel):
@@ -85,7 +48,7 @@ class ListTracesRequest(BaseModel):
         Optional[str],
         FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),
     ] = None
-    r"""Return only invocations of this agent (e.g. \"support-triage\"). Invocations with no recorded agent name are not matched.
+    r"""Return only invocations of this agent (e.g. \"support-triage\").
 
     """
 
@@ -93,7 +56,7 @@ class ListTracesRequest(BaseModel):
         Optional[str],
         FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),
     ] = None
-    r"""Return only invocations of this exact agent revision (e.g. \"a1b2c3d4\"). Combines with `agent_name`. Invocations with no recorded revision are not matched.
+    r"""Return only invocations of this agent revision (e.g. \"a1b2c3d4\"). Combines with `agent_name`.
 
     """
 
@@ -101,7 +64,7 @@ class ListTracesRequest(BaseModel):
         Optional[models_tracestatus.TraceStatus],
         FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),
     ] = None
-    r"""Return only invocations with this outcome. An invocation whose spans have aged out is still matched by the outcome it recorded.
+    r"""Return only invocations with this status.
 
     """
 
@@ -109,7 +72,7 @@ class ListTracesRequest(BaseModel):
         Optional[str],
         FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),
     ] = None
-    r"""Return only invocations of this session — the session identifier you ran it with. A session you do not have is a `404`.
+    r"""Return only invocations in this session. An unknown session returns `404`.
 
     """
 
@@ -117,7 +80,7 @@ class ListTracesRequest(BaseModel):
         Optional[datetime],
         FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),
     ] = None
-    r"""Return only invocations that started at or after this time. Defaults to 31 days ago; pass it to search further back.
+    r"""Return only invocations that started at or after this time. Defaults to 31 days ago.
 
     """
 
@@ -125,7 +88,7 @@ class ListTracesRequest(BaseModel):
         Optional[datetime],
         FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),
     ] = None
-    r"""Return only invocations that started at or before this time. Defaults to now, and must be after `since`; an earlier `until` is a `400`.
+    r"""Return only invocations that started at or before this time. Defaults to now and must be after `since`.
 
     """
 
@@ -133,7 +96,7 @@ class ListTracesRequest(BaseModel):
         Optional[str],
         FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),
     ] = None
-    r"""Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
+    r"""Continue after this cursor. For list responses, pass the preceding page's `next_cursor`; for session messages, pass the preceding page's last message `cursor`.
 
     """
 
@@ -141,9 +104,7 @@ class ListTracesRequest(BaseModel):
         Optional[int],
         FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),
     ] = 10
-    r"""Maximum number of traces to return. A page can be shorter, so page while `next_cursor` is present.
-
-    """
+    r"""Maximum number of traces to return."""
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

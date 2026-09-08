@@ -10,7 +10,6 @@ import shutil
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 OPERATION_DIRECTORY = REPOSITORY_ROOT / "src/albus_sdk"
 SDK_DOCUMENTATION_DIRECTORY = REPOSITORY_ROOT / "docs/sdks"
-SDK_PATH = OPERATION_DIRECTORY / "sdk.py"
 
 PUBLISHING_PROMPT = """> [!TIP]
 > To finish publishing your SDK to PyPI you must [run your first generation action](https://www.speakeasy.com/docs/github-setup#step-by-step-guide).
@@ -77,6 +76,24 @@ OPERATION_TIMEOUT_CONFIGURATION = re.compile(
 """
 )
 
+SDK_SERVER_SELECTION = {
+    "        server_idx: Optional[int] = None,\n": "",
+    "        url_params: Optional[Dict[str, str]] = None,\n": "",
+    "        :param server_idx: The index of the server to use for all methods\n": "",
+    "        :param url_params: Parameters to optionally template the server URL with\n": "",
+    """        if server_url is not None:
+            if url_params is not None:
+                server_url = utils.template_url(server_url, url_params)
+
+""": "",
+    "                server_idx=server_idx,\n": "",
+    "        if api_key is None:\n": "        if not api_key:\n",
+    "from albus_sdk import models as models_, utils\n": "from albus_sdk import models as models_\n",
+    "from typing import Any, Callable, Dict, Optional, TYPE_CHECKING, Union, cast\n": (
+        "from typing import Any, Callable, Optional, TYPE_CHECKING, Union, cast\n"
+    ),
+}
+
 RETRY_CONFIGURATION = """        if retries == UNSET:
             if self.sdk_configuration.retry_config is not UNSET:
                 retries = self.sdk_configuration.retry_config
@@ -97,39 +114,6 @@ GENERATED_RETRY_CONFIGURATION = """        if retries == UNSET:
         retry_config = None
         if isinstance(retries, utils.RetryConfig):
             retry_config = (retries, [\"429\", \"500\", \"502\", \"503\", \"504\"])
-
-"""
-
-SECURITY_EXAMPLE = re.compile(
-    r"^(?P<indent>[ \t]*)security=models\.Security\(\n"
-    r"(?P=indent)    (?P<scheme>api_key|bearer_auth)="
-    r"(?P<value>.+),\n"
-    r"(?P=indent)\),\n",
-    flags=re.MULTILINE,
-)
-
-MODELS_IMPORT = re.compile(
-    r"^from albus_sdk import models(?: as (?P<alias>\w+))?,",
-    flags=re.MULTILINE,
-)
-
-GENERATED_SECURITY_PARAMETER = """        security: Optional[
-            Union[{models}.Security, Callable[[], {models}.Security]]
-        ] = None,
-"""
-
-SDK_AUTHENTICATION_PARAMETERS = """        api_key: Optional[str] = None,
-        access_token: Optional[str] = None,
-"""
-
-SDK_AUTHENTICATION_VALIDATION = """        if api_key is not None and access_token is not None:
-            raise ValueError("api_key and access_token cannot both be set")
-
-        security = None
-        if api_key is not None:
-            security = {models}.Security(api_key=api_key)
-        elif access_token is not None:
-            security = {models}.Security(bearer_auth=access_token)
 
 """
 
@@ -166,17 +150,6 @@ single `run_session` invocation. Omit it to inherit the SDK default; pass
         content,
         count=1,
     )
-    content = normalize_authentication_examples(content)
-    content = content.replace(
-        "You can set the security parameters through the `security` optional "
-        "parameter when initializing the SDK client instance. The selected "
-        "scheme will be used by default to authenticate with the API for all "
-        "operations that support it. For example:\n",
-        "Pass an organization API key with `api_key`, or a user access token "
-        "with `access_token`. The SDK sends the corresponding bearer "
-        "credential for every operation that supports it. For example:\n",
-        1,
-    )
 
     if "To finish publishing your SDK to PyPI" in content:
         raise RuntimeError("unexpected Speakeasy publishing prompt was generated")
@@ -187,99 +160,6 @@ single `run_session` invocation. Omit it to inherit the SDK default; pass
 
     path.write_text(content)
     normalize_lines(path)
-
-
-def normalize_authentication_examples(content: str) -> str:
-    credential_names = {
-        "api_key": "api_key",
-        "bearer_auth": "access_token",
-    }
-
-    return SECURITY_EXAMPLE.sub(
-        lambda match: (
-            f"{match.group('indent')}{credential_names[match.group('scheme')]}="
-            f"{match.group('value')},\n"
-        ),
-        content,
-    )
-
-
-def models_module_name(content: str) -> str:
-    """Return the name `sdk.py` imports the models module under.
-
-    The generator aliases the import when an operation group shadows it, as
-    the `Models` tag does.
-    """
-    match = MODELS_IMPORT.search(content)
-    if match is None:
-        raise RuntimeError("expected a generated models import in sdk.py")
-
-    return match.group("alias") or "models"
-
-
-def normalize_sdk_authentication() -> None:
-    content = SDK_PATH.read_text()
-    models_module = models_module_name(content)
-    security_parameter = GENERATED_SECURITY_PARAMETER.format(models=models_module)
-    authentication_validation = SDK_AUTHENTICATION_VALIDATION.format(
-        models=models_module
-    )
-
-    if "api_key: Optional[str] = None" not in content:
-        if content.count(security_parameter) != 2:
-            raise RuntimeError("expected sync and async generated security parameters")
-
-        content = content.replace(
-            security_parameter,
-            SDK_AUTHENTICATION_PARAMETERS,
-        )
-    else:
-        content = content.replace(security_parameter, "")
-
-    validation_start = "        if api_key is not None and access_token is not None:\n"
-    if validation_start in content:
-        validation_end = "        client_supplied = True\n"
-        async_validation_end = "        async_client_supplied = True\n"
-        sync_validation, remainder = content.split(validation_end, maxsplit=1)
-        sync_validation = sync_validation.rsplit(validation_start, maxsplit=1)[0]
-        async_validation, suffix = remainder.split(async_validation_end, maxsplit=1)
-        async_validation = async_validation.rsplit(validation_start, maxsplit=1)[0]
-        content = (
-            sync_validation
-            + authentication_validation
-            + validation_end
-            + async_validation
-            + authentication_validation
-            + async_validation_end
-            + suffix
-        )
-    else:
-        if content.count("        client_supplied = True\n") != 1:
-            raise RuntimeError("expected generated synchronous SDK constructor")
-        if content.count("        async_client_supplied = True\n") != 1:
-            raise RuntimeError("expected generated asynchronous SDK constructor")
-
-        content = content.replace(
-            "        client_supplied = True\n",
-            authentication_validation + "        client_supplied = True\n",
-            1,
-        )
-        content = content.replace(
-            "        async_client_supplied = True\n",
-            authentication_validation + "        async_client_supplied = True\n",
-            1,
-        )
-
-    content = content.replace(
-        "        :param security: The security details required for authentication\n",
-        "",
-    )
-    content = content.replace(
-        "from typing import Callable, Dict, Optional, TYPE_CHECKING, Union, cast\n",
-        "from typing import Dict, Optional, TYPE_CHECKING, cast\n",
-    )
-    SDK_PATH.write_text(content)
-    normalize_lines(SDK_PATH)
 
 
 def normalize_package_metadata() -> None:
@@ -424,6 +304,24 @@ def remove_unused_imports(content: str) -> str:
     return content
 
 
+def normalize_sdk_constructors() -> None:
+    """The SDK has one server, so the generated selection parameters go.
+
+    An empty api_key means no api_key, so the environment and the stored
+    browser session still apply.
+    """
+    path = OPERATION_DIRECTORY / "sdk.py"
+    content = path.read_text()
+    for generated, normalized in SDK_SERVER_SELECTION.items():
+        if generated not in content:
+            raise RuntimeError(
+                f"expected generated SDK constructor text: {generated!r}"
+            )
+        content = content.replace(generated, normalized)
+
+    path.write_text(content)
+
+
 def normalize_operation_files() -> None:
     for path in OPERATION_DIRECTORY.glob("*.py"):
         if path.name in {
@@ -482,7 +380,7 @@ def normalize_sdk_documentation() -> None:
 
             normalized_sections.append(section.replace(retry_row, replacement, 1))
 
-        path.write_text(normalize_authentication_examples("".join(normalized_sections)))
+        path.write_text("".join(normalized_sections))
         normalize_lines(path)
 
 
@@ -492,12 +390,10 @@ def main() -> None:
     normalize_contributing()
     (REPOSITORY_ROOT / "scripts/publish.sh").unlink(missing_ok=True)
     normalize_lines(REPOSITORY_ROOT / "src/albus_sdk/utils/datetimes.py")
-    normalize_sdk_authentication()
     normalize_operation_files()
+    normalize_sdk_constructors()
     normalize_sdk_documentation()
-    usage = REPOSITORY_ROOT / "USAGE.md"
-    usage.write_text(normalize_authentication_examples(usage.read_text()))
-    normalize_lines(usage)
+    normalize_lines(REPOSITORY_ROOT / "USAGE.md")
 
     prepare_readme = REPOSITORY_ROOT / "scripts/prepare_readme.py"
     runpy.run_path(str(prepare_readme), run_name="__main__")

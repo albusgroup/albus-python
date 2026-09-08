@@ -12,7 +12,7 @@ Buy the prepaid credits agent sessions run on.
 
 ## create_checkout
 
-Starts a credit purchase for your organization. Returns the URL of a payment page to send the buyer's browser to; the credits are added to your balance once the payment completes there.
+Creates a purchase and returns its payment URL. Credits are added when payment completes.
 
 
 ### Example Usage
@@ -20,13 +20,12 @@ Starts a credit purchase for your organization. Returns the URL of a payment pag
 <!-- UsageSnippet language="python" operationID="createCheckout" method="post" path="/billing/checkout" -->
 ```python
 # Synchronous Example
-from albus_sdk import Albus, models
+from albus_sdk import Albus
 import os
 
 
 with Albus(
-    x_albus_organization="<value>",
-    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+    api_key=os.getenv("ALBUS_API_KEY", ""),
 ) as albus:
 
     res = albus.billing.create_checkout(amount_usd=421255, success_url="https://flimsy-apricot.com/", cancel_url="https://silent-formamide.name")
@@ -41,15 +40,14 @@ An Async SDK client can also be used to make asynchronous requests by importing 
 
 ```python
 # Asynchronous Example
-from albus_sdk import AsyncAlbus, models
+from albus_sdk import AsyncAlbus
 import asyncio
 import os
 
 async def main():
 
     async with AsyncAlbus(
-        x_albus_organization="<value>",
-        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+        api_key=os.getenv("ALBUS_API_KEY", ""),
     ) as albus:
 
         res = await albus.billing.create_checkout(amount_usd=421255, success_url="https://flimsy-apricot.com/", cancel_url="https://silent-formamide.name")
@@ -91,13 +89,12 @@ Returns your organization's current prepaid credit balance in USD.
 <!-- UsageSnippet language="python" operationID="getCreditBalance" method="get" path="/billing/balance" -->
 ```python
 # Synchronous Example
-from albus_sdk import Albus, models
+from albus_sdk import Albus
 import os
 
 
 with Albus(
-    x_albus_organization="<value>",
-    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+    api_key=os.getenv("ALBUS_API_KEY", ""),
 ) as albus:
 
     res = albus.billing.get_credit_balance()
@@ -112,15 +109,14 @@ An Async SDK client can also be used to make asynchronous requests by importing 
 
 ```python
 # Asynchronous Example
-from albus_sdk import AsyncAlbus, models
+from albus_sdk import AsyncAlbus
 import asyncio
 import os
 
 async def main():
 
     async with AsyncAlbus(
-        x_albus_organization="<value>",
-        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+        api_key=os.getenv("ALBUS_API_KEY", ""),
     ) as albus:
 
         res = await albus.billing.get_credit_balance()
@@ -133,9 +129,8 @@ asyncio.run(main())
 
 ### Parameters
 
-| Parameter                                                                         | Type                                                                              | Required                                                                          | Description                                                                       |
-| --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `request`                                                                         | [operations.GetCreditBalanceRequest](../../operations/getcreditbalancerequest.md) | :heavy_check_mark:                                                                | The request object to use for the request.                                        |
+| Parameter                                                           | Type                                                                | Required                                                            | Description                                                         |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
 
 ### Response
 
@@ -151,7 +146,7 @@ asyncio.run(main())
 
 ## list_credit_ledger
 
-Lists your organization's credit ledger, newest first: purchases, grants, usage charges, and adjustments, each with the signed USD amount it moved the balance by. Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present.
+Returns purchases, grants, usage charges, and adjustments newest first, with the signed USD amount of each balance change.
 
 
 ### Example Usage
@@ -159,13 +154,12 @@ Lists your organization's credit ledger, newest first: purchases, grants, usage 
 <!-- UsageSnippet language="python" operationID="listCreditLedger" method="get" path="/billing/ledger" -->
 ```python
 # Synchronous Example
-from albus_sdk import Albus, models
+from albus_sdk import Albus
 import os
 
 
 with Albus(
-    x_albus_organization="<value>",
-    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+    api_key=os.getenv("ALBUS_API_KEY", ""),
 ) as albus:
 
     res = albus.billing.list_credit_ledger(limit=100)
@@ -180,15 +174,14 @@ An Async SDK client can also be used to make asynchronous requests by importing 
 
 ```python
 # Asynchronous Example
-from albus_sdk import AsyncAlbus, models
+from albus_sdk import AsyncAlbus
 import asyncio
 import os
 
 async def main():
 
     async with AsyncAlbus(
-        x_albus_organization="<value>",
-        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+        api_key=os.getenv("ALBUS_API_KEY", ""),
     ) as albus:
 
         res = await albus.billing.list_credit_ledger(limit=100)
@@ -201,10 +194,10 @@ asyncio.run(main())
 
 ### Parameters
 
-| Parameter                                                                                                                           | Type                                                                                                                                | Required                                                                                                                            | Description                                                                                                                         |
-| ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `after`                                                                                                                             | *Optional[str]*                                                                                                                     | :heavy_minus_sign:                                                                                                                  | Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.<br/> |
-| `limit`                                                                                                                             | *Optional[int]*                                                                                                                     | :heavy_minus_sign:                                                                                                                  | Maximum number of items to return.                                                                                                  |
+| Parameter                                                                                                                                                        | Type                                                                                                                                                             | Required                                                                                                                                                         | Description                                                                                                                                                      |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `after`                                                                                                                                                          | *Optional[str]*                                                                                                                                                  | :heavy_minus_sign:                                                                                                                                               | Continue after this cursor. For list responses, pass the preceding page's `next_cursor`; for session messages, pass the preceding page's last message `cursor`.<br/> |
+| `limit`                                                                                                                                                          | *Optional[int]*                                                                                                                                                  | :heavy_minus_sign:                                                                                                                                               | Maximum number of items to return.                                                                                                                               |
 
 ### Response
 

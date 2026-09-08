@@ -27,31 +27,24 @@ class Sessions(BaseSDK):
     ) -> models.ListSessionsResponse:
         r"""List sessions
 
-        Lists your organization's sessions, most recently used first. Filter by agent name, agent revision, invocation state, time window, or an invocation it ran: a session matches when any of its invocations does, and a filtered listing is ordered by each session's most recent matching invocation. A filter that matches nothing returns an empty page rather than an error.
+        Returns sessions ordered by their most recent matching invocation.
 
-        Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present — you have reached the end when it is absent. A page can hold fewer sessions than `limit`, or none at all, and still have a `next_cursor`; a short page is not the end of the results.
-
-        A listing covers the window given by `since` and `until`, and omitting `since` searches the last 31 days. The window is fixed when the first page is requested, so paging with `after` keeps returning results from the window that page used: `after` carries that window and the filters it was made with, so send it with no filters, or with every filter repeated exactly, and expect a `400` otherwise.
-
-
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
 
         :param agent_name: Return only sessions that ran this agent (e.g. \"support-triage\").
 
-        :param agent_revision: Return only sessions that ran this exact agent revision (e.g. \"a1b2c3d4\"). Requires `agent_name`; a revision without an agent name is a `400`.
+        :param agent_revision: Return only sessions that ran this agent revision (e.g. \"a1b2c3d4\"). Requires `agent_name`.
 
-        :param status: Return only sessions with an invocation that ended this way, or is `RUNNING` now. `DONE` matches a successful invocation.
+        :param status: Return only sessions with an invocation in this state. `DONE` matches a successful invocation.
 
-        :param invocation_key: Return only the session that ran this invocation, whether it is still running or has ended.
+        :param invocation_key: Return only the session containing this invocation.
 
-        :param since: Return only sessions with an invocation that started at or after this time. Without `since` or `until`, the listing covers sessions used in the last 31 days; pass it to search further back.
+        :param since: Return only sessions with an invocation that started at or after this time. Defaults to 31 days ago.
 
-        :param until: Return only sessions with an invocation that started at or before this time. Defaults to now, and must be after `since`; an earlier `until` is a `400`.
+        :param until: Return only sessions with an invocation that started at or before this time. Defaults to now and must be after `since`.
 
-        :param after: Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
+        :param after: Continue after this cursor. For list responses, pass the preceding page's `next_cursor`; for session messages, pass the preceding page's last message `cursor`.
 
-        :param limit: Maximum number of sessions to return. A page can be shorter, so page while `next_cursor` is present.
-
+        :param limit: Maximum number of sessions to return.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
@@ -78,12 +71,8 @@ class Sessions(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.ListSessionsGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -139,13 +128,12 @@ class Sessions(BaseSDK):
     ) -> models.SessionResponse:
         r"""Get a session with its messages
 
-        Returns the session's metadata and a page of its messages ordered by cursor ascending. Use `after` and `limit` to page through messages.
+        Returns session metadata and messages in chronological order.
 
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
+        :param id: Client-provided session identifier. Reuse it to continue the session.
 
-        :param id: Client-provided session identifier. Use the same value across requests to continue the same agent session.
-        :param after: Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
+        :param after: Continue after this cursor. For list responses, pass the preceding page's `next_cursor`; for session messages, pass the preceding page's last message `cursor`.
 
         :param limit: Maximum number of items to return.
         """
@@ -169,12 +157,8 @@ class Sessions(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.GetSessionGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -237,22 +221,19 @@ class Sessions(BaseSDK):
     ) -> operations.RunSessionResponse:
         r"""Run or resume a session
 
-        Runs the session with the given ID, creating it if it does not exist and resuming it otherwise. Each call is a single invocation, optionally named by the Idempotency-Key header, whose value is the invocation's key. Supplying a key makes the call safe to retry: retrying with the same key and an identical body re-attaches to the in-flight invocation and returns its current state; a differing body for the same key returns 409; a new key while another invocation is still running returns 423. Omitting the header starts a fresh, non-idempotent invocation each time; the server generates a key and returns it in the Idempotency-Key response header.
-
-        With `wait_timeout_seconds` the request long-polls: it blocks until the invocation's assistant response is available and returns it in `message`. Omit it to wait up to 30 minutes, or pass 0 to return as soon as the invocation is accepted. A positive value bounds the wait in seconds; if it elapses first the request fails with 504 and a JSON body, letting the client distinguish an expected server-side timeout from a transport error; the client may retry.
+        Starts a new session or continues an existing one with another agent invocation.
 
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
+        :param id: Client-provided session identifier. Reuse it to continue the session.
 
-        :param id: Client-provided session identifier. Use the same value across requests to continue the same agent session.
         :param user_prompt: The user prompt driving this invocation.
         :param agent_name: Human-readable name identifying the agent (e.g. \"support-triage\"). Invocations sharing a name are grouped as one agent; each distinct configuration under it becomes a revision.
 
         :param agent: The agent configuration for an invocation: the model, tools, instructions, and MCP servers that define its behavior. Invocations with the same configuration share a revision.
 
-        :param invocation_key: Optional but strongly encouraged. The key naming this invocation of the session, unique within your organization: reuse the same value to safely retry a request, read the invocation back with `GET /traces/{invocation_key}`, and use a new value to start a new invocation. When omitted, the server generates a key for the invocation and returns it in the Idempotency-Key response header, but the request is not retry-safe.
+        :param invocation_key: Names the invocation and makes identical requests safe to retry. Reuse with a different body returns `409`. When omitted, the response returns a generated key and the request is not retry-safe.
 
-        :param wait_timeout_seconds: Wait up to this many seconds for the assistant response. Omit to wait up to 30 minutes; use 0 to return after the invocation is accepted.
+        :param wait_timeout_seconds: Wait up to this many seconds for the assistant response. Omit to wait 30 minutes; use 0 to return once accepted. A timeout does not stop the invocation.
 
         :param retry_config: Override the SDK retry configuration for this invocation.
         """
@@ -285,15 +266,11 @@ class Sessions(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.RunSessionGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.body, False, False, "json", models.RunSessionRequest
             ),
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=timeout_ms,
         )
 
@@ -385,9 +362,8 @@ class Sessions(BaseSDK):
     ):
         r"""Delete a session
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
+        :param id: Client-provided session identifier. Reuse it to continue the session.
 
-        :param id: Client-provided session identifier. Use the same value across requests to continue the same agent session.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
@@ -407,12 +383,8 @@ class Sessions(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.DeleteSessionGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -466,12 +438,11 @@ class Sessions(BaseSDK):
     ) -> models.CancelSessionResponse:
         r"""Cancel a session's running invocation
 
-        Requests cancellation of the invocation currently running for the session. Cancellation is asynchronous: the call returns once the request is accepted, and the invocation resolves as canceled shortly after, unlocking the session for new invocations. A request waiting on the invocation receives its terminal outcome. Returns 409 when the session has no invocation running.
+        Requests asynchronous cancellation and returns once accepted.
 
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
+        :param id: Client-provided session identifier. Reuse it to continue the session.
 
-        :param id: Client-provided session identifier. Use the same value across requests to continue the same agent session.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
@@ -491,12 +462,8 @@ class Sessions(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.CancelSessionGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -555,13 +522,12 @@ class Sessions(BaseSDK):
     ) -> models.ListAuditEventsResponse:
         r"""List a session's audit log
 
-        Returns the session's audit log — an immutable, time-ordered record of what happened during its invocations (LLM calls, tool results, and invocation outcomes). Events are ordered by the time they occurred. Use `after` and `limit` to page through them; pass the response's `next_cursor` as the next request's `after` to fetch the following page.
+        Returns an immutable record of session events in chronological order.
 
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
+        :param id: Client-provided session identifier. Reuse it to continue the session.
 
-        :param id: Client-provided session identifier. Use the same value across requests to continue the same agent session.
-        :param after: Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
+        :param after: Continue after this cursor. For list responses, pass the preceding page's `next_cursor`; for session messages, pass the preceding page's last message `cursor`.
 
         :param limit: Maximum number of items to return.
         """
@@ -585,12 +551,8 @@ class Sessions(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.GetSessionAuditGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -658,31 +620,24 @@ class AsyncSessions(AsyncBaseSDK):
     ) -> models.ListSessionsResponse:
         r"""List sessions
 
-        Lists your organization's sessions, most recently used first. Filter by agent name, agent revision, invocation state, time window, or an invocation it ran: a session matches when any of its invocations does, and a filtered listing is ordered by each session's most recent matching invocation. A filter that matches nothing returns an empty page rather than an error.
+        Returns sessions ordered by their most recent matching invocation.
 
-        Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present — you have reached the end when it is absent. A page can hold fewer sessions than `limit`, or none at all, and still have a `next_cursor`; a short page is not the end of the results.
-
-        A listing covers the window given by `since` and `until`, and omitting `since` searches the last 31 days. The window is fixed when the first page is requested, so paging with `after` keeps returning results from the window that page used: `after` carries that window and the filters it was made with, so send it with no filters, or with every filter repeated exactly, and expect a `400` otherwise.
-
-
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
 
         :param agent_name: Return only sessions that ran this agent (e.g. \"support-triage\").
 
-        :param agent_revision: Return only sessions that ran this exact agent revision (e.g. \"a1b2c3d4\"). Requires `agent_name`; a revision without an agent name is a `400`.
+        :param agent_revision: Return only sessions that ran this agent revision (e.g. \"a1b2c3d4\"). Requires `agent_name`.
 
-        :param status: Return only sessions with an invocation that ended this way, or is `RUNNING` now. `DONE` matches a successful invocation.
+        :param status: Return only sessions with an invocation in this state. `DONE` matches a successful invocation.
 
-        :param invocation_key: Return only the session that ran this invocation, whether it is still running or has ended.
+        :param invocation_key: Return only the session containing this invocation.
 
-        :param since: Return only sessions with an invocation that started at or after this time. Without `since` or `until`, the listing covers sessions used in the last 31 days; pass it to search further back.
+        :param since: Return only sessions with an invocation that started at or after this time. Defaults to 31 days ago.
 
-        :param until: Return only sessions with an invocation that started at or before this time. Defaults to now, and must be after `since`; an earlier `until` is a `400`.
+        :param until: Return only sessions with an invocation that started at or before this time. Defaults to now and must be after `since`.
 
-        :param after: Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
+        :param after: Continue after this cursor. For list responses, pass the preceding page's `next_cursor`; for session messages, pass the preceding page's last message `cursor`.
 
-        :param limit: Maximum number of sessions to return. A page can be shorter, so page while `next_cursor` is present.
-
+        :param limit: Maximum number of sessions to return.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
@@ -709,12 +664,8 @@ class AsyncSessions(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.ListSessionsGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -770,13 +721,12 @@ class AsyncSessions(AsyncBaseSDK):
     ) -> models.SessionResponse:
         r"""Get a session with its messages
 
-        Returns the session's metadata and a page of its messages ordered by cursor ascending. Use `after` and `limit` to page through messages.
+        Returns session metadata and messages in chronological order.
 
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
+        :param id: Client-provided session identifier. Reuse it to continue the session.
 
-        :param id: Client-provided session identifier. Use the same value across requests to continue the same agent session.
-        :param after: Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
+        :param after: Continue after this cursor. For list responses, pass the preceding page's `next_cursor`; for session messages, pass the preceding page's last message `cursor`.
 
         :param limit: Maximum number of items to return.
         """
@@ -800,12 +750,8 @@ class AsyncSessions(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.GetSessionGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -868,22 +814,19 @@ class AsyncSessions(AsyncBaseSDK):
     ) -> operations.RunSessionResponse:
         r"""Run or resume a session
 
-        Runs the session with the given ID, creating it if it does not exist and resuming it otherwise. Each call is a single invocation, optionally named by the Idempotency-Key header, whose value is the invocation's key. Supplying a key makes the call safe to retry: retrying with the same key and an identical body re-attaches to the in-flight invocation and returns its current state; a differing body for the same key returns 409; a new key while another invocation is still running returns 423. Omitting the header starts a fresh, non-idempotent invocation each time; the server generates a key and returns it in the Idempotency-Key response header.
-
-        With `wait_timeout_seconds` the request long-polls: it blocks until the invocation's assistant response is available and returns it in `message`. Omit it to wait up to 30 minutes, or pass 0 to return as soon as the invocation is accepted. A positive value bounds the wait in seconds; if it elapses first the request fails with 504 and a JSON body, letting the client distinguish an expected server-side timeout from a transport error; the client may retry.
+        Starts a new session or continues an existing one with another agent invocation.
 
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
+        :param id: Client-provided session identifier. Reuse it to continue the session.
 
-        :param id: Client-provided session identifier. Use the same value across requests to continue the same agent session.
         :param user_prompt: The user prompt driving this invocation.
         :param agent_name: Human-readable name identifying the agent (e.g. \"support-triage\"). Invocations sharing a name are grouped as one agent; each distinct configuration under it becomes a revision.
 
         :param agent: The agent configuration for an invocation: the model, tools, instructions, and MCP servers that define its behavior. Invocations with the same configuration share a revision.
 
-        :param invocation_key: Optional but strongly encouraged. The key naming this invocation of the session, unique within your organization: reuse the same value to safely retry a request, read the invocation back with `GET /traces/{invocation_key}`, and use a new value to start a new invocation. When omitted, the server generates a key for the invocation and returns it in the Idempotency-Key response header, but the request is not retry-safe.
+        :param invocation_key: Names the invocation and makes identical requests safe to retry. Reuse with a different body returns `409`. When omitted, the response returns a generated key and the request is not retry-safe.
 
-        :param wait_timeout_seconds: Wait up to this many seconds for the assistant response. Omit to wait up to 30 minutes; use 0 to return after the invocation is accepted.
+        :param wait_timeout_seconds: Wait up to this many seconds for the assistant response. Omit to wait 30 minutes; use 0 to return once accepted. A timeout does not stop the invocation.
 
         :param retry_config: Override the SDK retry configuration for this invocation.
         """
@@ -916,15 +859,11 @@ class AsyncSessions(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.RunSessionGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.body, False, False, "json", models.RunSessionRequest
             ),
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=timeout_ms,
         )
 
@@ -1016,9 +955,8 @@ class AsyncSessions(AsyncBaseSDK):
     ):
         r"""Delete a session
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
+        :param id: Client-provided session identifier. Reuse it to continue the session.
 
-        :param id: Client-provided session identifier. Use the same value across requests to continue the same agent session.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
@@ -1038,12 +976,8 @@ class AsyncSessions(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.DeleteSessionGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -1097,12 +1031,11 @@ class AsyncSessions(AsyncBaseSDK):
     ) -> models.CancelSessionResponse:
         r"""Cancel a session's running invocation
 
-        Requests cancellation of the invocation currently running for the session. Cancellation is asynchronous: the call returns once the request is accepted, and the invocation resolves as canceled shortly after, unlocking the session for new invocations. A request waiting on the invocation receives its terminal outcome. Returns 409 when the session has no invocation running.
+        Requests asynchronous cancellation and returns once accepted.
 
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
+        :param id: Client-provided session identifier. Reuse it to continue the session.
 
-        :param id: Client-provided session identifier. Use the same value across requests to continue the same agent session.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
@@ -1122,12 +1055,8 @@ class AsyncSessions(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.CancelSessionGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -1186,13 +1115,12 @@ class AsyncSessions(AsyncBaseSDK):
     ) -> models.ListAuditEventsResponse:
         r"""List a session's audit log
 
-        Returns the session's audit log — an immutable, time-ordered record of what happened during its invocations (LLM calls, tool results, and invocation outcomes). Events are ordered by the time they occurred. Use `after` and `limit` to page through them; pass the response's `next_cursor` as the next request's `after` to fetch the following page.
+        Returns an immutable record of session events in chronological order.
 
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
+        :param id: Client-provided session identifier. Reuse it to continue the session.
 
-        :param id: Client-provided session identifier. Use the same value across requests to continue the same agent session.
-        :param after: Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
+        :param after: Continue after this cursor. For list responses, pass the preceding page's `next_cursor`; for session messages, pass the preceding page's last message `cursor`.
 
         :param limit: Maximum number of items to return.
         """
@@ -1216,12 +1144,8 @@ class AsyncSessions(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.GetSessionAuditGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 

@@ -10,7 +10,7 @@ Identify the authenticated user.
 
 ## whoami
 
-Returns the caller a credential authenticates: a signed-in user with every organization they belong to and their roles in each, or the API key that signed the request, along with the organization it acts in.
+Returns the signed-in user and their organizations, or the API key and its organization.
 
 
 ### Example Usage
@@ -18,13 +18,12 @@ Returns the caller a credential authenticates: a signed-in user with every organ
 <!-- UsageSnippet language="python" operationID="whoami" method="get" path="/whoami" -->
 ```python
 # Synchronous Example
-from albus_sdk import Albus, models
+from albus_sdk import Albus
 import os
 
 
 with Albus(
-    x_albus_organization="<value>",
-    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+    api_key=os.getenv("ALBUS_API_KEY", ""),
 ) as albus:
 
     res = albus.auth.whoami()
@@ -39,15 +38,14 @@ An Async SDK client can also be used to make asynchronous requests by importing 
 
 ```python
 # Asynchronous Example
-from albus_sdk import AsyncAlbus, models
+from albus_sdk import AsyncAlbus
 import asyncio
 import os
 
 async def main():
 
     async with AsyncAlbus(
-        x_albus_organization="<value>",
-        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+        api_key=os.getenv("ALBUS_API_KEY", ""),
     ) as albus:
 
         res = await albus.auth.whoami()
@@ -62,7 +60,6 @@ asyncio.run(main())
 
 | Parameter                                                           | Type                                                                | Required                                                            | Description                                                         |
 | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| `request`                                                           | [operations.WhoamiRequest](../../operations/whoamirequest.md)       | :heavy_check_mark:                                                  | The request object to use for the request.                          |
 
 ### Response
 

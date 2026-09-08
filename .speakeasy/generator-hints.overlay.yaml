@@ -3,16 +3,32 @@ info:
   title: Generator hints the public spec does not carry
   version: 1.0.0
 actions:
-  - target: "$"
-    description: Make X-Albus-Organization a client-level option instead of a per-call argument.
+  - target: "$.servers[?(@.url != 'https://albus.sh/api')]"
+    description: The SDK targets production; anything else is a server_url override.
+    remove: true
+  - target: "$.components.securitySchemes.bearerAuth"
+    description: >-
+      Both schemes are a bearer token on the wire. The SDK exposes one
+      credential, api_key, and a browser-session token rides in it too.
+    remove: true
+  - target: "$.security[?(@.bearerAuth != null)]"
+    remove: true
+  - target: "$.paths.*.*.security"
+    description: >-
+      Every operation authenticates the one way the SDK knows, including the
+      ones the public spec restricts to user tokens.
+    remove: true
+  - target: "$.paths['/health'].get"
+    description: Health stays anonymous.
     update:
-      x-speakeasy-globals:
-        parameters:
-          - $ref: "#/components/parameters/OrganizationHeader"
+      security: []
+  - target: "$.paths.*.*.parameters[?(@['$ref'] == '#/components/parameters/OrganizationHeader')]"
+    description: >-
+      The organization is neither a method argument nor a client option; the
+      SDK sends it from the stored browser session when no API key is used.
+    remove: true
   - target: "$.components.parameters.OrganizationHeader"
-    description: Hide the header from method signatures; the client option supplies it.
-    update:
-      x-speakeasy-globals-hidden: true
+    remove: true
   - target: "$.components.parameters.IdempotencyKey"
     description: Name the parameter for the invocation it identifies.
     update:

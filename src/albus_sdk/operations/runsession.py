@@ -19,50 +19,18 @@ from typing import Dict, List, Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class RunSessionGlobalsTypedDict(TypedDict):
-    x_albus_organization: NotRequired[str]
-    r"""The id of the organization the request acts on, which must be one the caller belongs to. Defaults to the organization the caller joined first. Ignored for API keys, which are bound to one organization.
-
-    """
-
-
-class RunSessionGlobals(BaseModel):
-    x_albus_organization: Annotated[
-        Optional[str],
-        pydantic.Field(alias="X-Albus-Organization"),
-        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
-    ] = None
-    r"""The id of the organization the request acts on, which must be one the caller belongs to. Defaults to the organization the caller joined first. Ignored for API keys, which are bound to one organization.
-
-    """
-
-    @model_serializer(mode="wrap")
-    def serialize_model(self, handler):
-        optional_fields = set(["X-Albus-Organization"])
-        serialized = handler(self)
-        m = {}
-
-        for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k, serialized.get(n))
-
-            if val != UNSET_SENTINEL:
-                if val is not None or k not in optional_fields:
-                    m[k] = val
-
-        return m
-
-
 class RunSessionRequestTypedDict(TypedDict):
     id: str
-    r"""Client-provided session identifier. Use the same value across requests to continue the same agent session."""
+    r"""Client-provided session identifier. Reuse it to continue the session.
+
+    """
     body: models_runsessionrequest.RunSessionRequestTypedDict
     invocation_key: NotRequired[str]
-    r"""Optional but strongly encouraged. The key naming this invocation of the session, unique within your organization: reuse the same value to safely retry a request, read the invocation back with `GET /traces/{invocation_key}`, and use a new value to start a new invocation. When omitted, the server generates a key for the invocation and returns it in the Idempotency-Key response header, but the request is not retry-safe.
+    r"""Names the invocation and makes identical requests safe to retry. Reuse with a different body returns `409`. When omitted, the response returns a generated key and the request is not retry-safe.
 
     """
     wait_timeout_seconds: NotRequired[int]
-    r"""Wait up to this many seconds for the assistant response. Omit to wait up to 30 minutes; use 0 to return after the invocation is accepted.
+    r"""Wait up to this many seconds for the assistant response. Omit to wait 30 minutes; use 0 to return once accepted. A timeout does not stop the invocation.
 
     """
 
@@ -71,7 +39,9 @@ class RunSessionRequest(BaseModel):
     id: Annotated[
         str, FieldMetadata(path=PathParamMetadata(style="simple", explode=False))
     ]
-    r"""Client-provided session identifier. Use the same value across requests to continue the same agent session."""
+    r"""Client-provided session identifier. Reuse it to continue the session.
+
+    """
 
     body: Annotated[
         models_runsessionrequest.RunSessionRequest,
@@ -83,7 +53,7 @@ class RunSessionRequest(BaseModel):
         pydantic.Field(alias="Idempotency-Key"),
         FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
     ] = None
-    r"""Optional but strongly encouraged. The key naming this invocation of the session, unique within your organization: reuse the same value to safely retry a request, read the invocation back with `GET /traces/{invocation_key}`, and use a new value to start a new invocation. When omitted, the server generates a key for the invocation and returns it in the Idempotency-Key response header, but the request is not retry-safe.
+    r"""Names the invocation and makes identical requests safe to retry. Reuse with a different body returns `409`. When omitted, the response returns a generated key and the request is not retry-safe.
 
     """
 
@@ -91,7 +61,7 @@ class RunSessionRequest(BaseModel):
         Optional[int],
         FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),
     ] = 1800
-    r"""Wait up to this many seconds for the assistant response. Omit to wait up to 30 minutes; use 0 to return after the invocation is accepted.
+    r"""Wait up to this many seconds for the assistant response. Omit to wait 30 minutes; use 0 to return once accepted. A timeout does not stop the invocation.
 
     """
 

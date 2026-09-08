@@ -20,14 +20,10 @@ class Memories(BaseSDK):
     ) -> models.ListMemoryGroupsResponse:
         r"""List memory groups
 
-        Lists the memory groups of your organization, ordered by key: every `memory.group` value an agent has run with, along with how many memories agents in the group currently read. Read a group's memories with `GET /memorygroups/{group}`.
-
-        Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present — you have reached the end when it is absent.
+        Returns memory groups ordered by key, with each group's active memory count.
 
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
-
-        :param after: Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
+        :param after: Continue after this cursor. For list responses, pass the preceding page's `next_cursor`; for session messages, pass the preceding page's last message `cursor`.
 
         :param limit: Maximum number of items to return.
         """
@@ -50,12 +46,8 @@ class Memories(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.ListMemoryGroupsGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -111,16 +103,12 @@ class Memories(BaseSDK):
     ) -> models.ListMemoriesResponse:
         r"""List a group's memories
 
-        Lists the memories of one memory group that agents currently read, newest first. Memories a later memory has replaced are not returned. A group nothing has been remembered in yet is an empty list, not an error.
-
-        Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present — you have reached the end when it is absent.
+        Returns active memories newest first. Replaced memories are omitted.
 
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
+        :param group: Memory group to read or delete, matching the agent's `memory.group`.
 
-        :param group: The memory group to read or delete — the `memory.group` value the agents sharing those memories run with.
-
-        :param after: Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
+        :param after: Continue after this cursor. For list responses, pass the preceding page's `next_cursor`; for session messages, pass the preceding page's last message `cursor`.
 
         :param limit: Maximum number of items to return.
         """
@@ -144,12 +132,8 @@ class Memories(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.ListMemoriesGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -203,12 +187,10 @@ class Memories(BaseSDK):
     ):
         r"""Delete a group's memories
 
-        Deletes every memory of one memory group. Agents bound to the group remember nothing from before the call and can remember again after it. A group that holds no memories is deleted just the same, so the call is safe to repeat.
+        Removes every memory in the group. Agents can add new memories later.
 
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
-
-        :param group: The memory group to read or delete — the `memory.group` value the agents sharing those memories run with.
+        :param group: Memory group to read or delete, matching the agent's `memory.group`.
 
         """
         url_variables = None
@@ -229,12 +211,8 @@ class Memories(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.DeleteMemoryGroupGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -289,15 +267,12 @@ class Memories(BaseSDK):
     ):
         r"""Delete one memory
 
-        Deletes one memory of a memory group. Agents bound to the group stop reading it, and the deletion is permanent. A memory the group does not hold is a `404`.
+        Permanently removes the memory from the group.
 
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
+        :param group: Memory group to read or delete, matching the agent's `memory.group`.
 
-        :param group: The memory group to read or delete — the `memory.group` value the agents sharing those memories run with.
-
-        :param id: The memory's identifier, as returned by `GET /memorygroups/{group}`.
-
+        :param id: Identifier of the memory to delete.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
@@ -318,12 +293,8 @@ class Memories(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.DeleteMemoryGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -385,14 +356,10 @@ class AsyncMemories(AsyncBaseSDK):
     ) -> models.ListMemoryGroupsResponse:
         r"""List memory groups
 
-        Lists the memory groups of your organization, ordered by key: every `memory.group` value an agent has run with, along with how many memories agents in the group currently read. Read a group's memories with `GET /memorygroups/{group}`.
-
-        Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present — you have reached the end when it is absent.
+        Returns memory groups ordered by key, with each group's active memory count.
 
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
-
-        :param after: Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
+        :param after: Continue after this cursor. For list responses, pass the preceding page's `next_cursor`; for session messages, pass the preceding page's last message `cursor`.
 
         :param limit: Maximum number of items to return.
         """
@@ -415,12 +382,8 @@ class AsyncMemories(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.ListMemoryGroupsGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -476,16 +439,12 @@ class AsyncMemories(AsyncBaseSDK):
     ) -> models.ListMemoriesResponse:
         r"""List a group's memories
 
-        Lists the memories of one memory group that agents currently read, newest first. Memories a later memory has replaced are not returned. A group nothing has been remembered in yet is an empty list, not an error.
-
-        Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present — you have reached the end when it is absent.
+        Returns active memories newest first. Replaced memories are omitted.
 
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
+        :param group: Memory group to read or delete, matching the agent's `memory.group`.
 
-        :param group: The memory group to read or delete — the `memory.group` value the agents sharing those memories run with.
-
-        :param after: Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
+        :param after: Continue after this cursor. For list responses, pass the preceding page's `next_cursor`; for session messages, pass the preceding page's last message `cursor`.
 
         :param limit: Maximum number of items to return.
         """
@@ -509,12 +468,8 @@ class AsyncMemories(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.ListMemoriesGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -568,12 +523,10 @@ class AsyncMemories(AsyncBaseSDK):
     ):
         r"""Delete a group's memories
 
-        Deletes every memory of one memory group. Agents bound to the group remember nothing from before the call and can remember again after it. A group that holds no memories is deleted just the same, so the call is safe to repeat.
+        Removes every memory in the group. Agents can add new memories later.
 
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
-
-        :param group: The memory group to read or delete — the `memory.group` value the agents sharing those memories run with.
+        :param group: Memory group to read or delete, matching the agent's `memory.group`.
 
         """
         url_variables = None
@@ -594,12 +547,8 @@ class AsyncMemories(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.DeleteMemoryGroupGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -654,15 +603,12 @@ class AsyncMemories(AsyncBaseSDK):
     ):
         r"""Delete one memory
 
-        Deletes one memory of a memory group. Agents bound to the group stop reading it, and the deletion is permanent. A memory the group does not hold is a `404`.
+        Permanently removes the memory from the group.
 
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
+        :param group: Memory group to read or delete, matching the agent's `memory.group`.
 
-        :param group: The memory group to read or delete — the `memory.group` value the agents sharing those memories run with.
-
-        :param id: The memory's identifier, as returned by `GET /memorygroups/{group}`.
-
+        :param id: Identifier of the memory to delete.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
@@ -683,12 +629,8 @@ class AsyncMemories(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.DeleteMemoryGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 

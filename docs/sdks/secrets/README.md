@@ -6,28 +6,27 @@ Manage secrets available to agent sessions.
 
 ### Available Operations
 
-* [list_secrets](#list_secrets) - List all secrets
+* [list_secrets](#list_secrets) - List secrets
 * [create_secret](#create_secret) - Create a secret
-* [get_secret](#get_secret) - Get a secret by name
-* [update_secret](#update_secret) - Update a secret by name
-* [delete_secret](#delete_secret) - Delete a secret by name
+* [get_secret](#get_secret) - Get a secret
+* [update_secret](#update_secret) - Update a secret
+* [delete_secret](#delete_secret) - Delete a secret
 
 ## list_secrets
 
-List all secrets
+List secrets
 
 ### Example Usage
 
 <!-- UsageSnippet language="python" operationID="listSecrets" method="get" path="/secrets" -->
 ```python
 # Synchronous Example
-from albus_sdk import Albus, models
+from albus_sdk import Albus
 import os
 
 
 with Albus(
-    x_albus_organization="<value>",
-    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+    api_key=os.getenv("ALBUS_API_KEY", ""),
 ) as albus:
 
     res = albus.secrets.list_secrets()
@@ -42,15 +41,14 @@ An Async SDK client can also be used to make asynchronous requests by importing 
 
 ```python
 # Asynchronous Example
-from albus_sdk import AsyncAlbus, models
+from albus_sdk import AsyncAlbus
 import asyncio
 import os
 
 async def main():
 
     async with AsyncAlbus(
-        x_albus_organization="<value>",
-        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+        api_key=os.getenv("ALBUS_API_KEY", ""),
     ) as albus:
 
         res = await albus.secrets.list_secrets()
@@ -63,9 +61,8 @@ asyncio.run(main())
 
 ### Parameters
 
-| Parameter                                                               | Type                                                                    | Required                                                                | Description                                                             |
-| ----------------------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| `request`                                                               | [operations.ListSecretsRequest](../../operations/listsecretsrequest.md) | :heavy_check_mark:                                                      | The request object to use for the request.                              |
+| Parameter                                                           | Type                                                                | Required                                                            | Description                                                         |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
 
 ### Response
 
@@ -87,13 +84,12 @@ Create a secret
 <!-- UsageSnippet language="python" operationID="createSecret" method="post" path="/secrets" -->
 ```python
 # Synchronous Example
-from albus_sdk import Albus, models
+from albus_sdk import Albus
 import os
 
 
 with Albus(
-    x_albus_organization="<value>",
-    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+    api_key=os.getenv("ALBUS_API_KEY", ""),
 ) as albus:
 
     res = albus.secrets.create_secret(name="<value>", value="<value>")
@@ -108,15 +104,14 @@ An Async SDK client can also be used to make asynchronous requests by importing 
 
 ```python
 # Asynchronous Example
-from albus_sdk import AsyncAlbus, models
+from albus_sdk import AsyncAlbus
 import asyncio
 import os
 
 async def main():
 
     async with AsyncAlbus(
-        x_albus_organization="<value>",
-        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+        api_key=os.getenv("ALBUS_API_KEY", ""),
     ) as albus:
 
         res = await albus.secrets.create_secret(name="<value>", value="<value>")
@@ -148,20 +143,19 @@ asyncio.run(main())
 
 ## get_secret
 
-Get a secret by name
+Get a secret
 
 ### Example Usage
 
 <!-- UsageSnippet language="python" operationID="getSecret" method="get" path="/secrets/{name}" -->
 ```python
 # Synchronous Example
-from albus_sdk import Albus, models
+from albus_sdk import Albus
 import os
 
 
 with Albus(
-    x_albus_organization="<value>",
-    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+    api_key=os.getenv("ALBUS_API_KEY", ""),
 ) as albus:
 
     res = albus.secrets.get_secret(name="<value>")
@@ -176,15 +170,14 @@ An Async SDK client can also be used to make asynchronous requests by importing 
 
 ```python
 # Asynchronous Example
-from albus_sdk import AsyncAlbus, models
+from albus_sdk import AsyncAlbus
 import asyncio
 import os
 
 async def main():
 
     async with AsyncAlbus(
-        x_albus_organization="<value>",
-        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+        api_key=os.getenv("ALBUS_API_KEY", ""),
     ) as albus:
 
         res = await albus.secrets.get_secret(name="<value>")
@@ -199,7 +192,7 @@ asyncio.run(main())
 
 | Parameter                                                           | Type                                                                | Required                                                            | Description                                                         |
 | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| `name`                                                              | *str*                                                               | :heavy_check_mark:                                                  | N/A                                                                 |
+| `name`                                                              | *str*                                                               | :heavy_check_mark:                                                  | Name of the secret to return.                                       |
 
 ### Response
 
@@ -215,20 +208,19 @@ asyncio.run(main())
 
 ## update_secret
 
-Update a secret by name
+Update a secret
 
 ### Example Usage
 
 <!-- UsageSnippet language="python" operationID="updateSecret" method="put" path="/secrets/{name}" -->
 ```python
 # Synchronous Example
-from albus_sdk import Albus, models
+from albus_sdk import Albus
 import os
 
 
 with Albus(
-    x_albus_organization="<value>",
-    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+    api_key=os.getenv("ALBUS_API_KEY", ""),
 ) as albus:
 
     res = albus.secrets.update_secret(name="<value>", value="<value>")
@@ -243,15 +235,14 @@ An Async SDK client can also be used to make asynchronous requests by importing 
 
 ```python
 # Asynchronous Example
-from albus_sdk import AsyncAlbus, models
+from albus_sdk import AsyncAlbus
 import asyncio
 import os
 
 async def main():
 
     async with AsyncAlbus(
-        x_albus_organization="<value>",
-        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+        api_key=os.getenv("ALBUS_API_KEY", ""),
     ) as albus:
 
         res = await albus.secrets.update_secret(name="<value>", value="<value>")
@@ -266,7 +257,7 @@ asyncio.run(main())
 
 | Parameter                                                           | Type                                                                | Required                                                            | Description                                                         |
 | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| `name`                                                              | *str*                                                               | :heavy_check_mark:                                                  | N/A                                                                 |
+| `name`                                                              | *str*                                                               | :heavy_check_mark:                                                  | Name of the secret to update.                                       |
 | `value`                                                             | *str*                                                               | :heavy_check_mark:                                                  | The new secret value.                                               |
 
 ### Response
@@ -284,20 +275,19 @@ asyncio.run(main())
 
 ## delete_secret
 
-Delete a secret by name
+Delete a secret
 
 ### Example Usage
 
 <!-- UsageSnippet language="python" operationID="deleteSecret" method="delete" path="/secrets/{name}" -->
 ```python
 # Synchronous Example
-from albus_sdk import Albus, models
+from albus_sdk import Albus
 import os
 
 
 with Albus(
-    x_albus_organization="<value>",
-    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+    api_key=os.getenv("ALBUS_API_KEY", ""),
 ) as albus:
 
     albus.secrets.delete_secret(name="<value>")
@@ -311,15 +301,14 @@ An Async SDK client can also be used to make asynchronous requests by importing 
 
 ```python
 # Asynchronous Example
-from albus_sdk import AsyncAlbus, models
+from albus_sdk import AsyncAlbus
 import asyncio
 import os
 
 async def main():
 
     async with AsyncAlbus(
-        x_albus_organization="<value>",
-        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+        api_key=os.getenv("ALBUS_API_KEY", ""),
     ) as albus:
 
         await albus.secrets.delete_secret(name="<value>")
@@ -333,7 +322,7 @@ asyncio.run(main())
 
 | Parameter                                                           | Type                                                                | Required                                                            | Description                                                         |
 | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| `name`                                                              | *str*                                                               | :heavy_check_mark:                                                  | N/A                                                                 |
+| `name`                                                              | *str*                                                               | :heavy_check_mark:                                                  | Name of the secret to delete.                                       |
 
 ### Errors
 

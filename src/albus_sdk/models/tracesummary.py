@@ -27,7 +27,7 @@ class TraceSummaryTypedDict(TypedDict):
 
     """
     started_at: datetime
-    r"""When the invocation was accepted."""
+    r"""An RFC 3339 timestamp with millisecond precision."""
     agent_name: NotRequired[str]
     r"""Name of the agent the invocation ran (e.g. \"support-triage\"). Absent for an invocation made before agent names were recorded.
 
@@ -37,9 +37,7 @@ class TraceSummaryTypedDict(TypedDict):
 
     """
     ended_at: NotRequired[datetime]
-    r"""When the invocation's outcome was recorded. Absent while it runs.
-
-    """
+    r"""An RFC 3339 timestamp with millisecond precision."""
 
 
 class TraceSummary(BaseModel):
@@ -64,7 +62,7 @@ class TraceSummary(BaseModel):
     """
 
     started_at: datetime
-    r"""When the invocation was accepted."""
+    r"""An RFC 3339 timestamp with millisecond precision."""
 
     agent_name: Optional[str] = None
     r"""Name of the agent the invocation ran (e.g. \"support-triage\"). Absent for an invocation made before agent names were recorded.
@@ -77,9 +75,7 @@ class TraceSummary(BaseModel):
     """
 
     ended_at: Optional[datetime] = None
-    r"""When the invocation's outcome was recorded. Absent while it runs.
-
-    """
+    r"""An RFC 3339 timestamp with millisecond precision."""
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

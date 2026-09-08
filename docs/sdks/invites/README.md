@@ -10,7 +10,7 @@
 
 ## list_invites
 
-Lists the unexpired invitations into your organization. Requires the admin role.
+Returns unexpired invitations. Requires the admin role.
 
 
 ### Example Usage
@@ -18,13 +18,12 @@ Lists the unexpired invitations into your organization. Requires the admin role.
 <!-- UsageSnippet language="python" operationID="listInvites" method="get" path="/organization/invites" -->
 ```python
 # Synchronous Example
-from albus_sdk import Albus, models
+from albus_sdk import Albus
 import os
 
 
 with Albus(
-    x_albus_organization="<value>",
-    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+    api_key=os.getenv("ALBUS_API_KEY", ""),
 ) as albus:
 
     res = albus.invites.list_invites()
@@ -39,15 +38,14 @@ An Async SDK client can also be used to make asynchronous requests by importing 
 
 ```python
 # Asynchronous Example
-from albus_sdk import AsyncAlbus, models
+from albus_sdk import AsyncAlbus
 import asyncio
 import os
 
 async def main():
 
     async with AsyncAlbus(
-        x_albus_organization="<value>",
-        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+        api_key=os.getenv("ALBUS_API_KEY", ""),
     ) as albus:
 
         res = await albus.invites.list_invites()
@@ -60,9 +58,8 @@ asyncio.run(main())
 
 ### Parameters
 
-| Parameter                                                               | Type                                                                    | Required                                                                | Description                                                             |
-| ----------------------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| `request`                                                               | [operations.ListInvitesRequest](../../operations/listinvitesrequest.md) | :heavy_check_mark:                                                      | The request object to use for the request.                              |
+| Parameter                                                           | Type                                                                | Required                                                            | Description                                                         |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
 
 ### Response
 
@@ -78,7 +75,7 @@ asyncio.run(main())
 
 ## create_invite
 
-Invites an email address into your organization. The invitation is redeemed automatically the next time the invitee signs in with that email, and expires after 14 days. Requires the admin role.
+The invitation is accepted when the recipient signs in and expires after 14 days. Requires the admin role.
 
 
 ### Example Usage
@@ -86,13 +83,12 @@ Invites an email address into your organization. The invitation is redeemed auto
 <!-- UsageSnippet language="python" operationID="createInvite" method="post" path="/organization/invites" -->
 ```python
 # Synchronous Example
-from albus_sdk import Albus, models
+from albus_sdk import Albus
 import os
 
 
 with Albus(
-    x_albus_organization="<value>",
-    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+    api_key=os.getenv("ALBUS_API_KEY", ""),
 ) as albus:
 
     res = albus.invites.create_invite(email="Cassie27@hotmail.com", role="member")
@@ -107,15 +103,14 @@ An Async SDK client can also be used to make asynchronous requests by importing 
 
 ```python
 # Asynchronous Example
-from albus_sdk import AsyncAlbus, models
+from albus_sdk import AsyncAlbus
 import asyncio
 import os
 
 async def main():
 
     async with AsyncAlbus(
-        x_albus_organization="<value>",
-        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+        api_key=os.getenv("ALBUS_API_KEY", ""),
     ) as albus:
 
         res = await albus.invites.create_invite(email="Cassie27@hotmail.com", role="member")
@@ -156,13 +151,12 @@ Requires the admin role.
 <!-- UsageSnippet language="python" operationID="revokeInvite" method="delete" path="/organization/invites/{id}" -->
 ```python
 # Synchronous Example
-from albus_sdk import Albus, models
+from albus_sdk import Albus
 import os
 
 
 with Albus(
-    x_albus_organization="<value>",
-    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+    api_key=os.getenv("ALBUS_API_KEY", ""),
 ) as albus:
 
     albus.invites.revoke_invite(id="<id>")
@@ -176,15 +170,14 @@ An Async SDK client can also be used to make asynchronous requests by importing 
 
 ```python
 # Asynchronous Example
-from albus_sdk import AsyncAlbus, models
+from albus_sdk import AsyncAlbus
 import asyncio
 import os
 
 async def main():
 
     async with AsyncAlbus(
-        x_albus_organization="<value>",
-        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+        api_key=os.getenv("ALBUS_API_KEY", ""),
     ) as albus:
 
         await albus.invites.revoke_invite(id="<id>")

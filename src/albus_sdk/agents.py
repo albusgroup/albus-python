@@ -3,10 +3,10 @@
 from .basesdk import AsyncBaseSDK, BaseSDK
 from albus_sdk import errors, models, operations, utils
 from albus_sdk._hooks import HookContext
-from albus_sdk.types import BaseModel, OptionalNullable, UNSET
+from albus_sdk.types import OptionalNullable, UNSET
 from albus_sdk.utils import get_security_from_env
 from albus_sdk.utils.unmarshal_json_response import unmarshal_json_response
-from typing import Any, Mapping, Optional, Union, cast
+from typing import Any, Optional
 
 
 class Agents(BaseSDK):
@@ -14,44 +14,28 @@ class Agents(BaseSDK):
 
     def list_agents(
         self,
-        *,
-        request: Union[
-            operations.ListAgentsRequest, operations.ListAgentsRequestTypedDict
-        ] = operations.ListAgentsRequest(),
     ) -> models.ListAgentsResponse:
         r"""List agents
 
-        Lists the agents that have run in your organization, each with its latest revision.
+        Returns agents that have run, with each agent's latest revision.
 
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
-
-        :param request: The request object to send.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
-
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, operations.ListAgentsRequest)
-        request = cast(operations.ListAgentsRequest, request)
-
         req = self._build_request(
             method="GET",
             path="/agents",
             base_url=base_url,
             url_variables=url_variables,
-            request=request,
+            request=None,
             request_body_required=False,
             request_has_path_params=False,
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.ListAgentsGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -100,12 +84,10 @@ class Agents(BaseSDK):
         *,
         name: str,
     ) -> models.Agent:
-        r"""Get an agent by name
+        r"""Get an agent
 
-        Returns the agent with the given name, its current revision, and the list of all its revisions newest first.
+        Returns the current revision and all revisions newest first.
 
-
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
 
         :param name: The agent's name.
         """
@@ -127,12 +109,8 @@ class Agents(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.GetAgentGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -185,12 +163,10 @@ class Agents(BaseSDK):
         name: str,
         revision: str,
     ) -> models.AgentRevision:
-        r"""Get a specific revision of an agent
+        r"""Get an agent revision
 
-        Returns the full configuration of one revision of an agent — its model, tools, instructions, and MCP servers.
+        Returns the revision's model, tools, instructions, and MCP servers.
 
-
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
 
         :param name: The agent's name.
         :param revision: The agent revision to fetch.
@@ -214,12 +190,8 @@ class Agents(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.GetAgentRevisionGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -272,44 +244,28 @@ class AsyncAgents(AsyncBaseSDK):
 
     async def list_agents(
         self,
-        *,
-        request: Union[
-            operations.ListAgentsRequest, operations.ListAgentsRequestTypedDict
-        ] = operations.ListAgentsRequest(),
     ) -> models.ListAgentsResponse:
         r"""List agents
 
-        Lists the agents that have run in your organization, each with its latest revision.
+        Returns agents that have run, with each agent's latest revision.
 
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
-
-        :param request: The request object to send.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
-
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, operations.ListAgentsRequest)
-        request = cast(operations.ListAgentsRequest, request)
-
         req = self._build_request_async(
             method="GET",
             path="/agents",
             base_url=base_url,
             url_variables=url_variables,
-            request=request,
+            request=None,
             request_body_required=False,
             request_has_path_params=False,
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.ListAgentsGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -358,12 +314,10 @@ class AsyncAgents(AsyncBaseSDK):
         *,
         name: str,
     ) -> models.Agent:
-        r"""Get an agent by name
+        r"""Get an agent
 
-        Returns the agent with the given name, its current revision, and the list of all its revisions newest first.
+        Returns the current revision and all revisions newest first.
 
-
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
 
         :param name: The agent's name.
         """
@@ -385,12 +339,8 @@ class AsyncAgents(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.GetAgentGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -443,12 +393,10 @@ class AsyncAgents(AsyncBaseSDK):
         name: str,
         revision: str,
     ) -> models.AgentRevision:
-        r"""Get a specific revision of an agent
+        r"""Get an agent revision
 
-        Returns the full configuration of one revision of an agent — its model, tools, instructions, and MCP servers.
+        Returns the revision's model, tools, instructions, and MCP servers.
 
-
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
 
         :param name: The agent's name.
         :param revision: The agent revision to fetch.
@@ -472,12 +420,8 @@ class AsyncAgents(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.GetAgentRevisionGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 

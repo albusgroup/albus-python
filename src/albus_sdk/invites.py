@@ -3,53 +3,37 @@
 from .basesdk import AsyncBaseSDK, BaseSDK
 from albus_sdk import errors, models, operations, utils
 from albus_sdk._hooks import HookContext
-from albus_sdk.types import BaseModel, OptionalNullable, UNSET
+from albus_sdk.types import OptionalNullable, UNSET
 from albus_sdk.utils import get_security_from_env
 from albus_sdk.utils.unmarshal_json_response import unmarshal_json_response
-from typing import Any, Mapping, Optional, Union, cast
+from typing import Any, Optional
 
 
 class Invites(BaseSDK):
     def list_invites(
         self,
-        *,
-        request: Union[
-            operations.ListInvitesRequest, operations.ListInvitesRequestTypedDict
-        ] = operations.ListInvitesRequest(),
     ) -> models.ListInvitesResponse:
         r"""List pending invitations
 
-        Lists the unexpired invitations into your organization. Requires the admin role.
+        Returns unexpired invitations. Requires the admin role.
 
 
-        If set, this operation will use `bearer_auth` from the global security.
-
-        :param request: The request object to send.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
-
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, operations.ListInvitesRequest)
-        request = cast(operations.ListInvitesRequest, request)
-
         req = self._build_request(
             method="GET",
             path="/organization/invites",
             base_url=base_url,
             url_variables=url_variables,
-            request=request,
+            request=None,
             request_body_required=False,
             request_has_path_params=False,
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.ListInvitesGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -104,10 +88,8 @@ class Invites(BaseSDK):
     ) -> models.Invite:
         r"""Invite a user by email
 
-        Invites an email address into your organization. The invitation is redeemed automatically the next time the invitee signs in with that email, and expires after 14 days. Requires the admin role.
+        The invitation is accepted when the recipient signs in and expires after 14 days. Requires the admin role.
 
-
-        If set, this operation will use `bearer_auth` from the global security.
 
         :param email: Email address of the person to invite.
         :param role: Role to grant the invitee.
@@ -131,15 +113,11 @@ class Invites(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.CreateInviteGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
                 request, False, False, "json", models.CreateInviteRequest
             ),
             allow_empty_value=None,
-            allowed_fields=["bearer_auth"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -201,8 +179,6 @@ class Invites(BaseSDK):
 
         Requires the admin role.
 
-        If set, this operation will use `bearer_auth` from the global security.
-
         :param id: The invitation identifier.
         """
         url_variables = None
@@ -223,12 +199,8 @@ class Invites(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.RevokeInviteGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -282,44 +254,28 @@ class Invites(BaseSDK):
 class AsyncInvites(AsyncBaseSDK):
     async def list_invites(
         self,
-        *,
-        request: Union[
-            operations.ListInvitesRequest, operations.ListInvitesRequestTypedDict
-        ] = operations.ListInvitesRequest(),
     ) -> models.ListInvitesResponse:
         r"""List pending invitations
 
-        Lists the unexpired invitations into your organization. Requires the admin role.
+        Returns unexpired invitations. Requires the admin role.
 
 
-        If set, this operation will use `bearer_auth` from the global security.
-
-        :param request: The request object to send.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
-
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, operations.ListInvitesRequest)
-        request = cast(operations.ListInvitesRequest, request)
-
         req = self._build_request_async(
             method="GET",
             path="/organization/invites",
             base_url=base_url,
             url_variables=url_variables,
-            request=request,
+            request=None,
             request_body_required=False,
             request_has_path_params=False,
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.ListInvitesGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -374,10 +330,8 @@ class AsyncInvites(AsyncBaseSDK):
     ) -> models.Invite:
         r"""Invite a user by email
 
-        Invites an email address into your organization. The invitation is redeemed automatically the next time the invitee signs in with that email, and expires after 14 days. Requires the admin role.
+        The invitation is accepted when the recipient signs in and expires after 14 days. Requires the admin role.
 
-
-        If set, this operation will use `bearer_auth` from the global security.
 
         :param email: Email address of the person to invite.
         :param role: Role to grant the invitee.
@@ -401,15 +355,11 @@ class AsyncInvites(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.CreateInviteGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
                 request, False, False, "json", models.CreateInviteRequest
             ),
             allow_empty_value=None,
-            allowed_fields=["bearer_auth"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -471,8 +421,6 @@ class AsyncInvites(AsyncBaseSDK):
 
         Requires the admin role.
 
-        If set, this operation will use `bearer_auth` from the global security.
-
         :param id: The invitation identifier.
         """
         url_variables = None
@@ -493,12 +441,8 @@ class AsyncInvites(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.RevokeInviteGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 

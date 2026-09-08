@@ -11,13 +11,13 @@ from .httpclient import (
 from .sdkconfiguration import SDKConfiguration
 from .utils.logger import Logger, get_default_logger
 from .utils.retries import RetryConfig
-from albus_sdk import models as models_, utils
+from albus_sdk import models as models_
 from albus_sdk._hooks import SDKHooks
 from albus_sdk.types import OptionalNullable, UNSET
 import httpx
 import importlib
 import sys
-from typing import Dict, Optional, TYPE_CHECKING, cast
+from typing import Any, Callable, Optional, TYPE_CHECKING, Union, cast
 import weakref
 
 if TYPE_CHECKING:
@@ -78,11 +78,7 @@ class Albus(BaseSDK):
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
-        access_token: Optional[str] = None,
-        x_albus_organization: Optional[str] = None,
-        server_idx: Optional[int] = None,
-        url_params: Optional[Dict[str, str]] = None,
+        api_key: Optional[Union[Optional[str], Callable[[], Optional[str]]]] = None,
         server_url: Optional[str] = None,
         client: Optional[HttpClient] = None,
         retry_config: OptionalNullable[RetryConfig] = UNSET,
@@ -91,23 +87,12 @@ class Albus(BaseSDK):
     ) -> None:
         r"""Instantiates the SDK configuring it with the provided parameters.
 
-        :param x_albus_organization: Configures the x_albus_organization parameter for all supported operations
-        :param server_idx: The index of the server to use for all methods
+        :param api_key: The api_key required for authentication
         :param server_url: The server URL to use for all methods
-        :param url_params: Parameters to optionally template the server URL with
         :param client: The HTTP client to use for all synchronous methods
         :param retry_config: The retry configuration to use for all supported methods
         :param timeout_ms: Optional request timeout applied to each operation in milliseconds
         """
-        if api_key is not None and access_token is not None:
-            raise ValueError("api_key and access_token cannot both be set")
-
-        security = None
-        if api_key is not None:
-            security = models_.Security(api_key=api_key)
-        elif access_token is not None:
-            security = models_.Security(bearer_auth=access_token)
-
         client_supplied = True
         if client is None:
             client = httpx.Client(follow_redirects=True)
@@ -120,15 +105,14 @@ class Albus(BaseSDK):
         if debug_logger is None:
             debug_logger = get_default_logger()
 
-        if server_url is not None:
-            if url_params is not None:
-                server_url = utils.template_url(server_url, url_params)
-
-        _globals = models_.internal.Globals(
-            x_albus_organization=utils.get_global_from_env(
-                x_albus_organization, "ALBUS_X_ALBUS_ORGANIZATION", str
-            ),
-        )
+        security: Any = None
+        if not api_key:
+            security = None
+        elif callable(api_key):
+            # pylint: disable=unnecessary-lambda-assignment
+            security = lambda: models_.Security(api_key=api_key())
+        else:
+            security = models_.Security(api_key=api_key)
 
         BaseSDK.__init__(
             self,
@@ -137,10 +121,8 @@ class Albus(BaseSDK):
                 client_supplied=client_supplied,
                 async_client=None,
                 async_client_supplied=False,
-                globals=_globals,
                 security=security,
                 server_url=server_url,
-                server_idx=server_idx,
                 retry_config=retry_config,
                 timeout_ms=timeout_ms,
                 debug_logger=debug_logger,
@@ -256,11 +238,7 @@ class AsyncAlbus(AsyncBaseSDK):
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
-        access_token: Optional[str] = None,
-        x_albus_organization: Optional[str] = None,
-        server_idx: Optional[int] = None,
-        url_params: Optional[Dict[str, str]] = None,
+        api_key: Optional[Union[Optional[str], Callable[[], Optional[str]]]] = None,
         server_url: Optional[str] = None,
         async_client: Optional[AsyncHttpClient] = None,
         retry_config: OptionalNullable[RetryConfig] = UNSET,
@@ -269,23 +247,12 @@ class AsyncAlbus(AsyncBaseSDK):
     ) -> None:
         r"""Instantiates the SDK configuring it with the provided parameters.
 
-        :param x_albus_organization: Configures the x_albus_organization parameter for all supported operations
-        :param server_idx: The index of the server to use for all methods
+        :param api_key: The api_key required for authentication
         :param server_url: The server URL to use for all methods
-        :param url_params: Parameters to optionally template the server URL with
         :param async_client: The Async HTTP client to use for all asynchronous methods
         :param retry_config: The retry configuration to use for all supported methods
         :param timeout_ms: Optional request timeout applied to each operation in milliseconds
         """
-        if api_key is not None and access_token is not None:
-            raise ValueError("api_key and access_token cannot both be set")
-
-        security = None
-        if api_key is not None:
-            security = models_.Security(api_key=api_key)
-        elif access_token is not None:
-            security = models_.Security(bearer_auth=access_token)
-
         async_client_supplied = True
         if async_client is None:
             async_client = httpx.AsyncClient(follow_redirects=True)
@@ -296,15 +263,14 @@ class AsyncAlbus(AsyncBaseSDK):
             type(async_client), AsyncHttpClient
         ), "The provided async_client must implement the AsyncHttpClient protocol."
 
-        if server_url is not None:
-            if url_params is not None:
-                server_url = utils.template_url(server_url, url_params)
-
-        _globals = models_.internal.Globals(
-            x_albus_organization=utils.get_global_from_env(
-                x_albus_organization, "ALBUS_X_ALBUS_ORGANIZATION", str
-            ),
-        )
+        security: Any = None
+        if not api_key:
+            security = None
+        elif callable(api_key):
+            # pylint: disable=unnecessary-lambda-assignment
+            security = lambda: models_.Security(api_key=api_key())
+        else:
+            security = models_.Security(api_key=api_key)
 
         AsyncBaseSDK.__init__(
             self,
@@ -313,10 +279,8 @@ class AsyncAlbus(AsyncBaseSDK):
                 client_supplied=False,
                 async_client=async_client,
                 async_client_supplied=async_client_supplied,
-                globals=_globals,
                 security=security,
                 server_url=server_url,
-                server_idx=server_idx,
                 retry_config=retry_config,
                 timeout_ms=timeout_ms,
                 debug_logger=debug_logger,

@@ -41,7 +41,7 @@ def sdk() -> Iterator[Albus]:
 @pytest.fixture
 def bearer_sdk() -> Iterator[Albus]:
     """For the operations the spec allows `bearer_auth` alone."""
-    with Albus(server_url=MOCK_URL, access_token=ACCESS_TOKEN) as sdk:
+    with Albus(server_url=MOCK_URL, api_key=ACCESS_TOKEN) as sdk:
         yield sdk
 
 

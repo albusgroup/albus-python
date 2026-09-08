@@ -14,9 +14,7 @@ class Health(BaseSDK):
     def health(
         self,
     ) -> models.HealthResponse:
-        r"""Health check endpoint
-
-        Returns 200 OK if the service is healthy
+        r"""Check service health
 
         """
         url_variables = None
@@ -81,9 +79,7 @@ class AsyncHealth(AsyncBaseSDK):
     async def health(
         self,
     ) -> models.HealthResponse:
-        r"""Health check endpoint
-
-        Returns 200 OK if the service is healthy
+        r"""Check service health
 
         """
         url_variables = None

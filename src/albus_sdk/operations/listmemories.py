@@ -2,59 +2,19 @@
 
 from __future__ import annotations
 from albus_sdk.types import BaseModel, UNSET_SENTINEL
-from albus_sdk.utils import (
-    FieldMetadata,
-    HeaderMetadata,
-    PathParamMetadata,
-    QueryParamMetadata,
-)
-import pydantic
+from albus_sdk.utils import FieldMetadata, PathParamMetadata, QueryParamMetadata
 from pydantic import model_serializer
 from typing import Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
 
 
-class ListMemoriesGlobalsTypedDict(TypedDict):
-    x_albus_organization: NotRequired[str]
-    r"""The id of the organization the request acts on, which must be one the caller belongs to. Defaults to the organization the caller joined first. Ignored for API keys, which are bound to one organization.
-
-    """
-
-
-class ListMemoriesGlobals(BaseModel):
-    x_albus_organization: Annotated[
-        Optional[str],
-        pydantic.Field(alias="X-Albus-Organization"),
-        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
-    ] = None
-    r"""The id of the organization the request acts on, which must be one the caller belongs to. Defaults to the organization the caller joined first. Ignored for API keys, which are bound to one organization.
-
-    """
-
-    @model_serializer(mode="wrap")
-    def serialize_model(self, handler):
-        optional_fields = set(["X-Albus-Organization"])
-        serialized = handler(self)
-        m = {}
-
-        for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k, serialized.get(n))
-
-            if val != UNSET_SENTINEL:
-                if val is not None or k not in optional_fields:
-                    m[k] = val
-
-        return m
-
-
 class ListMemoriesRequestTypedDict(TypedDict):
     group: str
-    r"""The memory group to read or delete — the `memory.group` value the agents sharing those memories run with.
+    r"""Memory group to read or delete, matching the agent's `memory.group`.
 
     """
     after: NotRequired[str]
-    r"""Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
+    r"""Continue after this cursor. For list responses, pass the preceding page's `next_cursor`; for session messages, pass the preceding page's last message `cursor`.
 
     """
     limit: NotRequired[int]
@@ -65,7 +25,7 @@ class ListMemoriesRequest(BaseModel):
     group: Annotated[
         str, FieldMetadata(path=PathParamMetadata(style="simple", explode=False))
     ]
-    r"""The memory group to read or delete — the `memory.group` value the agents sharing those memories run with.
+    r"""Memory group to read or delete, matching the agent's `memory.group`.
 
     """
 
@@ -73,7 +33,7 @@ class ListMemoriesRequest(BaseModel):
         Optional[str],
         FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),
     ] = None
-    r"""Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
+    r"""Continue after this cursor. For list responses, pass the preceding page's `next_cursor`; for session messages, pass the preceding page's last message `cursor`.
 
     """
 

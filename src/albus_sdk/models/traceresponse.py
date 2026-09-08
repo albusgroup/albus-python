@@ -30,7 +30,7 @@ class TraceResponseTypedDict(TypedDict):
 
     """
     started_at: datetime
-    r"""When the invocation was accepted."""
+    r"""An RFC 3339 timestamp with millisecond precision."""
     session_position: int
     r"""Which invocation of its session this is, counting from 1 in the order they were created — the same number as the `inv` segment of every span's id, so you do not have to read an id to know which invocation you are holding. Invocations are only ever appended, so a position never changes.
 
@@ -48,9 +48,7 @@ class TraceResponseTypedDict(TypedDict):
 
     """
     ended_at: NotRequired[datetime]
-    r"""When the invocation's outcome was recorded. Absent while it runs.
-
-    """
+    r"""An RFC 3339 timestamp with millisecond precision."""
     failure: NotRequired[TraceFailureTypedDict]
     r"""Why the invocation ended without answering. Present only when `status` is `FAILED` or `CANCELED`, and readable past the retention window, since it comes from the invocation rather than its spans. Read it here rather than from `GET /traces`, which reports only that an invocation failed — listing a page of reasons costs a lookup per invocation on it.
 
@@ -87,7 +85,7 @@ class TraceResponse(BaseModel):
     """
 
     started_at: datetime
-    r"""When the invocation was accepted."""
+    r"""An RFC 3339 timestamp with millisecond precision."""
 
     session_position: int
     r"""Which invocation of its session this is, counting from 1 in the order they were created — the same number as the `inv` segment of every span's id, so you do not have to read an id to know which invocation you are holding. Invocations are only ever appended, so a position never changes.
@@ -110,9 +108,7 @@ class TraceResponse(BaseModel):
     """
 
     ended_at: Optional[datetime] = None
-    r"""When the invocation's outcome was recorded. Absent while it runs.
-
-    """
+    r"""An RFC 3339 timestamp with millisecond precision."""
 
     failure: Optional[TraceFailure] = None
     r"""Why the invocation ended without answering. Present only when `status` is `FAILED` or `CANCELED`, and readable past the retention window, since it comes from the invocation rather than its spans. Read it here rather than from `GET /traces`, which reports only that an invocation failed — listing a page of reasons costs a lookup per invocation on it.

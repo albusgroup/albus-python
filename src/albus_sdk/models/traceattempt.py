@@ -22,9 +22,9 @@ class TraceAttemptTypedDict(TypedDict):
 
     """
     started_at: datetime
-    r"""When the attempt began."""
+    r"""An RFC 3339 timestamp with millisecond precision."""
     ended_at: NotRequired[datetime]
-    r"""When the attempt ended. Absent while it runs."""
+    r"""An RFC 3339 timestamp with millisecond precision."""
     usage: NotRequired[TokenUsageTypedDict]
     r"""Tokens consumed. Absent when none were recorded."""
 
@@ -43,10 +43,10 @@ class TraceAttempt(BaseModel):
     """
 
     started_at: datetime
-    r"""When the attempt began."""
+    r"""An RFC 3339 timestamp with millisecond precision."""
 
     ended_at: Optional[datetime] = None
-    r"""When the attempt ended. Absent while it runs."""
+    r"""An RFC 3339 timestamp with millisecond precision."""
 
     usage: Optional[TokenUsage] = None
     r"""Tokens consumed. Absent when none were recorded."""

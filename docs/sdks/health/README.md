@@ -6,11 +6,11 @@ Check service availability.
 
 ### Available Operations
 
-* [health](#health) - Health check endpoint
+* [health](#health) - Check service health
 
 ## health
 
-Returns 200 OK if the service is healthy
+Check service health
 
 ### Example Usage
 

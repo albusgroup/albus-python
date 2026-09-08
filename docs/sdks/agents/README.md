@@ -7,12 +7,12 @@ Inspect the agents that have run in your organization.
 ### Available Operations
 
 * [list_agents](#list_agents) - List agents
-* [get_agent](#get_agent) - Get an agent by name
-* [get_agent_revision](#get_agent_revision) - Get a specific revision of an agent
+* [get_agent](#get_agent) - Get an agent
+* [get_agent_revision](#get_agent_revision) - Get an agent revision
 
 ## list_agents
 
-Lists the agents that have run in your organization, each with its latest revision.
+Returns agents that have run, with each agent's latest revision.
 
 
 ### Example Usage
@@ -20,13 +20,12 @@ Lists the agents that have run in your organization, each with its latest revisi
 <!-- UsageSnippet language="python" operationID="listAgents" method="get" path="/agents" -->
 ```python
 # Synchronous Example
-from albus_sdk import Albus, models
+from albus_sdk import Albus
 import os
 
 
 with Albus(
-    x_albus_organization="<value>",
-    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+    api_key=os.getenv("ALBUS_API_KEY", ""),
 ) as albus:
 
     res = albus.agents.list_agents()
@@ -41,15 +40,14 @@ An Async SDK client can also be used to make asynchronous requests by importing 
 
 ```python
 # Asynchronous Example
-from albus_sdk import AsyncAlbus, models
+from albus_sdk import AsyncAlbus
 import asyncio
 import os
 
 async def main():
 
     async with AsyncAlbus(
-        x_albus_organization="<value>",
-        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+        api_key=os.getenv("ALBUS_API_KEY", ""),
     ) as albus:
 
         res = await albus.agents.list_agents()
@@ -62,9 +60,8 @@ asyncio.run(main())
 
 ### Parameters
 
-| Parameter                                                             | Type                                                                  | Required                                                              | Description                                                           |
-| --------------------------------------------------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `request`                                                             | [operations.ListAgentsRequest](../../operations/listagentsrequest.md) | :heavy_check_mark:                                                    | The request object to use for the request.                            |
+| Parameter                                                           | Type                                                                | Required                                                            | Description                                                         |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
 
 ### Response
 
@@ -79,7 +76,7 @@ asyncio.run(main())
 
 ## get_agent
 
-Returns the agent with the given name, its current revision, and the list of all its revisions newest first.
+Returns the current revision and all revisions newest first.
 
 
 ### Example Usage
@@ -87,13 +84,12 @@ Returns the agent with the given name, its current revision, and the list of all
 <!-- UsageSnippet language="python" operationID="getAgent" method="get" path="/agents/{name}" -->
 ```python
 # Synchronous Example
-from albus_sdk import Albus, models
+from albus_sdk import Albus
 import os
 
 
 with Albus(
-    x_albus_organization="<value>",
-    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+    api_key=os.getenv("ALBUS_API_KEY", ""),
 ) as albus:
 
     res = albus.agents.get_agent(name="<value>")
@@ -108,15 +104,14 @@ An Async SDK client can also be used to make asynchronous requests by importing 
 
 ```python
 # Asynchronous Example
-from albus_sdk import AsyncAlbus, models
+from albus_sdk import AsyncAlbus
 import asyncio
 import os
 
 async def main():
 
     async with AsyncAlbus(
-        x_albus_organization="<value>",
-        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+        api_key=os.getenv("ALBUS_API_KEY", ""),
     ) as albus:
 
         res = await albus.agents.get_agent(name="<value>")
@@ -147,7 +142,7 @@ asyncio.run(main())
 
 ## get_agent_revision
 
-Returns the full configuration of one revision of an agent — its model, tools, instructions, and MCP servers.
+Returns the revision's model, tools, instructions, and MCP servers.
 
 
 ### Example Usage
@@ -155,13 +150,12 @@ Returns the full configuration of one revision of an agent — its model, tools,
 <!-- UsageSnippet language="python" operationID="getAgentRevision" method="get" path="/agents/{name}/revisions/{revision}" -->
 ```python
 # Synchronous Example
-from albus_sdk import Albus, models
+from albus_sdk import Albus
 import os
 
 
 with Albus(
-    x_albus_organization="<value>",
-    access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+    api_key=os.getenv("ALBUS_API_KEY", ""),
 ) as albus:
 
     res = albus.agents.get_agent_revision(name="<value>", revision="<value>")
@@ -176,15 +170,14 @@ An Async SDK client can also be used to make asynchronous requests by importing 
 
 ```python
 # Asynchronous Example
-from albus_sdk import AsyncAlbus, models
+from albus_sdk import AsyncAlbus
 import asyncio
 import os
 
 async def main():
 
     async with AsyncAlbus(
-        x_albus_organization="<value>",
-        access_token=os.getenv("ALBUS_BEARER_AUTH", ""),
+        api_key=os.getenv("ALBUS_API_KEY", ""),
     ) as albus:
 
         res = await albus.agents.get_agent_revision(name="<value>", revision="<value>")

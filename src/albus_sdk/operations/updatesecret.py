@@ -2,55 +2,14 @@
 
 from __future__ import annotations
 from albus_sdk.models import updatesecretrequest as models_updatesecretrequest
-from albus_sdk.types import BaseModel, UNSET_SENTINEL
-from albus_sdk.utils import (
-    FieldMetadata,
-    HeaderMetadata,
-    PathParamMetadata,
-    RequestMetadata,
-)
-import pydantic
-from pydantic import model_serializer
-from typing import Optional
-from typing_extensions import Annotated, NotRequired, TypedDict
-
-
-class UpdateSecretGlobalsTypedDict(TypedDict):
-    x_albus_organization: NotRequired[str]
-    r"""The id of the organization the request acts on, which must be one the caller belongs to. Defaults to the organization the caller joined first. Ignored for API keys, which are bound to one organization.
-
-    """
-
-
-class UpdateSecretGlobals(BaseModel):
-    x_albus_organization: Annotated[
-        Optional[str],
-        pydantic.Field(alias="X-Albus-Organization"),
-        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
-    ] = None
-    r"""The id of the organization the request acts on, which must be one the caller belongs to. Defaults to the organization the caller joined first. Ignored for API keys, which are bound to one organization.
-
-    """
-
-    @model_serializer(mode="wrap")
-    def serialize_model(self, handler):
-        optional_fields = set(["X-Albus-Organization"])
-        serialized = handler(self)
-        m = {}
-
-        for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k, serialized.get(n))
-
-            if val != UNSET_SENTINEL:
-                if val is not None or k not in optional_fields:
-                    m[k] = val
-
-        return m
+from albus_sdk.types import BaseModel
+from albus_sdk.utils import FieldMetadata, PathParamMetadata, RequestMetadata
+from typing_extensions import Annotated, TypedDict
 
 
 class UpdateSecretRequestTypedDict(TypedDict):
     name: str
+    r"""Name of the secret to update."""
     body: models_updatesecretrequest.UpdateSecretRequestTypedDict
 
 
@@ -58,6 +17,7 @@ class UpdateSecretRequest(BaseModel):
     name: Annotated[
         str, FieldMetadata(path=PathParamMetadata(style="simple", explode=False))
     ]
+    r"""Name of the secret to update."""
 
     body: Annotated[
         models_updatesecretrequest.UpdateSecretRequest,

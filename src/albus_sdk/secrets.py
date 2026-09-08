@@ -3,10 +3,10 @@
 from .basesdk import AsyncBaseSDK, BaseSDK
 from albus_sdk import errors, models, operations, utils
 from albus_sdk._hooks import HookContext
-from albus_sdk.types import BaseModel, OptionalNullable, UNSET
+from albus_sdk.types import OptionalNullable, UNSET
 from albus_sdk.utils import get_security_from_env
 from albus_sdk.utils.unmarshal_json_response import unmarshal_json_response
-from typing import Any, Mapping, Optional, Union, cast
+from typing import Any, Optional
 
 
 class Secrets(BaseSDK):
@@ -14,41 +14,25 @@ class Secrets(BaseSDK):
 
     def list_secrets(
         self,
-        *,
-        request: Union[
-            operations.ListSecretsRequest, operations.ListSecretsRequestTypedDict
-        ] = operations.ListSecretsRequest(),
     ) -> models.ListSecretsResponse:
-        r"""List all secrets
+        r"""List secrets
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
-
-        :param request: The request object to send.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
-
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, operations.ListSecretsRequest)
-        request = cast(operations.ListSecretsRequest, request)
-
         req = self._build_request(
             method="GET",
             path="/secrets",
             base_url=base_url,
             url_variables=url_variables,
-            request=request,
+            request=None,
             request_body_required=False,
             request_has_path_params=False,
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.ListSecretsGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -100,8 +84,6 @@ class Secrets(BaseSDK):
     ) -> models.Secret:
         r"""Create a secret
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
-
         :param name:
         :param value: The secret value.
         """
@@ -124,15 +106,11 @@ class Secrets(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.CreateSecretGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
                 request, False, False, "json", models.CreateSecretRequest
             ),
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -184,11 +162,9 @@ class Secrets(BaseSDK):
         *,
         name: str,
     ) -> models.Secret:
-        r"""Get a secret by name
+        r"""Get a secret
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
-
-        :param name:
+        :param name: Name of the secret to return.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
@@ -208,12 +184,8 @@ class Secrets(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.GetSecretGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -266,11 +238,9 @@ class Secrets(BaseSDK):
         name: str,
         value: str,
     ) -> models.Secret:
-        r"""Update a secret by name
+        r"""Update a secret
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
-
-        :param name:
+        :param name: Name of the secret to update.
         :param value: The new secret value.
         """
         url_variables = None
@@ -294,15 +264,11 @@ class Secrets(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.UpdateSecretGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.body, False, False, "json", models.UpdateSecretRequest
             ),
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -357,11 +323,9 @@ class Secrets(BaseSDK):
         *,
         name: str,
     ):
-        r"""Delete a secret by name
+        r"""Delete a secret
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
-
-        :param name:
+        :param name: Name of the secret to delete.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
@@ -381,12 +345,8 @@ class Secrets(BaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.DeleteSecretGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -439,41 +399,25 @@ class AsyncSecrets(AsyncBaseSDK):
 
     async def list_secrets(
         self,
-        *,
-        request: Union[
-            operations.ListSecretsRequest, operations.ListSecretsRequestTypedDict
-        ] = operations.ListSecretsRequest(),
     ) -> models.ListSecretsResponse:
-        r"""List all secrets
+        r"""List secrets
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
-
-        :param request: The request object to send.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
-
-        if not isinstance(request, BaseModel):
-            request = utils.unmarshal(request, operations.ListSecretsRequest)
-        request = cast(operations.ListSecretsRequest, request)
-
         req = self._build_request_async(
             method="GET",
             path="/secrets",
             base_url=base_url,
             url_variables=url_variables,
-            request=request,
+            request=None,
             request_body_required=False,
             request_has_path_params=False,
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.ListSecretsGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -525,8 +469,6 @@ class AsyncSecrets(AsyncBaseSDK):
     ) -> models.Secret:
         r"""Create a secret
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
-
         :param name:
         :param value: The secret value.
         """
@@ -549,15 +491,11 @@ class AsyncSecrets(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.CreateSecretGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
                 request, False, False, "json", models.CreateSecretRequest
             ),
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -609,11 +547,9 @@ class AsyncSecrets(AsyncBaseSDK):
         *,
         name: str,
     ) -> models.Secret:
-        r"""Get a secret by name
+        r"""Get a secret
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
-
-        :param name:
+        :param name: Name of the secret to return.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
@@ -633,12 +569,8 @@ class AsyncSecrets(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.GetSecretGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -691,11 +623,9 @@ class AsyncSecrets(AsyncBaseSDK):
         name: str,
         value: str,
     ) -> models.Secret:
-        r"""Update a secret by name
+        r"""Update a secret
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
-
-        :param name:
+        :param name: Name of the secret to update.
         :param value: The new secret value.
         """
         url_variables = None
@@ -719,15 +649,11 @@ class AsyncSecrets(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.UpdateSecretGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             get_serialized_body=lambda: utils.serialize_request_body(
                 request.body, False, False, "json", models.UpdateSecretRequest
             ),
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 
@@ -782,11 +708,9 @@ class AsyncSecrets(AsyncBaseSDK):
         *,
         name: str,
     ):
-        r"""Delete a secret by name
+        r"""Delete a secret
 
-        If set, this operation will use either `bearer_auth` or `api_key` from the global security.
-
-        :param name:
+        :param name: Name of the secret to delete.
         """
         url_variables = None
         base_url = self._get_url(None, url_variables)
@@ -806,12 +730,8 @@ class AsyncSecrets(AsyncBaseSDK):
             request_has_query_params=True,
             user_agent_header="user-agent",
             accept_header_value="application/json",
-            _globals=operations.DeleteSecretGlobals(
-                x_albus_organization=self.sdk_configuration.globals.x_albus_organization,
-            ),
             security=self.sdk_configuration.security,
             allow_empty_value=None,
-            allowed_fields=["bearer_auth", "api_key"],
             timeout_ms=self.sdk_configuration.timeout_ms,
         )
 

@@ -9,23 +9,10 @@ from typing_extensions import Annotated, NotRequired, TypedDict
 
 
 class SecurityTypedDict(TypedDict):
-    bearer_auth: NotRequired[str]
     api_key: NotRequired[str]
 
 
 class Security(BaseModel):
-    bearer_auth: Annotated[
-        Optional[str],
-        FieldMetadata(
-            security=SecurityMetadata(
-                scheme=True,
-                scheme_type="http",
-                sub_type="bearer",
-                field_name="Authorization",
-            )
-        ),
-    ] = None
-
     api_key: Annotated[
         Optional[str],
         FieldMetadata(
@@ -40,7 +27,7 @@ class Security(BaseModel):
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = set(["bearerAuth", "apiKey"])
+        optional_fields = set(["apiKey"])
         serialized = handler(self)
         m = {}
 

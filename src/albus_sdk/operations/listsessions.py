@@ -3,46 +3,11 @@
 from __future__ import annotations
 from albus_sdk.models import sessionstate as models_sessionstate
 from albus_sdk.types import BaseModel, UNSET_SENTINEL
-from albus_sdk.utils import FieldMetadata, HeaderMetadata, QueryParamMetadata
+from albus_sdk.utils import FieldMetadata, QueryParamMetadata
 from datetime import datetime
-import pydantic
 from pydantic import model_serializer
 from typing import Optional
 from typing_extensions import Annotated, NotRequired, TypedDict
-
-
-class ListSessionsGlobalsTypedDict(TypedDict):
-    x_albus_organization: NotRequired[str]
-    r"""The id of the organization the request acts on, which must be one the caller belongs to. Defaults to the organization the caller joined first. Ignored for API keys, which are bound to one organization.
-
-    """
-
-
-class ListSessionsGlobals(BaseModel):
-    x_albus_organization: Annotated[
-        Optional[str],
-        pydantic.Field(alias="X-Albus-Organization"),
-        FieldMetadata(header=HeaderMetadata(style="simple", explode=False)),
-    ] = None
-    r"""The id of the organization the request acts on, which must be one the caller belongs to. Defaults to the organization the caller joined first. Ignored for API keys, which are bound to one organization.
-
-    """
-
-    @model_serializer(mode="wrap")
-    def serialize_model(self, handler):
-        optional_fields = set(["X-Albus-Organization"])
-        serialized = handler(self)
-        m = {}
-
-        for n, f in type(self).model_fields.items():
-            k = f.alias or n
-            val = serialized.get(k, serialized.get(n))
-
-            if val != UNSET_SENTINEL:
-                if val is not None or k not in optional_fields:
-                    m[k] = val
-
-        return m
 
 
 class ListSessionsRequestTypedDict(TypedDict):
@@ -51,33 +16,31 @@ class ListSessionsRequestTypedDict(TypedDict):
 
     """
     agent_revision: NotRequired[str]
-    r"""Return only sessions that ran this exact agent revision (e.g. \"a1b2c3d4\"). Requires `agent_name`; a revision without an agent name is a `400`.
+    r"""Return only sessions that ran this agent revision (e.g. \"a1b2c3d4\"). Requires `agent_name`.
 
     """
     status: NotRequired[models_sessionstate.SessionState]
-    r"""Return only sessions with an invocation that ended this way, or is `RUNNING` now. `DONE` matches a successful invocation.
+    r"""Return only sessions with an invocation in this state. `DONE` matches a successful invocation.
 
     """
     invocation_key: NotRequired[str]
-    r"""Return only the session that ran this invocation, whether it is still running or has ended.
+    r"""Return only the session containing this invocation.
 
     """
     since: NotRequired[datetime]
-    r"""Return only sessions with an invocation that started at or after this time. Without `since` or `until`, the listing covers sessions used in the last 31 days; pass it to search further back.
+    r"""Return only sessions with an invocation that started at or after this time. Defaults to 31 days ago.
 
     """
     until: NotRequired[datetime]
-    r"""Return only sessions with an invocation that started at or before this time. Defaults to now, and must be after `since`; an earlier `until` is a `400`.
+    r"""Return only sessions with an invocation that started at or before this time. Defaults to now and must be after `since`.
 
     """
     after: NotRequired[str]
-    r"""Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
+    r"""Continue after this cursor. For list responses, pass the preceding page's `next_cursor`; for session messages, pass the preceding page's last message `cursor`.
 
     """
     limit: NotRequired[int]
-    r"""Maximum number of sessions to return. A page can be shorter, so page while `next_cursor` is present.
-
-    """
+    r"""Maximum number of sessions to return."""
 
 
 class ListSessionsRequest(BaseModel):
@@ -93,7 +56,7 @@ class ListSessionsRequest(BaseModel):
         Optional[str],
         FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),
     ] = None
-    r"""Return only sessions that ran this exact agent revision (e.g. \"a1b2c3d4\"). Requires `agent_name`; a revision without an agent name is a `400`.
+    r"""Return only sessions that ran this agent revision (e.g. \"a1b2c3d4\"). Requires `agent_name`.
 
     """
 
@@ -101,7 +64,7 @@ class ListSessionsRequest(BaseModel):
         Optional[models_sessionstate.SessionState],
         FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),
     ] = None
-    r"""Return only sessions with an invocation that ended this way, or is `RUNNING` now. `DONE` matches a successful invocation.
+    r"""Return only sessions with an invocation in this state. `DONE` matches a successful invocation.
 
     """
 
@@ -109,7 +72,7 @@ class ListSessionsRequest(BaseModel):
         Optional[str],
         FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),
     ] = None
-    r"""Return only the session that ran this invocation, whether it is still running or has ended.
+    r"""Return only the session containing this invocation.
 
     """
 
@@ -117,7 +80,7 @@ class ListSessionsRequest(BaseModel):
         Optional[datetime],
         FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),
     ] = None
-    r"""Return only sessions with an invocation that started at or after this time. Without `since` or `until`, the listing covers sessions used in the last 31 days; pass it to search further back.
+    r"""Return only sessions with an invocation that started at or after this time. Defaults to 31 days ago.
 
     """
 
@@ -125,7 +88,7 @@ class ListSessionsRequest(BaseModel):
         Optional[datetime],
         FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),
     ] = None
-    r"""Return only sessions with an invocation that started at or before this time. Defaults to now, and must be after `since`; an earlier `until` is a `400`.
+    r"""Return only sessions with an invocation that started at or before this time. Defaults to now and must be after `since`.
 
     """
 
@@ -133,7 +96,7 @@ class ListSessionsRequest(BaseModel):
         Optional[str],
         FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),
     ] = None
-    r"""Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
+    r"""Continue after this cursor. For list responses, pass the preceding page's `next_cursor`; for session messages, pass the preceding page's last message `cursor`.
 
     """
 
@@ -141,9 +104,7 @@ class ListSessionsRequest(BaseModel):
         Optional[int],
         FieldMetadata(query=QueryParamMetadata(style="form", explode=True)),
     ] = 25
-    r"""Maximum number of sessions to return. A page can be shorter, so page while `next_cursor` is present.
-
-    """
+    r"""Maximum number of sessions to return."""
 
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):

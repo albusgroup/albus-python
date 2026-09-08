@@ -6,8 +6,6 @@ info:
 servers:
   - url: https://albus.sh/api
     description: Production server
-  - url: http://localhost:8080
-    description: Local development server
 tags:
   - name: Agents
     description: Inspect the agents that have run in your organization.
@@ -32,20 +30,15 @@ tags:
   - name: Traces
     description: Find your agent invocations and read what they did.
 security:
-  - bearerAuth: []
   - apiKey: []
 paths:
   /secrets:
     get:
       operationId: listSecrets
-      summary: List all secrets
+      summary: List secrets
       tags:
         - Secrets
-      security:
-        - bearerAuth: []
-        - apiKey: []
-      parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
+      parameters: []
       responses:
         "200":
           description: OK
@@ -64,11 +57,7 @@ paths:
       summary: Create a secret
       tags:
         - Secrets
-      security:
-        - bearerAuth: []
-        - apiKey: []
-      parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
+      parameters: []
       requestBody:
         required: true
         content:
@@ -97,17 +86,14 @@ paths:
   /secrets/{name}:
     get:
       operationId: getSecret
-      summary: Get a secret by name
+      summary: Get a secret
       tags:
         - Secrets
-      security:
-        - bearerAuth: []
-        - apiKey: []
       parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
         - name: name
           in: path
           required: true
+          description: Name of the secret to return.
           schema:
             type: string
       responses:
@@ -131,17 +117,14 @@ paths:
                 $ref: "#/components/schemas/ErrNotFound"
     put:
       operationId: updateSecret
-      summary: Update a secret by name
+      summary: Update a secret
       tags:
         - Secrets
-      security:
-        - bearerAuth: []
-        - apiKey: []
       parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
         - name: name
           in: path
           required: true
+          description: Name of the secret to update.
           schema:
             type: string
       requestBody:
@@ -177,17 +160,14 @@ paths:
                 $ref: "#/components/schemas/ErrNotFound"
     delete:
       operationId: deleteSecret
-      summary: Delete a secret by name
+      summary: Delete a secret
       tags:
         - Secrets
-      security:
-        - bearerAuth: []
-        - apiKey: []
       parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
         - name: name
           in: path
           required: true
+          description: Name of the secret to delete.
           schema:
             type: string
       responses:
@@ -210,21 +190,11 @@ paths:
       operationId: listSessions
       summary: List sessions
       description: >
-        Lists your organization's sessions, most recently used first. Filter by agent name, agent revision, invocation state, time window, or an invocation it ran: a session matches when any of its invocations does, and a filtered listing is ordered by each session's most recent matching invocation. A filter that matches nothing returns an empty page rather than an error.
-
-
-        Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present — you have reached the end when it is absent. A page can hold fewer sessions than `limit`, or none at all, and still have a `next_cursor`; a short page is not the end of the results.
-
-
-        A listing covers the window given by `since` and `until`, and omitting `since` searches the last 31 days. The window is fixed when the first page is requested, so paging with `after` keeps returning results from the window that page used: `after` carries that window and the filters it was made with, so send it with no filters, or with every filter repeated exactly, and expect a `400` otherwise.
+        Returns sessions ordered by their most recent matching invocation.
 
       tags:
         - Sessions
-      security:
-        - bearerAuth: []
-        - apiKey: []
       parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
         - name: agent_name
           in: query
           required: false
@@ -238,7 +208,7 @@ paths:
           in: query
           required: false
           description: >
-            Return only sessions that ran this exact agent revision (e.g. "a1b2c3d4"). Requires `agent_name`; a revision without an agent name is a `400`.
+            Return only sessions that ran this agent revision (e.g. "a1b2c3d4"). Requires `agent_name`.
 
           schema:
             type: string
@@ -247,7 +217,7 @@ paths:
           in: query
           required: false
           description: >
-            Return only sessions with an invocation that ended this way, or is `RUNNING` now. `DONE` matches a successful invocation.
+            Return only sessions with an invocation in this state. `DONE` matches a successful invocation.
 
           schema:
             $ref: "#/components/schemas/SessionState"
@@ -255,7 +225,7 @@ paths:
           in: query
           required: false
           description: >
-            Return only the session that ran this invocation, whether it is still running or has ended.
+            Return only the session containing this invocation.
 
           schema:
             type: string
@@ -265,7 +235,7 @@ paths:
           in: query
           required: false
           description: >
-            Return only sessions with an invocation that started at or after this time. Without `since` or `until`, the listing covers sessions used in the last 31 days; pass it to search further back.
+            Return only sessions with an invocation that started at or after this time. Defaults to 31 days ago.
 
           schema:
             type: string
@@ -274,7 +244,7 @@ paths:
           in: query
           required: false
           description: >
-            Return only sessions with an invocation that started at or before this time. Defaults to now, and must be after `since`; an earlier `until` is a `400`.
+            Return only sessions with an invocation that started at or before this time. Defaults to now and must be after `since`.
 
           schema:
             type: string
@@ -307,15 +277,11 @@ paths:
       operationId: getSession
       summary: Get a session with its messages
       description: >
-        Returns the session's metadata and a page of its messages ordered by cursor ascending. Use `after` and `limit` to page through messages.
+        Returns session metadata and messages in chronological order.
 
       tags:
         - Sessions
-      security:
-        - bearerAuth: []
-        - apiKey: []
       parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
         - $ref: "#/components/parameters/AfterCursor"
         - $ref: "#/components/parameters/Limit"
       responses:
@@ -347,18 +313,11 @@ paths:
       operationId: runSession
       summary: Run or resume a session
       description: >
-        Runs the session with the given ID, creating it if it does not exist and resuming it otherwise. Each call is a single invocation, optionally named by the Idempotency-Key header, whose value is the invocation's key. Supplying a key makes the call safe to retry: retrying with the same key and an identical body re-attaches to the in-flight invocation and returns its current state; a differing body for the same key returns 409; a new key while another invocation is still running returns 423. Omitting the header starts a fresh, non-idempotent invocation each time; the server generates a key and returns it in the Idempotency-Key response header.
-
-
-        With `wait_timeout_seconds` the request long-polls: it blocks until the invocation's assistant response is available and returns it in `message`. Omit it to wait up to 30 minutes, or pass 0 to return as soon as the invocation is accepted. A positive value bounds the wait in seconds; if it elapses first the request fails with 504 and a JSON body, letting the client distinguish an expected server-side timeout from a transport error; the client may retry.
+        Starts a new session or continues an existing one with another agent invocation.
 
       tags:
         - Sessions
-      security:
-        - bearerAuth: []
-        - apiKey: []
       parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
         - $ref: "#/components/parameters/IdempotencyKey"
         - $ref: "#/components/parameters/WaitTimeoutSeconds"
       requestBody:
@@ -373,7 +332,7 @@ paths:
           headers:
             Idempotency-Key:
               description: >
-                This invocation's key — the value sent in the request header, or a server-generated one when the header was omitted. Use it to reference or safely retry this invocation.
+                Invocation key used for this request. Use it to retrieve or safely retry the invocation.
 
               schema:
                 type: string
@@ -439,11 +398,7 @@ paths:
       summary: Delete a session
       tags:
         - Sessions
-      security:
-        - bearerAuth: []
-        - apiKey: []
-      parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
+      parameters: []
       responses:
         "204":
           description: Deleted
@@ -466,15 +421,11 @@ paths:
       operationId: cancelSession
       summary: Cancel a session's running invocation
       description: >
-        Requests cancellation of the invocation currently running for the session. Cancellation is asynchronous: the call returns once the request is accepted, and the invocation resolves as canceled shortly after, unlocking the session for new invocations. A request waiting on the invocation receives its terminal outcome. Returns 409 when the session has no invocation running.
+        Requests asynchronous cancellation and returns once accepted.
 
       tags:
         - Sessions
-      security:
-        - bearerAuth: []
-        - apiKey: []
-      parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
+      parameters: []
       responses:
         "202":
           description: Cancellation requested
@@ -507,15 +458,11 @@ paths:
       operationId: getSessionAudit
       summary: List a session's audit log
       description: >
-        Returns the session's audit log — an immutable, time-ordered record of what happened during its invocations (LLM calls, tool results, and invocation outcomes). Events are ordered by the time they occurred. Use `after` and `limit` to page through them; pass the response's `next_cursor` as the next request's `after` to fetch the following page.
+        Returns an immutable record of session events in chronological order.
 
       tags:
         - Sessions
-      security:
-        - bearerAuth: []
-        - apiKey: []
       parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
         - $ref: "#/components/parameters/AfterCursor"
         - $ref: "#/components/parameters/Limit"
       responses:
@@ -548,26 +495,16 @@ paths:
       operationId: listTraces
       summary: Search traces
       description: >
-        Lists your organization's agent invocations, newest first, without their spans. Filter by agent name, agent revision, status, session, or start time to find the invocation you want, then read it with `GET /traces/{invocation_key}`. An invocation is listed as soon as it starts, and a filter that matches nothing returns an empty page rather than an error — except `session_id`, which is a `404` when your organization has no such session.
-
-
-        Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present — you have reached the end when it is absent. A page can hold fewer invocations than `limit`, or none at all, and still have a `next_cursor`; a short page is not the end of the results.
-
-
-        A listing covers the window given by `since` and `until`, and omitting `since` searches the last 31 days. The window is fixed when the first page is requested, so paging with `after` keeps returning results from the window that page used: `after` carries that window and the filters it was made with, so send it with no filters, or with every filter repeated exactly, and expect a `400` otherwise.
+        Returns invocations newest first, without their spans. Running invocations are included.
 
       tags:
         - Traces
-      security:
-        - bearerAuth: []
-        - apiKey: []
       parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
         - name: agent_name
           in: query
           required: false
           description: >
-            Return only invocations of this agent (e.g. "support-triage"). Invocations with no recorded agent name are not matched.
+            Return only invocations of this agent (e.g. "support-triage").
 
           schema:
             type: string
@@ -576,7 +513,7 @@ paths:
           in: query
           required: false
           description: >
-            Return only invocations of this exact agent revision (e.g. "a1b2c3d4"). Combines with `agent_name`. Invocations with no recorded revision are not matched.
+            Return only invocations of this agent revision (e.g. "a1b2c3d4"). Combines with `agent_name`.
 
           schema:
             type: string
@@ -585,7 +522,7 @@ paths:
           in: query
           required: false
           description: >
-            Return only invocations with this outcome. An invocation whose spans have aged out is still matched by the outcome it recorded.
+            Return only invocations with this status.
 
           schema:
             $ref: "#/components/schemas/TraceStatus"
@@ -593,7 +530,7 @@ paths:
           in: query
           required: false
           description: >
-            Return only invocations of this session — the session identifier you ran it with. A session you do not have is a `404`.
+            Return only invocations in this session. An unknown session returns `404`.
 
           schema:
             type: string
@@ -604,7 +541,7 @@ paths:
           in: query
           required: false
           description: >
-            Return only invocations that started at or after this time. Defaults to 31 days ago; pass it to search further back.
+            Return only invocations that started at or after this time. Defaults to 31 days ago.
 
           schema:
             type: string
@@ -613,7 +550,7 @@ paths:
           in: query
           required: false
           description: >
-            Return only invocations that started at or before this time. Defaults to now, and must be after `since`; an earlier `until` is a `400`.
+            Return only invocations that started at or before this time. Defaults to now and must be after `since`.
 
           schema:
             type: string
@@ -652,29 +589,16 @@ paths:
       operationId: getTrace
       summary: Get one invocation's trace
       description: >
-        Returns one agent invocation and a page of its spans in chronological order — the model calls it made and the tool calls they requested, with their payloads.
-
-
-        Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present — you have reached the end when it is absent. A page can hold fewer spans than `limit`, or none at all, and still have a `next_cursor`; a short page is not the end of the spans.
-
-
-        An invocation that was retried has more than one attempt, and by default only the spans of the latest attempt come back — the one that produced its outcome, or the one still in flight: the attempts before it are hidden, so a retried invocation reads as one history. They are hidden, not absent — every attempt ran, spent tokens, and may have made tool calls whose effects stand — so `attempts` lists all of them with their own outcomes and token usage, and `attempts=all` returns their spans too, each marked `superseded`.
-
-
-        A span becomes readable seconds after it happens, so an invocation still in flight can return fewer spans than it has already taken. A payload can come back shortened, or left out when it is too large — `input` and `output` say when, and `*_bytes`, `*_sha256` and `*_truncated` describe the complete value where the span carries them. Reading the shape of an invocation without its payloads is a request with `payloads=false`: the same spans with their timings, statuses and token usage, and `limit` up to 500, so a whole trace usually fits in one request. Spans age out after a retention window: past it `spans_expired` is true and no spans come back, while the invocation itself stays readable.
+        Returns an invocation and its spans in chronological order. Spans may appear shortly after they occur and expire before the invocation does.
 
       tags:
         - Traces
-      security:
-        - bearerAuth: []
-        - apiKey: []
       parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
         - name: payloads
           in: query
           required: false
           description: >
-            Whether to include what each span was given and produced. `true`, the default, returns `input` and `output` and the fields that describe them. `false` returns the same spans without them — everything the span recorded about itself: `id`, `parent_id`, `type`, `name`, `status`, `started_at`, `ended_at` and `usage` — which is the cheap way to read an invocation's shape, and it lets `limit` go up to 500. `after` carries the mode it was made with, so page with the same `payloads` you started with and expect a `400` otherwise.
+            Whether to include span inputs and outputs. Disabling payloads raises the maximum `limit` to 500. Use the same value on every page.
 
           schema:
             type: boolean
@@ -683,7 +607,7 @@ paths:
           in: query
           required: false
           description: >
-            Which attempts to return spans for. `final`, the default, returns only the spans of the latest attempt — the one that produced the invocation's outcome, or the one still in flight; `all` also returns the spans of the attempts before it, each marked `superseded`. Either way `attempts` in the response lists every attempt that ran.
+            Attempts whose spans to return. `final` returns only the latest; `all` includes earlier spans marked `superseded`.
 
           schema:
             type: string
@@ -734,14 +658,10 @@ paths:
   /organization:
     get:
       operationId: getOrganization
-      summary: Get the organization the request acts in
+      summary: Get the current organization
       tags:
         - Organization
-      security:
-        - bearerAuth: []
-        - apiKey: []
-      parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
+      parameters: []
       responses:
         "200":
           description: OK
@@ -757,15 +677,11 @@ paths:
                 $ref: "#/components/schemas/ErrUnauthorized"
     patch:
       operationId: updateOrganization
-      summary: Rename the organization the request acts in
+      summary: Rename the current organization
       description: Requires the admin role.
       tags:
         - Organization
-      security:
-        - bearerAuth: []
-        - apiKey: []
-      parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
+      parameters: []
       requestBody:
         required: true
         content:
@@ -800,14 +716,10 @@ paths:
   /organization/members:
     get:
       operationId: listOrganizationMembers
-      summary: List the members of the organization the request acts in
+      summary: List organization members
       tags:
         - Organization
-      security:
-        - bearerAuth: []
-        - apiKey: []
-      parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
+      parameters: []
       responses:
         "200":
           description: OK
@@ -830,17 +742,13 @@ paths:
   /organization/members/{user_id}:
     delete:
       operationId: removeOrganizationMember
-      summary: Remove a member from the organization the request acts in
+      summary: Remove an organization member
       description: >
         Requires the admin role. The last admin cannot be removed.
 
       tags:
         - Organization
-      security:
-        - bearerAuth: []
-        - apiKey: []
       parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
         - $ref: "#/components/parameters/MemberUserID"
       responses:
         "204":
@@ -878,17 +786,13 @@ paths:
   /organization/members/{user_id}/role:
     put:
       operationId: setOrganizationMemberRole
-      summary: Set a member's role in the organization the request acts in
+      summary: Set an organization member's role
       description: >
         Requires the admin role. The last admin cannot be demoted.
 
       tags:
         - Organization
-      security:
-        - bearerAuth: []
-        - apiKey: []
       parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
         - $ref: "#/components/parameters/MemberUserID"
       requestBody:
         required: true
@@ -938,14 +842,11 @@ paths:
       operationId: listInvites
       summary: List pending invitations
       description: >
-        Lists the unexpired invitations into your organization. Requires the admin role.
+        Returns unexpired invitations. Requires the admin role.
 
       tags:
         - Invites
-      security:
-        - bearerAuth: []
-      parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
+      parameters: []
       responses:
         "200":
           description: OK
@@ -969,14 +870,11 @@ paths:
       operationId: createInvite
       summary: Invite a user by email
       description: >
-        Invites an email address into your organization. The invitation is redeemed automatically the next time the invitee signs in with that email, and expires after 14 days. Requires the admin role.
+        The invitation is accepted when the recipient signs in and expires after 14 days. Requires the admin role.
 
       tags:
         - Invites
-      security:
-        - bearerAuth: []
-      parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
+      parameters: []
       requestBody:
         required: true
         content:
@@ -1021,10 +919,7 @@ paths:
       description: Requires the admin role.
       tags:
         - Invites
-      security:
-        - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
         - name: id
           in: path
           required: true
@@ -1055,13 +950,11 @@ paths:
   /tokens:
     get:
       operationId: listTokens
-      summary: List all API tokens. Never returns token values, only metadata.
+      summary: List API tokens
+      description: Returns token metadata without token values.
       tags:
         - Tokens
-      security:
-        - bearerAuth: []
-      parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
+      parameters: []
       responses:
         "200":
           description: OK
@@ -1077,14 +970,13 @@ paths:
                 $ref: "#/components/schemas/ErrUnauthorized"
     post:
       operationId: createToken
-      summary: Create an API token. The token value is returned only in this response.
-      description: Requires the admin role.
+      summary: Create an API token
+      description: >
+        Returns the token value only in this response. Requires the admin role.
+
       tags:
         - Tokens
-      security:
-        - bearerAuth: []
-      parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
+      parameters: []
       requestBody:
         required: true
         content:
@@ -1113,17 +1005,15 @@ paths:
   /tokens/{id}:
     get:
       operationId: getToken
-      summary: Get token metadata by ID. Never returns the token value.
+      summary: Get API token metadata
+      description: Does not return the token value.
       tags:
         - Tokens
-      security:
-        - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
         - name: id
           in: path
           required: true
-          description: The token's lookup ID (the identifier portion of the token string).
+          description: Lookup identifier from the token value.
           schema:
             type: string
       responses:
@@ -1147,18 +1037,15 @@ paths:
                 $ref: "#/components/schemas/ErrNotFound"
     delete:
       operationId: deleteToken
-      summary: Revoke an API token by ID
+      summary: Revoke an API token
       description: Requires the admin role.
       tags:
         - Tokens
-      security:
-        - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
         - name: id
           in: path
           required: true
-          description: The token's lookup ID.
+          description: Lookup identifier of the token to revoke.
           schema:
             type: string
       responses:
@@ -1187,15 +1074,11 @@ paths:
       operationId: listAgents
       summary: List agents
       description: >
-        Lists the agents that have run in your organization, each with its latest revision.
+        Returns agents that have run, with each agent's latest revision.
 
       tags:
         - Agents
-      security:
-        - bearerAuth: []
-        - apiKey: []
-      parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
+      parameters: []
       responses:
         "200":
           description: OK
@@ -1219,17 +1102,13 @@ paths:
           type: string
     get:
       operationId: getAgent
-      summary: Get an agent by name
+      summary: Get an agent
       description: >
-        Returns the agent with the given name, its current revision, and the list of all its revisions newest first.
+        Returns the current revision and all revisions newest first.
 
       tags:
         - Agents
-      security:
-        - bearerAuth: []
-        - apiKey: []
-      parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
+      parameters: []
       responses:
         "200":
           description: OK
@@ -1265,17 +1144,13 @@ paths:
           type: string
     get:
       operationId: getAgentRevision
-      summary: Get a specific revision of an agent
+      summary: Get an agent revision
       description: >
-        Returns the full configuration of one revision of an agent — its model, tools, instructions, and MCP servers.
+        Returns the revision's model, tools, instructions, and MCP servers.
 
       tags:
         - Agents
-      security:
-        - bearerAuth: []
-        - apiKey: []
-      parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
+      parameters: []
       responses:
         "200":
           description: OK
@@ -1300,18 +1175,11 @@ paths:
       operationId: listMemoryGroups
       summary: List memory groups
       description: >
-        Lists the memory groups of your organization, ordered by key: every `memory.group` value an agent has run with, along with how many memories agents in the group currently read. Read a group's memories with `GET /memorygroups/{group}`.
-
-
-        Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present — you have reached the end when it is absent.
+        Returns memory groups ordered by key, with each group's active memory count.
 
       tags:
         - Memories
-      security:
-        - bearerAuth: []
-        - apiKey: []
       parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
         - $ref: "#/components/parameters/AfterCursor"
         - $ref: "#/components/parameters/Limit"
       responses:
@@ -1338,18 +1206,11 @@ paths:
       operationId: listMemories
       summary: List a group's memories
       description: >
-        Lists the memories of one memory group that agents currently read, newest first. Memories a later memory has replaced are not returned. A group nothing has been remembered in yet is an empty list, not an error.
-
-
-        Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present — you have reached the end when it is absent.
+        Returns active memories newest first. Replaced memories are omitted.
 
       tags:
         - Memories
-      security:
-        - bearerAuth: []
-        - apiKey: []
       parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
         - $ref: "#/components/parameters/MemoryGroup"
         - $ref: "#/components/parameters/AfterCursor"
         - $ref: "#/components/parameters/Limit"
@@ -1376,15 +1237,11 @@ paths:
       operationId: deleteMemoryGroup
       summary: Delete a group's memories
       description: >
-        Deletes every memory of one memory group. Agents bound to the group remember nothing from before the call and can remember again after it. A group that holds no memories is deleted just the same, so the call is safe to repeat.
+        Removes every memory in the group. Agents can add new memories later.
 
       tags:
         - Memories
-      security:
-        - bearerAuth: []
-        - apiKey: []
       parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
         - $ref: "#/components/parameters/MemoryGroup"
       responses:
         "204":
@@ -1406,15 +1263,11 @@ paths:
       operationId: deleteMemory
       summary: Delete one memory
       description: >
-        Deletes one memory of a memory group. Agents bound to the group stop reading it, and the deletion is permanent. A memory the group does not hold is a `404`.
+        Permanently removes the memory from the group.
 
       tags:
         - Memories
-      security:
-        - bearerAuth: []
-        - apiKey: []
       parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
         - $ref: "#/components/parameters/MemoryGroup"
         - $ref: "#/components/parameters/MemoryID"
       responses:
@@ -1442,16 +1295,10 @@ paths:
     get:
       operationId: listModels
       summary: List models
-      description: >
-        Lists the models available to run agents on, each with the provider that serves it.
-
+      description: Returns available models and their providers.
       tags:
         - Models
-      security:
-        - bearerAuth: []
-        - apiKey: []
-      parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
+      parameters: []
       responses:
         "200":
           description: OK
@@ -1468,11 +1315,9 @@ paths:
   /health:
     get:
       operationId: health
-      summary: Health check endpoint
-      description: Returns 200 OK if the service is healthy
+      summary: Check service health
       tags:
         - Health
-      security: []
       responses:
         "200":
           description: Service is healthy
@@ -1486,20 +1331,17 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthResponse"
+      security: []
   /whoami:
     get:
       operationId: whoami
       summary: Get the authenticated caller
       description: >
-        Returns the caller a credential authenticates: a signed-in user with every organization they belong to and their roles in each, or the API key that signed the request, along with the organization it acts in.
+        Returns the signed-in user and their organizations, or the API key and its organization.
 
       tags:
         - Auth
-      security:
-        - bearerAuth: []
-        - apiKey: []
-      parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
+      parameters: []
       responses:
         "200":
           description: OK
@@ -1518,14 +1360,11 @@ paths:
       operationId: createCheckout
       summary: Buy prepaid credits
       description: >
-        Starts a credit purchase for your organization. Returns the URL of a payment page to send the buyer's browser to; the credits are added to your balance once the payment completes there.
+        Creates a purchase and returns its payment URL. Credits are added when payment completes.
 
       tags:
         - Billing
-      security:
-        - bearerAuth: []
-      parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
+      parameters: []
       requestBody:
         required: true
         content:
@@ -1566,11 +1405,7 @@ paths:
 
       tags:
         - Billing
-      security:
-        - bearerAuth: []
-        - apiKey: []
-      parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
+      parameters: []
       responses:
         "200":
           description: OK
@@ -1595,15 +1430,11 @@ paths:
       operationId: listCreditLedger
       summary: List your credit history
       description: >
-        Lists your organization's credit ledger, newest first: purchases, grants, usage charges, and adjustments, each with the signed USD amount it moved the balance by. Page with `after` and `limit`: pass the response's `next_cursor` as the next request's `after`, and keep requesting while `next_cursor` is present.
+        Returns purchases, grants, usage charges, and adjustments newest first, with the signed USD amount of each balance change.
 
       tags:
         - Billing
-      security:
-        - bearerAuth: []
-        - apiKey: []
       parameters:
-        - $ref: "#/components/parameters/OrganizationHeader"
         - $ref: "#/components/parameters/AfterCursor"
         - $ref: "#/components/parameters/Limit"
       responses:
@@ -1627,25 +1458,11 @@ paths:
                 $ref: "#/components/schemas/ErrUnauthorized"
 components:
   securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
     apiKey:
       type: http
       scheme: bearer
       description: Org-scoped API key issued via POST /tokens
   parameters:
-    OrganizationHeader:
-      name: X-Albus-Organization
-      in: header
-      required: false
-      description: >
-        The id of the organization the request acts on, which must be one the caller belongs to. Defaults to the organization the caller joined first. Ignored for API keys, which are bound to one organization.
-
-      schema:
-        type: string
-      x-speakeasy-globals-hidden: true
     MemberUserID:
       name: user_id
       in: path
@@ -1657,7 +1474,9 @@ components:
       name: id
       in: path
       required: true
-      description: Client-provided session identifier. Use the same value across requests to continue the same agent session.
+      description: >
+        Client-provided session identifier. Reuse it to continue the session.
+
       schema:
         type: string
         minLength: 2
@@ -1668,7 +1487,7 @@ components:
       in: header
       required: false
       description: >
-        Optional but strongly encouraged. The key naming this invocation of the session, unique within your organization: reuse the same value to safely retry a request, read the invocation back with `GET /traces/{invocation_key}`, and use a new value to start a new invocation. When omitted, the server generates a key for the invocation and returns it in the Idempotency-Key response header, but the request is not retry-safe.
+        Names the invocation and makes identical requests safe to retry. Reuse with a different body returns `409`. When omitted, the response returns a generated key and the request is not retry-safe.
 
       schema:
         type: string
@@ -1680,7 +1499,7 @@ components:
       in: path
       required: true
       description: >
-        The invocation's key — the value sent as its Idempotency-Key, or the one the server returned in that header when it was omitted.
+        Invocation key sent or returned in the `Idempotency-Key` header.
 
       schema:
         type: string
@@ -1691,7 +1510,7 @@ components:
       in: path
       required: true
       description: >
-        The memory group to read or delete — the `memory.group` value the agents sharing those memories run with.
+        Memory group to read or delete, matching the agent's `memory.group`.
 
       schema:
         type: string
@@ -1701,9 +1520,7 @@ components:
       name: id
       in: path
       required: true
-      description: >
-        The memory's identifier, as returned by `GET /memorygroups/{group}`.
-
+      description: Identifier of the memory to delete.
       schema:
         type: string
         minLength: 1
@@ -1713,7 +1530,7 @@ components:
       in: query
       required: false
       description: >
-        Opaque pagination cursor. Return only items positioned after it; pass a value obtained from a previous page to fetch the next one.
+        Continue after this cursor. For list responses, pass the preceding page's `next_cursor`; for session messages, pass the preceding page's last message `cursor`.
 
       schema:
         type: string
@@ -1731,9 +1548,7 @@ components:
       name: limit
       in: query
       required: false
-      description: >
-        Maximum number of traces to return. A page can be shorter, so page while `next_cursor` is present.
-
+      description: Maximum number of traces to return.
       schema:
         type: integer
         minimum: 1
@@ -1743,9 +1558,7 @@ components:
       name: limit
       in: query
       required: false
-      description: >
-        Maximum number of sessions to return. A page can be shorter, so page while `next_cursor` is present.
-
+      description: Maximum number of sessions to return.
       schema:
         type: integer
         minimum: 1
@@ -1756,7 +1569,7 @@ components:
       in: query
       required: false
       description: >
-        Maximum number of spans to return. With payloads at most 25, which is also the default; with `payloads=false` at most 500, and 500 by default, so one request usually returns a whole trace. A `limit` above the bound for the mode you asked for is a `400`. A page can be shorter, so page while `next_cursor` is present.
+        Maximum spans to return. Defaults to 25 with payloads and 500 without; these are also the respective maximums.
 
       schema:
         type: integer
@@ -1767,7 +1580,7 @@ components:
       in: query
       required: false
       description: >
-        Wait up to this many seconds for the assistant response. Omit to wait up to 30 minutes; use 0 to return after the invocation is accepted.
+        Wait up to this many seconds for the assistant response. Omit to wait 30 minutes; use 0 to return once accepted. A timeout does not stop the invocation.
 
       schema:
         type: integer
@@ -2777,6 +2590,11 @@ components:
         total_tokens:
           type: integer
           format: int64
+    TraceTimestamp:
+      type: string
+      format: date-time
+      x-ogen-time-format: "2006-01-02T15:04:05.000Z07:00"
+      description: An RFC 3339 timestamp with millisecond precision.
     TraceAttempt:
       type: object
       description: >
@@ -2796,12 +2614,10 @@ components:
         status:
           $ref: "#/components/schemas/TraceStatus"
         started_at:
-          type: string
-          format: date-time
+          $ref: "#/components/schemas/TraceTimestamp"
           description: When the attempt began.
         ended_at:
-          type: string
-          format: date-time
+          $ref: "#/components/schemas/TraceTimestamp"
           description: When the attempt ended. Absent while it runs.
         usage:
           $ref: "#/components/schemas/TokenUsage"
@@ -2841,12 +2657,10 @@ components:
             Whether the invocation's spans have aged out. Spans are kept for the retention window (currently 90 days) from the invocation's start; the invocation itself is kept, so `status` and the fields beside it stay readable past it.
 
         started_at:
-          type: string
-          format: date-time
+          $ref: "#/components/schemas/TraceTimestamp"
           description: When the invocation was accepted.
         ended_at:
-          type: string
-          format: date-time
+          $ref: "#/components/schemas/TraceTimestamp"
           description: >
             When the invocation's outcome was recorded. Absent while it runs.
 
@@ -2910,12 +2724,10 @@ components:
             Why the span failed. Absent when it succeeded. A long message is shortened, and then carries the same `[omitted: N of M bytes; sha256=…]` marker a payload does.
 
         started_at:
-          type: string
-          format: date-time
+          $ref: "#/components/schemas/TraceTimestamp"
           description: When the span began.
         ended_at:
-          type: string
-          format: date-time
+          $ref: "#/components/schemas/TraceTimestamp"
           description: When the span finished.
         usage:
           $ref: "#/components/schemas/TokenUsage"
@@ -3141,6 +2953,3 @@ components:
         created_at:
           type: string
           format: date-time
-x-speakeasy-globals:
-  parameters:
-    - $ref: "#/components/parameters/OrganizationHeader"
