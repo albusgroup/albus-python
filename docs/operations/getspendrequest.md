@@ -1,0 +1,9 @@
+# GetSpendRequest
+
+
+## Fields
+
+| Field                                                                                                          | Type                                                                                                           | Required                                                                                                       | Description                                                                                                    |
+| -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `since`                                                                                                        | [date](https://docs.python.org/3/library/datetime.html#date-objects)                                           | :heavy_minus_sign:                                                                                             | Include usage from the UTC day containing this time onward. Defaults to 31 days before `until`.<br/>           |
+| `until`                                                                                                        | [date](https://docs.python.org/3/library/datetime.html#date-objects)                                           | :heavy_minus_sign:                                                                                             | Include usage through the end of the UTC day containing this time. Defaults to now and must be after `since`.<br/> |

@@ -6,6 +6,7 @@ from albus_sdk._hooks import HookContext
 from albus_sdk.types import OptionalNullable, UNSET
 from albus_sdk.utils import get_security_from_env
 from albus_sdk.utils.unmarshal_json_response import unmarshal_json_response
+from datetime import datetime
 from typing import Any, Optional
 
 
@@ -256,6 +257,89 @@ class Billing(BaseSDK):
 
         raise errors.AlbusDefaultError("Unexpected response received", http_res)
 
+    def get_spend(
+        self,
+        *,
+        since: Optional[datetime] = None,
+        until: Optional[datetime] = None,
+    ) -> models.SpendResponse:
+        r"""Get your spend breakdown
+
+        Returns what your usage cost, split by UTC day and by what was used: each model at each provider, and compute time. Each line carries the quantities it was charged for.
+
+
+        :param since: Include usage from the UTC day containing this time onward. Defaults to 31 days before `until`.
+
+        :param until: Include usage through the end of the UTC day containing this time. Defaults to now and must be after `since`.
+
+        """
+        url_variables = None
+        base_url = self._get_url(None, url_variables)
+
+        request = operations.GetSpendRequest(
+            since=since,
+            until=until,
+        )
+
+        req = self._build_request(
+            method="GET",
+            path="/billing/spend",
+            base_url=base_url,
+            url_variables=url_variables,
+            request=request,
+            request_body_required=False,
+            request_has_path_params=False,
+            request_has_query_params=True,
+            user_agent_header="user-agent",
+            accept_header_value="application/json",
+            security=self.sdk_configuration.security,
+            allow_empty_value=None,
+            timeout_ms=self.sdk_configuration.timeout_ms,
+        )
+
+        retry_config = None
+
+        http_res = self.do_request(
+            hook_ctx=HookContext(
+                config=self.sdk_configuration,
+                base_url=base_url or "",
+                operation_id="getSpend",
+                oauth2_scopes=None,
+                security_source=get_security_from_env(
+                    self.sdk_configuration.security, models.Security
+                ),
+                tags=["Billing"],
+                extensions=None,
+            ),
+            request=req,
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
+            retry_config=None,
+        )
+
+        response_data: Any = None
+        if utils.match_response(http_res, "200", "application/json"):
+            return unmarshal_json_response(models.SpendResponse, http_res)
+        if utils.match_response(http_res, "400", "application/json"):
+            response_data = unmarshal_json_response(errors.ErrBadRequestData, http_res)
+            raise errors.ErrBadRequest(response_data, http_res)
+        if utils.match_response(http_res, "401", "application/json"):
+            response_data = unmarshal_json_response(
+                errors.ErrUnauthorizedData, http_res
+            )
+            raise errors.ErrUnauthorized(response_data, http_res)
+        if utils.match_response(http_res, "4XX", "*"):
+            http_res_text = utils.stream_to_text(http_res)
+            raise errors.AlbusDefaultError(
+                "API error occurred", http_res, http_res_text
+            )
+        if utils.match_response(http_res, "5XX", "*"):
+            http_res_text = utils.stream_to_text(http_res)
+            raise errors.AlbusDefaultError(
+                "API error occurred", http_res, http_res_text
+            )
+
+        raise errors.AlbusDefaultError("Unexpected response received", http_res)
+
 
 class AsyncBilling(AsyncBaseSDK):
     r"""Buy the prepaid credits agent sessions run on."""
@@ -483,6 +567,89 @@ class AsyncBilling(AsyncBaseSDK):
         response_data: Any = None
         if utils.match_response(http_res, "200", "application/json"):
             return unmarshal_json_response(models.ListCreditLedgerResponse, http_res)
+        if utils.match_response(http_res, "400", "application/json"):
+            response_data = unmarshal_json_response(errors.ErrBadRequestData, http_res)
+            raise errors.ErrBadRequest(response_data, http_res)
+        if utils.match_response(http_res, "401", "application/json"):
+            response_data = unmarshal_json_response(
+                errors.ErrUnauthorizedData, http_res
+            )
+            raise errors.ErrUnauthorized(response_data, http_res)
+        if utils.match_response(http_res, "4XX", "*"):
+            http_res_text = await utils.stream_to_text_async(http_res)
+            raise errors.AlbusDefaultError(
+                "API error occurred", http_res, http_res_text
+            )
+        if utils.match_response(http_res, "5XX", "*"):
+            http_res_text = await utils.stream_to_text_async(http_res)
+            raise errors.AlbusDefaultError(
+                "API error occurred", http_res, http_res_text
+            )
+
+        raise errors.AlbusDefaultError("Unexpected response received", http_res)
+
+    async def get_spend(
+        self,
+        *,
+        since: Optional[datetime] = None,
+        until: Optional[datetime] = None,
+    ) -> models.SpendResponse:
+        r"""Get your spend breakdown
+
+        Returns what your usage cost, split by UTC day and by what was used: each model at each provider, and compute time. Each line carries the quantities it was charged for.
+
+
+        :param since: Include usage from the UTC day containing this time onward. Defaults to 31 days before `until`.
+
+        :param until: Include usage through the end of the UTC day containing this time. Defaults to now and must be after `since`.
+
+        """
+        url_variables = None
+        base_url = self._get_url(None, url_variables)
+
+        request = operations.GetSpendRequest(
+            since=since,
+            until=until,
+        )
+
+        req = self._build_request_async(
+            method="GET",
+            path="/billing/spend",
+            base_url=base_url,
+            url_variables=url_variables,
+            request=request,
+            request_body_required=False,
+            request_has_path_params=False,
+            request_has_query_params=True,
+            user_agent_header="user-agent",
+            accept_header_value="application/json",
+            security=self.sdk_configuration.security,
+            allow_empty_value=None,
+            timeout_ms=self.sdk_configuration.timeout_ms,
+        )
+
+        retry_config = None
+
+        http_res = await self.do_request_async(
+            hook_ctx=HookContext(
+                config=self.sdk_configuration,
+                base_url=base_url or "",
+                operation_id="getSpend",
+                oauth2_scopes=None,
+                security_source=get_security_from_env(
+                    self.sdk_configuration.security, models.Security
+                ),
+                tags=["Billing"],
+                extensions=None,
+            ),
+            request=req,
+            is_error_status_code=lambda c: utils.match_status_codes(["4XX", "5XX"], c),
+            retry_config=None,
+        )
+
+        response_data: Any = None
+        if utils.match_response(http_res, "200", "application/json"):
+            return unmarshal_json_response(models.SpendResponse, http_res)
         if utils.match_response(http_res, "400", "application/json"):
             response_data = unmarshal_json_response(errors.ErrBadRequestData, http_res)
             raise errors.ErrBadRequest(response_data, http_res)

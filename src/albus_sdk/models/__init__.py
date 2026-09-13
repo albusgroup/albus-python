@@ -37,7 +37,11 @@ if TYPE_CHECKING:
         CreditBalanceResponse,
         CreditBalanceResponseTypedDict,
     )
-    from .creditledgerentry import CreditLedgerEntry, CreditLedgerEntryTypedDict, Kind
+    from .creditledgerentry import (
+        CreditLedgerEntry,
+        CreditLedgerEntryKind,
+        CreditLedgerEntryTypedDict,
+    )
     from .healthresponse import HealthResponse, HealthResponseTypedDict
     from .invite import Invite, InviteTypedDict
     from .listagentsresponse import ListAgentsResponse, ListAgentsResponseTypedDict
@@ -101,6 +105,8 @@ if TYPE_CHECKING:
         SetOrganizationMemberRoleRequest,
         SetOrganizationMemberRoleRequestTypedDict,
     )
+    from .spendline import SpendLine, SpendLineKind, SpendLineTypedDict
+    from .spendresponse import SpendResponse, SpendResponseTypedDict
     from .terminaltool import TerminalTool, TerminalToolTypedDict
     from .token import Token, TokenTypedDict
     from .tokenusage import TokenUsage, TokenUsageTypedDict
@@ -155,13 +161,13 @@ __all__ = [
     "CreditBalanceResponse",
     "CreditBalanceResponseTypedDict",
     "CreditLedgerEntry",
+    "CreditLedgerEntryKind",
     "CreditLedgerEntryTypedDict",
     "Generation",
     "HealthResponse",
     "HealthResponseTypedDict",
     "Invite",
     "InviteTypedDict",
-    "Kind",
     "ListAgentsResponse",
     "ListAgentsResponseTypedDict",
     "ListAuditEventsResponse",
@@ -228,6 +234,11 @@ __all__ = [
     "SessionTypedDict",
     "SetOrganizationMemberRoleRequest",
     "SetOrganizationMemberRoleRequestTypedDict",
+    "SpendLine",
+    "SpendLineKind",
+    "SpendLineTypedDict",
+    "SpendResponse",
+    "SpendResponseTypedDict",
     "TerminalTool",
     "TerminalToolTypedDict",
     "Token",
@@ -295,8 +306,8 @@ _dynamic_imports: dict[str, str] = {
     "CreditBalanceResponse": ".creditbalanceresponse",
     "CreditBalanceResponseTypedDict": ".creditbalanceresponse",
     "CreditLedgerEntry": ".creditledgerentry",
+    "CreditLedgerEntryKind": ".creditledgerentry",
     "CreditLedgerEntryTypedDict": ".creditledgerentry",
-    "Kind": ".creditledgerentry",
     "HealthResponse": ".healthresponse",
     "HealthResponseTypedDict": ".healthresponse",
     "Invite": ".invite",
@@ -368,6 +379,11 @@ _dynamic_imports: dict[str, str] = {
     "SessionState": ".sessionstate",
     "SetOrganizationMemberRoleRequest": ".setorganizationmemberrolerequest",
     "SetOrganizationMemberRoleRequestTypedDict": ".setorganizationmemberrolerequest",
+    "SpendLine": ".spendline",
+    "SpendLineKind": ".spendline",
+    "SpendLineTypedDict": ".spendline",
+    "SpendResponse": ".spendresponse",
+    "SpendResponseTypedDict": ".spendresponse",
     "TerminalTool": ".terminaltool",
     "TerminalToolTypedDict": ".terminaltool",
     "Token": ".token",

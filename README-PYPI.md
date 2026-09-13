@@ -320,6 +320,7 @@ asyncio.run(main())
 * [create_checkout](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/billing/README.md#create_checkout) - Buy prepaid credits
 * [get_credit_balance](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/billing/README.md#get_credit_balance) - Read your credit balance
 * [list_credit_ledger](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/billing/README.md#list_credit_ledger) - List your credit history
+* [get_spend](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/billing/README.md#get_spend) - Get your spend breakdown
 
 ### [Health](https://github.com/albusgroup/albus-python/blob/master/docs/sdks/health/README.md)
 
@@ -492,17 +493,17 @@ asyncio.run(main())
 
 
 **Inherit from [`AlbusError`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/albuserror.py)**:
-* [`ErrBadRequest`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errbadrequest.py): Status code `400`. Applicable to 19 of 38 methods.*
-* [`ErrNotFound`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errnotfound.py): Status code `404`. Applicable to 17 of 38 methods.*
-* [`ErrForbidden`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errforbidden.py): Forbidden - the caller is not an admin. Status code `403`. Applicable to 9 of 38 methods.*
-* [`ErrConflict`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errconflict.py): Status code `409`. Applicable to 5 of 38 methods.*
-* [`ErrUnavailable`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errunavailable.py): Status code `503`. Applicable to 2 of 38 methods.*
-* [`ErrInsufficientCredit`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errinsufficientcredit.py): The organization has no credit balance remaining. Status code `402`. Applicable to 1 of 38 methods.*
-* [`ErrInvocationCanceled`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errinvocationcanceled.py): The invocation was canceled instead of producing a response (only possible while waiting for a response, or when replaying a canceled invocation). Status code `410`. Applicable to 1 of 38 methods.*
-* [`ErrLocked`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errlocked.py): Another invocation is currently running for this session. Status code `423`. Applicable to 1 of 38 methods.*
-* [`ErrInvocationFailed`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errinvocationfailed.py): The invocation failed instead of producing a response (only possible while waiting for a response, or when replaying a failed invocation). The body carries the failure kind and detail. Status code `502`. Applicable to 1 of 38 methods.*
-* [`HealthResponseError`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/healthresponseerror.py): Service is healthy. Status code `503`. Applicable to 1 of 38 methods.*
-* [`ErrTimeout`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errtimeout.py): Timed out waiting for the assistant response. Status code `504`. Applicable to 1 of 38 methods.*
+* [`ErrBadRequest`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errbadrequest.py): Status code `400`. Applicable to 20 of 39 methods.*
+* [`ErrNotFound`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errnotfound.py): Status code `404`. Applicable to 17 of 39 methods.*
+* [`ErrForbidden`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errforbidden.py): Forbidden - the caller is not an admin. Status code `403`. Applicable to 9 of 39 methods.*
+* [`ErrConflict`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errconflict.py): Status code `409`. Applicable to 5 of 39 methods.*
+* [`ErrUnavailable`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errunavailable.py): Status code `503`. Applicable to 2 of 39 methods.*
+* [`ErrInsufficientCredit`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errinsufficientcredit.py): The organization has no credit balance remaining. Status code `402`. Applicable to 1 of 39 methods.*
+* [`ErrInvocationCanceled`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errinvocationcanceled.py): The invocation was canceled instead of producing a response (only possible while waiting for a response, or when replaying a canceled invocation). Status code `410`. Applicable to 1 of 39 methods.*
+* [`ErrLocked`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errlocked.py): Another invocation is currently running for this session. Status code `423`. Applicable to 1 of 39 methods.*
+* [`ErrInvocationFailed`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errinvocationfailed.py): The invocation failed instead of producing a response (only possible while waiting for a response, or when replaying a failed invocation). The body carries the failure kind and detail. Status code `502`. Applicable to 1 of 39 methods.*
+* [`HealthResponseError`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/healthresponseerror.py): Service is healthy. Status code `503`. Applicable to 1 of 39 methods.*
+* [`ErrTimeout`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errtimeout.py): Timed out waiting for the assistant response. Status code `504`. Applicable to 1 of 39 methods.*
 * [`ResponseValidationError`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/responsevalidationerror.py): Type mismatch between the response data and the expected Pydantic model. Provides access to the Pydantic validation error via the `cause` attribute.
 
 </details>
@@ -523,7 +524,7 @@ import os
 
 
 with Albus(
-    server_url="https://albus.sh/api",
+    server_url="https://albus.sh/api/v1",
     api_key=os.getenv("ALBUS_API_KEY", ""),
 ) as albus:
 
@@ -546,7 +547,7 @@ import os
 async def main():
 
     async with AsyncAlbus(
-        server_url="https://albus.sh/api",
+        server_url="https://albus.sh/api/v1",
         api_key=os.getenv("ALBUS_API_KEY", ""),
     ) as albus:
 

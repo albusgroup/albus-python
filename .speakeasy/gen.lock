@@ -4,13 +4,13 @@ management:
   docVersion: 1.0.0
   speakeasyVersion: 1.791.0
   generationVersion: 2.924.0
-  releaseVersion: 0.16.1
+  releaseVersion: 0.17.0
   repoURL: https://github.com/albusgroup/albus-python
   installationURL: https://github.com/albusgroup/albus-python.git
 persistentEdits:
-  generation_id: ec18ed87-9174-4737-bfb7-82c0e73bde48
-  pristine_commit_hash: 571e0cf3235a97d4610e4ab6fbe28aedd9d7ea98
-  pristine_tree_hash: 0130a8f71e62c7a80b6fde1c9336a316ce45cde3
+  generation_id: 320fc895-e171-41ce-8ce1-f2d50b93dec5
+  pristine_commit_hash: 129542beebc06941c358cfab98cbea51d1fd64fb
+  pristine_tree_hash: d675aa3a260336813775d382a5129d2b461bf442
 features:
   python:
     additionalDependencies: 1.1.0
@@ -167,8 +167,12 @@ trackedFiles:
     pristine_git_object: 7ad3b559f342e6ec0cac7f3ea3fee2c3f4f920c1
   docs/models/creditledgerentry.md:
     id: 04bba24aad0a
-    last_write_checksum: sha1:78fb744eecfce601d46bde22466f68122ee0bfb1
-    pristine_git_object: bd444ec77d6c16fbdf8ee659e243d87c15ce715e
+    last_write_checksum: sha1:771b3e3260e0d9d4e5d0ebaffe3c479993f42859
+    pristine_git_object: 274040cb79d1c110c9d4dd26f29aefedf1d7e9f9
+  docs/models/creditledgerentrykind.md:
+    id: b434e48da357
+    last_write_checksum: sha1:1288bf0be991920f4f4a7df7916c07d2efc33ba4
+    pristine_git_object: 15c8ea57006eed0f46ce3013c701a17b5235eb6b
   docs/models/generation.md:
     id: 5c89adf1697f
     last_write_checksum: sha1:2325094933f3892836750ddbdff8fafb7f7f6154
@@ -181,10 +185,6 @@ trackedFiles:
     id: 404f57046fc0
     last_write_checksum: sha1:fcc97212ba6efb591576413b38b5e24588f6827e
     pristine_git_object: 767ad35ca2636d3260821f840e6ce35153896f2c
-  docs/models/kind.md:
-    id: a1293dccee77
-    last_write_checksum: sha1:37747037a76fa2a8d88be59de2ffc99bc74c7914
-    pristine_git_object: 72e509667c4c45c3def2bb36281d8ffcbef18ec3
   docs/models/listagentsresponse.md:
     id: c88dc9f3c883
     last_write_checksum: sha1:78fbc16dd9640030008aa811e463bb12a4f06261
@@ -325,6 +325,18 @@ trackedFiles:
     id: 63a488236508
     last_write_checksum: sha1:d684d014e8b4bab9b3a53dc31c2b5086d11a905e
     pristine_git_object: ff14b1937b6cb5644483a6fb89f7a3f44e1ed0cb
+  docs/models/spendline.md:
+    id: b5e1611ab9a9
+    last_write_checksum: sha1:4a2e7728224e94dd3f208fd34ccacffb81ed0877
+    pristine_git_object: 1e21e106e308ba71e00df51040c7250337d9c555
+  docs/models/spendlinekind.md:
+    id: 46a5b27a8681
+    last_write_checksum: sha1:98861385aabb2654ae605f79d03477190aafa9b6
+    pristine_git_object: 49c4713726a3c50b840eb93eafa267d6712cb253
+  docs/models/spendresponse.md:
+    id: 0f0463a83ee7
+    last_write_checksum: sha1:e000a226f13908d39584d06d091d3da0515f04ed
+    pristine_git_object: 118d5b97931cf2c9c9471759346a38c1274f8150
   docs/models/terminaltool.md:
     id: d6be97d1a561
     last_write_checksum: sha1:5c4c0e2169233000703e046637477435b16d4a94
@@ -335,8 +347,8 @@ trackedFiles:
     pristine_git_object: a78018683f2d16689b582c2c6044d1b3ccba73da
   docs/models/tokenusage.md:
     id: 55ff021b70dd
-    last_write_checksum: sha1:f11df403fa3054a431054d4ab0f574877133c4a9
-    pristine_git_object: 4d5c6fee7bd07ba422d136b26d991d956db37a09
+    last_write_checksum: sha1:33a2e6e707865d244923ba215e03b568823e2181
+    pristine_git_object: 901b26b0c1e209fde0127ccdaeced138b4b7c569
   docs/models/tools.md:
     id: b78ed2931856
     last_write_checksum: sha1:93a90b012fdb945dea28044112364153d57109b5
@@ -441,6 +453,10 @@ trackedFiles:
     id: 6faa2d858796
     last_write_checksum: sha1:387c53437ee62a17bdc9e20368db192085ab750c
     pristine_git_object: 14c8409e0df0465cc44ae4efed1e7cffe8a07f53
+  docs/operations/getspendrequest.md:
+    id: a513fdba9332
+    last_write_checksum: sha1:76e57b8a3dd1ecd5d6295ba447f70b9ed8ef3034
+    pristine_git_object: 0de93e9f822c313cdf9c2a5fdbaf4e401afeb143
   docs/operations/gettokenrequest.md:
     id: cc4cf8c6def0
     last_write_checksum: sha1:88edf5f69a5b94a27f875d57d0ceaa499b104c85
@@ -507,8 +523,8 @@ trackedFiles:
     pristine_git_object: 8566eca18787fd420f78869643133c69c9ae288c
   docs/sdks/billing/README.md:
     id: dc915331dd9d
-    last_write_checksum: sha1:d484a22b8fdec7e0e945e65d8616fa354b7fc845
-    pristine_git_object: 118bb93474558b67172e6a3b863232a800fbb498
+    last_write_checksum: sha1:0907d06019ad5738d05357c888ab40c75ba93172
+    pristine_git_object: 5b849a27b912fa7473a4ffb11cf53635956041d0
   docs/sdks/health/README.md:
     id: 5082c50d5e82
     last_write_checksum: sha1:7ba648332b61c2caab33e0b6a3e4c03638d1fbcb
@@ -555,8 +571,8 @@ trackedFiles:
     pristine_git_object: c00200cfd072e9febac5d6be783da1925d11dac0
   pyproject.toml:
     id: 5d07e7d72637
-    last_write_checksum: sha1:e6ba22c679ac253f44fb113d14bdba26a0dff4b2
-    pristine_git_object: 4db776339a674e321dac72ec96f926b5216f656f
+    last_write_checksum: sha1:77207a3ac39b34459a5a3307bd4dea8f618fdabc
+    pristine_git_object: cdb5f22c13746ec6b8b3c2a2f2f49b2ed7ec1c6f
   scripts/prepare_readme.py:
     id: e0c5957a6035
     last_write_checksum: sha1:87ae869992e135551fddfe7224d27c36a6e6f6a1
@@ -583,8 +599,8 @@ trackedFiles:
     pristine_git_object: cbf6440ec13211554ee2cecd1ae5c961400cb297
   src/albus_sdk/_version.py:
     id: ce551781b317
-    last_write_checksum: sha1:a02511292bb72554162bcf9ca85bdc58c8ac04a1
-    pristine_git_object: 34e537742ef42980b20c0ca9c2bc4d611c27dfa6
+    last_write_checksum: sha1:246eaa37abc6b399a5ca02917c9bd02fd385095f
+    pristine_git_object: 098ffa223ec4fa895e9ff7f021a5a9e1c0a8cdf1
   src/albus_sdk/agents.py:
     id: db42fb5fa8b3
     last_write_checksum: sha1:7fd04c81cd63ab3a9cd6dd388366c4ec9fc1e118
@@ -599,8 +615,8 @@ trackedFiles:
     pristine_git_object: 01d00045f6b6bce6a59a35444f870566e1b9949b
   src/albus_sdk/billing.py:
     id: 558fd011008b
-    last_write_checksum: sha1:411f3e4b2267837930ff3466f237aea3bb17c11d
-    pristine_git_object: 743bcff98722f7a08ae4972add1d09e904edd440
+    last_write_checksum: sha1:c44dffdf4e5ae436e8c54ab173931e9fc3c17796
+    pristine_git_object: fa7e373b29d8a9a85fa6f87268a285cbc4da1454
   src/albus_sdk/errors/__init__.py:
     id: e65263ffdae7
     last_write_checksum: sha1:a2d5dc193fbf4944b212f10526fa7f7cf717b9ba
@@ -687,8 +703,8 @@ trackedFiles:
     pristine_git_object: 6d6e181db37316831d0b6cb1d162718d9e63cc02
   src/albus_sdk/models/__init__.py:
     id: d67e35945bd3
-    last_write_checksum: sha1:141a66909f2cb50257de2ad92b669a8a091bfe54
-    pristine_git_object: b63afcaa67019a9cd9e6eb742d57f4ae56439083
+    last_write_checksum: sha1:68bafd8376eb5863b89da311c1c395fead4ab6b6
+    pristine_git_object: c1ecc6fbda773d933288e9ceb220fb8b470f81b8
   src/albus_sdk/models/agent.py:
     id: c7f1cb7278cc
     last_write_checksum: sha1:4f8909e0313c4f73582c80560265f91c1a582498
@@ -755,8 +771,8 @@ trackedFiles:
     pristine_git_object: 18b389615d186d044fc124046215602393d9350b
   src/albus_sdk/models/creditledgerentry.py:
     id: e7d1acdb7ac6
-    last_write_checksum: sha1:d1a0b439419b55c65611a33d62ce7f841094e2ae
-    pristine_git_object: 11154ba345526b66d3f1dd08e96b4fd656e81f8d
+    last_write_checksum: sha1:48f4b865e795bc32eb3d2bdee8928ef989223608
+    pristine_git_object: 20f8b044ad1f1e6f0742ca2240a6323bc1b30b7c
   src/albus_sdk/models/healthresponse.py:
     id: b4024a7f6cca
     last_write_checksum: sha1:8cd13bd47fffd0f234e0b1aabde0020e1bf060fb
@@ -897,6 +913,14 @@ trackedFiles:
     id: 9b0d9e8b29ee
     last_write_checksum: sha1:1fbffe2c249712f3eb6ef9dd092a27f43c262bbc
     pristine_git_object: bc70563fda9c3c1fd381a3ea29e9d3db0a4906e6
+  src/albus_sdk/models/spendline.py:
+    id: 72421664e3ee
+    last_write_checksum: sha1:3fb86bc6c95a25def86eff41ba6793b8da5816cc
+    pristine_git_object: 7f7381982ce1bd0f0746b41aa84e698bc571930c
+  src/albus_sdk/models/spendresponse.py:
+    id: f8a5941c9379
+    last_write_checksum: sha1:d784f79942734c566a417a455815aee17da3bc10
+    pristine_git_object: 608525fb1f4f6b248fc2e8490549011e395bd927
   src/albus_sdk/models/terminaltool.py:
     id: 8ddf8383bbaf
     last_write_checksum: sha1:25b7551a1fe21798b431b7b4f10bae4a58cb7d7e
@@ -907,8 +931,8 @@ trackedFiles:
     pristine_git_object: 41112f4a4fad0fd8fd0a4d7f2374dc91d64f5502
   src/albus_sdk/models/tokenusage.py:
     id: a54df59e06df
-    last_write_checksum: sha1:0f0bd5a079fde3b346701e6ceb4f52af8589b5aa
-    pristine_git_object: 77002a5e2605ac7c42e6557868f97e69f54a3bb5
+    last_write_checksum: sha1:9b1a611fbd3faf8739716f47689b25522836693e
+    pristine_git_object: d964a92307e0f8a3085a52543c490a03f17b7178
   src/albus_sdk/models/tools.py:
     id: 0a62e93feca0
     last_write_checksum: sha1:f5bc68163f5037d93a240fb15911acb32fedbc6a
@@ -959,8 +983,8 @@ trackedFiles:
     pristine_git_object: 6a9319ad772d26e017917d7bd6e00a356bfd4df9
   src/albus_sdk/operations/__init__.py:
     id: d982dcdbe2ca
-    last_write_checksum: sha1:4d1769437e0715d92fe96f484388528828e56884
-    pristine_git_object: 9e07b4cf7ece9d0a1ad0cf892c41b3a243603054
+    last_write_checksum: sha1:14db7a5b26b4928e9e760cef32db0ebd0077fa72
+    pristine_git_object: 0b403a2aa4d9b96d86ee9ded0697ef1e65c0c3a0
   src/albus_sdk/operations/cancelsession.py:
     id: 61e24bdacb3d
     last_write_checksum: sha1:6424a3be5c943c90a52657ff9b20bd4abd44346d
@@ -1005,6 +1029,10 @@ trackedFiles:
     id: 086eed7a7935
     last_write_checksum: sha1:6fe4e20e534c1a16208c356a81d53e05751bdf3a
     pristine_git_object: cd186d5464932cf86f0aab88f6272a487bd61af5
+  src/albus_sdk/operations/getspend.py:
+    id: 8f4dbfda7973
+    last_write_checksum: sha1:87f8f51f49593b60955a02e79d02b535144997c4
+    pristine_git_object: 2d10f5219071b92bfe73f89e19af629257f386ab
   src/albus_sdk/operations/gettoken.py:
     id: de8b5ba33ebc
     last_write_checksum: sha1:5a4566faa1d365f5081a54db6232e7eae91e8b53
@@ -1067,8 +1095,8 @@ trackedFiles:
     pristine_git_object: 75f8daf2a9a96d75a974d70f510f4c9328f637f1
   src/albus_sdk/sdkconfiguration.py:
     id: 854b2ba3c254
-    last_write_checksum: sha1:92185e047eadd62ff90af4048dcadbf4efb77c28
-    pristine_git_object: 2a7da02dd03e460adc5a33bd0c852f89417f5bb2
+    last_write_checksum: sha1:0d79df786dc74c1243a812379dc8c6ba9698a9b6
+    pristine_git_object: be9cbde7892764f715a6345aee2836a0c430a3f1
   src/albus_sdk/secrets.py:
     id: a8240869ed44
     last_write_checksum: sha1:0dcf312a7abc3c9c425e885120f1e92a0755cf0b
@@ -1378,6 +1406,15 @@ examples:
           application/json: {"message": "Invalid or expired token"}
         "404":
           application/json: {"message": "Resource not found"}
+  getSpend:
+    speakeasy-default-get-spend:
+      responses:
+        "200":
+          application/json: {"since": "2026-07-13T05:17:10.127Z", "until": "2024-01-07T02:44:06.857Z", "total_usd": "<value>", "lines": [{"day": "2026-01-29T16:50:23.297Z", "kind": "hardware", "usd": "<value>"}]}
+        "400":
+          application/json: {"message": "Invalid request parameters"}
+        "401":
+          application/json: {"message": "Invalid or expired token"}
   getToken:
     speakeasy-default-get-token:
       parameters:

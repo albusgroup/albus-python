@@ -1,4 +1,4 @@
-# Kind
+# CreditLedgerEntryKind
 
 What moved the balance: a paid purchase, an operator grant, a usage charge, or a manual adjustment.
 
@@ -6,10 +6,10 @@ What moved the balance: a paid purchase, an operator grant, a usage charge, or a
 ## Example Usage
 
 ```python
-from albus_sdk.models import Kind
+from albus_sdk.models import CreditLedgerEntryKind
 
 # Open enum: unrecognized values are captured as UnrecognizedStr
-value: Kind = "purchase"
+value: CreditLedgerEntryKind = "purchase"
 ```
 
 

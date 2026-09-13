@@ -56,13 +56,13 @@ async def async_sdk_with_handler(
 
 def test_package_exposes_version() -> None:
     assert albus_sdk.VERSION == albus_sdk.__version__
-    assert albus_sdk.VERSION == "0.16.1"
+    assert albus_sdk.VERSION == "0.17.0"
 
 
 def test_default_production_url_and_sync_operation() -> None:
     def handler(request: httpx.Request) -> httpx.Response:
         assert request.method == "GET"
-        assert str(request.url) == "https://albus.sh/api/health"
+        assert str(request.url) == "https://albus.sh/api/v1/health"
 
         return httpx.Response(200, json={"status": "ok"})
 
@@ -74,7 +74,7 @@ def test_default_production_url_and_sync_operation() -> None:
 
 def test_organization_key_authentication() -> None:
     def handler(request: httpx.Request) -> httpx.Response:
-        assert str(request.url) == "https://albus.sh/api/sessions?limit=25"
+        assert str(request.url) == "https://albus.sh/api/v1/sessions?limit=25"
         assert request.headers["authorization"] == "Bearer organization-key"
 
         return httpx.Response(200, json={"sessions": []})
@@ -112,7 +112,7 @@ def test_run_session_defaults_to_a_30_minute_wait() -> None:
 @pytest.mark.asyncio
 async def test_user_token_authentication_and_async_operation() -> None:
     def handler(request: httpx.Request) -> httpx.Response:
-        assert str(request.url) == "https://albus.sh/api/tokens"
+        assert str(request.url) == "https://albus.sh/api/v1/tokens"
         assert request.headers["authorization"] == "Bearer user-token"
 
         return httpx.Response(200, json={"tokens": []})
@@ -169,7 +169,7 @@ def test_api_key_environment_fallback(
 ) -> None:
     monkeypatch.setenv("ALBUS_API_KEY", "environment-key")
     monkeypatch.setenv("ALBUS_CONFIG_DIR", str(tmp_path))
-    write_stored_session(tmp_path, "https://albus.sh/api", "session-token", "org-1")
+    write_stored_session(tmp_path, "https://albus.sh/api/v1", "session-token", "org-1")
 
     def handler(request: httpx.Request) -> httpx.Response:
         assert request.headers["authorization"] == "Bearer environment-key"
@@ -186,7 +186,7 @@ def test_stored_session_fallback(
 ) -> None:
     monkeypatch.delenv("ALBUS_API_KEY", raising=False)
     monkeypatch.setenv("ALBUS_CONFIG_DIR", str(tmp_path))
-    write_stored_session(tmp_path, "https://albus.sh/api", "session-token", "org-1")
+    write_stored_session(tmp_path, "https://albus.sh/api/v1", "session-token", "org-1")
     write_stored_session(tmp_path, "http://localhost:8080", "local-token", None)
 
     def handler(request: httpx.Request) -> httpx.Response:

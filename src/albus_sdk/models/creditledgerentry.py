@@ -7,7 +7,7 @@ from typing import Literal, Union
 from typing_extensions import TypedDict
 
 
-Kind = Union[
+CreditLedgerEntryKind = Union[
     Literal[
         "purchase",
         "grant",
@@ -22,7 +22,7 @@ r"""What moved the balance: a paid purchase, an operator grant, a usage charge, 
 
 
 class CreditLedgerEntryTypedDict(TypedDict):
-    kind: Kind
+    kind: CreditLedgerEntryKind
     r"""What moved the balance: a paid purchase, an operator grant, a usage charge, or a manual adjustment.
 
     """
@@ -39,7 +39,7 @@ class CreditLedgerEntryTypedDict(TypedDict):
 
 
 class CreditLedgerEntry(BaseModel):
-    kind: Kind
+    kind: CreditLedgerEntryKind
     r"""What moved the balance: a paid purchase, an operator grant, a usage charge, or a manual adjustment.
 
     """

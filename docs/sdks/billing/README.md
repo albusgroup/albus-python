@@ -9,6 +9,7 @@ Buy the prepaid credits agent sessions run on.
 * [create_checkout](#create_checkout) - Buy prepaid credits
 * [get_credit_balance](#get_credit_balance) - Read your credit balance
 * [list_credit_ledger](#list_credit_ledger) - List your credit history
+* [get_spend](#get_spend) - Get your spend breakdown
 
 ## create_checkout
 
@@ -202,6 +203,73 @@ asyncio.run(main())
 ### Response
 
 **[models.ListCreditLedgerResponse](../../models/listcreditledgerresponse.md)**
+
+### Errors
+
+| Error Type               | Status Code              | Content Type             |
+| ------------------------ | ------------------------ | ------------------------ |
+| errors.ErrBadRequest     | 400                      | application/json         |
+| errors.ErrUnauthorized   | 401                      | application/json         |
+| errors.AlbusDefaultError | 4XX, 5XX                 | \*/\*                    |
+
+## get_spend
+
+Returns what your usage cost, split by UTC day and by what was used: each model at each provider, and compute time. Each line carries the quantities it was charged for.
+
+
+### Example Usage
+
+<!-- UsageSnippet language="python" operationID="getSpend" method="get" path="/billing/spend" -->
+```python
+# Synchronous Example
+from albus_sdk import Albus
+import os
+
+
+with Albus(
+    api_key=os.getenv("ALBUS_API_KEY", ""),
+) as albus:
+
+    res = albus.billing.get_spend()
+
+    # Handle response
+    print(res)
+```
+
+</br>
+
+An Async SDK client can also be used to make asynchronous requests by importing it and asyncio.
+
+```python
+# Asynchronous Example
+from albus_sdk import AsyncAlbus
+import asyncio
+import os
+
+async def main():
+
+    async with AsyncAlbus(
+        api_key=os.getenv("ALBUS_API_KEY", ""),
+    ) as albus:
+
+        res = await albus.billing.get_spend()
+
+        # Handle response
+        print(res)
+
+asyncio.run(main())
+```
+
+### Parameters
+
+| Parameter                                                                                                      | Type                                                                                                           | Required                                                                                                       | Description                                                                                                    |
+| -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `since`                                                                                                        | [date](https://docs.python.org/3/library/datetime.html#date-objects)                                           | :heavy_minus_sign:                                                                                             | Include usage from the UTC day containing this time onward. Defaults to 31 days before `until`.<br/>           |
+| `until`                                                                                                        | [date](https://docs.python.org/3/library/datetime.html#date-objects)                                           | :heavy_minus_sign:                                                                                             | Include usage through the end of the UTC day containing this time. Defaults to now and must be after `since`.<br/> |
+
+### Response
+
+**[models.SpendResponse](../../models/spendresponse.md)**
 
 ### Errors
 

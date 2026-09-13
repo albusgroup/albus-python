@@ -13,6 +13,10 @@ class TokenUsageTypedDict(TypedDict):
     input_tokens: NotRequired[int]
     output_tokens: NotRequired[int]
     total_tokens: NotRequired[int]
+    thinking_tokens: NotRequired[int]
+    r"""Tokens the model spent reasoning before it answered, as reported by the provider. Absent when the provider reports none.
+
+    """
 
 
 class TokenUsage(BaseModel):
@@ -24,9 +28,16 @@ class TokenUsage(BaseModel):
 
     total_tokens: Optional[int] = None
 
+    thinking_tokens: Optional[int] = None
+    r"""Tokens the model spent reasoning before it answered, as reported by the provider. Absent when the provider reports none.
+
+    """
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = set(["input_tokens", "output_tokens", "total_tokens"])
+        optional_fields = set(
+            ["input_tokens", "output_tokens", "total_tokens", "thinking_tokens"]
+        )
         serialized = handler(self)
         m = {}
 

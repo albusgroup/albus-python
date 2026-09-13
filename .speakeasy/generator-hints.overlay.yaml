@@ -3,7 +3,7 @@ info:
   title: Generator hints the public spec does not carry
   version: 1.0.0
 actions:
-  - target: "$.servers[?(@.url != 'https://albus.sh/api')]"
+  - target: "$.servers[?(@.url != 'https://albus.sh/api/v1')]"
     description: The SDK targets production; anything else is a server_url override.
     remove: true
   - target: "$.components.securitySchemes.bearerAuth"

@@ -22,6 +22,7 @@ if TYPE_CHECKING:
     from .getsecret import GetSecretRequest, GetSecretRequestTypedDict
     from .getsession import GetSessionRequest, GetSessionRequestTypedDict
     from .getsessionaudit import GetSessionAuditRequest, GetSessionAuditRequestTypedDict
+    from .getspend import GetSpendRequest, GetSpendRequestTypedDict
     from .gettoken import GetTokenRequest, GetTokenRequestTypedDict
     from .gettrace import (
         Attempts,
@@ -82,6 +83,8 @@ __all__ = [
     "GetSessionAuditRequestTypedDict",
     "GetSessionRequest",
     "GetSessionRequestTypedDict",
+    "GetSpendRequest",
+    "GetSpendRequestTypedDict",
     "GetTokenRequest",
     "GetTokenRequestTypedDict",
     "GetTraceRequest",
@@ -135,6 +138,8 @@ _dynamic_imports: dict[str, str] = {
     "GetSessionRequestTypedDict": ".getsession",
     "GetSessionAuditRequest": ".getsessionaudit",
     "GetSessionAuditRequestTypedDict": ".getsessionaudit",
+    "GetSpendRequest": ".getspend",
+    "GetSpendRequestTypedDict": ".getspend",
     "GetTokenRequest": ".gettoken",
     "GetTokenRequestTypedDict": ".gettoken",
     "Attempts": ".gettrace",

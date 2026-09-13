@@ -16,7 +16,7 @@ from typing import Callable, Dict, Optional, Tuple, Union
 
 
 SERVERS = [
-    "https://albus.sh/api",
+    "https://albus.sh/api/v1",
     # Production server
 ]
 """Contains the list of servers available to the SDK"""

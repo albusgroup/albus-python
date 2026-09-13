@@ -1,0 +1,11 @@
+# SpendResponse
+
+
+## Fields
+
+| Field                                                                           | Type                                                                            | Required                                                                        | Description                                                                     |
+| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `since`                                                                         | [date](https://docs.python.org/3/library/datetime.html#date-objects)            | :heavy_check_mark:                                                              | The UTC midnight the lines start from, after widening `since` to a whole day.<br/> |
+| `until`                                                                         | [date](https://docs.python.org/3/library/datetime.html#date-objects)            | :heavy_check_mark:                                                              | The UTC midnight the lines stop before, after widening `until` to a whole day.<br/> |
+| `total_usd`                                                                     | *str*                                                                           | :heavy_check_mark:                                                              | The sum of every line, as a decimal USD string.                                 |
+| `lines`                                                                         | List[[models.SpendLine](../models/spendline.md)]                                | :heavy_check_mark:                                                              | Ordered by day, then kind, provider, model, and sku.                            |

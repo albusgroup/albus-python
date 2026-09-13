@@ -5,9 +5,9 @@ info:
   version: 1.0.0
 
 servers:
-  - url: https://albus.sh/api
+  - url: https://albus.sh/api/v1
     description: Production server
-  - url: http://localhost:8080
+  - url: http://localhost:8080/api/v1
     description: Local development server
 
 tags:
@@ -1612,6 +1612,59 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrUnauthorized"
 
+  /billing/spend:
+    get:
+      operationId: getSpend
+      summary: Get your spend breakdown
+      description: >
+        Returns what your usage cost, split by UTC day and by what was used:
+        each model at each provider, and compute time. Each line carries the
+        quantities it was charged for.
+      tags:
+        - Billing
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - $ref: "#/components/parameters/OrganizationHeader"
+        - name: since
+          in: query
+          required: false
+          description: >
+            Include usage from the UTC day containing this time onward.
+            Defaults to 31 days before `until`.
+          schema:
+            type: string
+            format: date-time
+        - name: until
+          in: query
+          required: false
+          description: >
+            Include usage through the end of the UTC day containing this
+            time. Defaults to now and must be after `since`.
+          schema:
+            type: string
+            format: date-time
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SpendResponse"
+        "400":
+          description: Bad request (invalid window)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrBadRequest"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrUnauthorized"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -2167,6 +2220,89 @@ components:
           description: >
             Cursor for the next page. Pass it as `after` to fetch the
             following entries. Omitted when there are no more entries.
+
+    SpendLine:
+      type: object
+      required:
+        - day
+        - kind
+        - usd
+      properties:
+        day:
+          type: string
+          format: date-time
+          description: The UTC midnight starting the day this line covers.
+        kind:
+          type: string
+          enum: [model, hardware]
+          description: >
+            What was used: a model, or the compute an invocation ran on.
+        provider_name:
+          type: string
+          description: >
+            The provider that served the model. Present on model lines.
+        model_name:
+          type: string
+          description: The model that was called. Present on model lines.
+        sku:
+          type: string
+          description: >
+            The compute item charged (e.g. "invocation_second"). Present
+            on hardware lines.
+        usd:
+          type: string
+          description: >
+            What this line cost, as a decimal USD string. Zero when the
+            usage was free.
+        input_tokens:
+          type: integer
+          format: int64
+          description: Prompt tokens sent, including cached ones.
+        cached_input_tokens:
+          type: integer
+          format: int64
+          description: Prompt tokens served from the provider's cache.
+        output_tokens:
+          type: integer
+          format: int64
+          description: Tokens the model generated.
+        thoughts_tokens:
+          type: integer
+          format: int64
+          description: Tokens the model spent reasoning.
+        wall_ms:
+          type: integer
+          format: int64
+          description: Milliseconds of compute time charged.
+
+    SpendResponse:
+      type: object
+      required:
+        - since
+        - until
+        - total_usd
+        - lines
+      properties:
+        since:
+          type: string
+          format: date-time
+          description: >
+            The UTC midnight the lines start from, after widening `since`
+            to a whole day.
+        until:
+          type: string
+          format: date-time
+          description: >
+            The UTC midnight the lines stop before, after widening `until`
+            to a whole day.
+        total_usd:
+          type: string
+          description: The sum of every line, as a decimal USD string.
+        lines:
+          type: array
+          items:
+            $ref: "#/components/schemas/SpendLine"
+          description: Ordered by day, then kind, provider, model, and sku.
 
     CancelSessionResponse:
       type: object
@@ -2838,6 +2974,12 @@ components:
         total_tokens:
           type: integer
           format: int64
+        thinking_tokens:
+          type: integer
+          format: int64
+          description: >
+            Tokens the model spent reasoning before it answered, as reported by
+            the provider. Absent when the provider reports none.
 
     TraceTimestamp:
       type: string
