@@ -496,7 +496,7 @@ asyncio.run(main())
 * [`ErrBadRequest`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errbadrequest.py): Status code `400`. Applicable to 20 of 39 methods.*
 * [`ErrNotFound`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errnotfound.py): Status code `404`. Applicable to 17 of 39 methods.*
 * [`ErrForbidden`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errforbidden.py): Forbidden - the caller is not an admin. Status code `403`. Applicable to 9 of 39 methods.*
-* [`ErrConflict`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errconflict.py): Status code `409`. Applicable to 5 of 39 methods.*
+* [`ErrConflict`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errconflict.py): Status code `409`. Applicable to 6 of 39 methods.*
 * [`ErrUnavailable`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errunavailable.py): Status code `503`. Applicable to 2 of 39 methods.*
 * [`ErrInsufficientCredit`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errinsufficientcredit.py): The organization has no credit balance remaining. Status code `402`. Applicable to 1 of 39 methods.*
 * [`ErrInvocationCanceled`](https://github.com/albusgroup/albus-python/blob/master/./src/albus_sdk/errors/errinvocationcanceled.py): The invocation was canceled instead of producing a response (only possible while waiting for a response, or when replaying a canceled invocation). Status code `410`. Applicable to 1 of 39 methods.*

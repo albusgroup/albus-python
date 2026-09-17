@@ -18,7 +18,9 @@ class SpendResponseTypedDict(TypedDict):
 
     """
     total_usd: str
-    r"""The sum of every line, as a decimal USD string."""
+    r"""The sum of every line charged to your credits, as a decimal USD string. Excludes model_byok lines.
+
+    """
     lines: List[SpendLineTypedDict]
     r"""Ordered by day, then kind, provider, model, and sku."""
 
@@ -35,7 +37,9 @@ class SpendResponse(BaseModel):
     """
 
     total_usd: str
-    r"""The sum of every line, as a decimal USD string."""
+    r"""The sum of every line charged to your credits, as a decimal USD string. Excludes model_byok lines.
+
+    """
 
     lines: List[SpendLine]
     r"""Ordered by day, then kind, provider, model, and sku."""

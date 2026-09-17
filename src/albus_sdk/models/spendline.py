@@ -11,11 +11,12 @@ from typing_extensions import NotRequired, TypedDict
 SpendLineKind = Union[
     Literal[
         "model",
+        "model_byok",
         "hardware",
     ],
     UnrecognizedStr,
 ]
-r"""What was used: a model, or the compute an invocation ran on.
+r"""What was used: a model billed to your credits, a model called with your own provider credential, or the compute an invocation ran on.
 
 """
 
@@ -24,19 +25,21 @@ class SpendLineTypedDict(TypedDict):
     day: datetime
     r"""The UTC midnight starting the day this line covers."""
     kind: SpendLineKind
-    r"""What was used: a model, or the compute an invocation ran on.
+    r"""What was used: a model billed to your credits, a model called with your own provider credential, or the compute an invocation ran on.
 
     """
     usd: str
-    r"""What this line cost, as a decimal USD string. Zero when the usage was free.
+    r"""What this line cost, as a decimal USD string. Zero when the usage was free. On a model_byok line this is the usage valued at our model prices for reference; you paid the provider directly and no credits were charged.
 
     """
     provider_name: NotRequired[str]
-    r"""The provider that served the model. Present on model lines.
+    r"""The provider that served the model. Present on model and model_byok lines.
 
     """
     model_name: NotRequired[str]
-    r"""The model that was called. Present on model lines."""
+    r"""The model that was called. Present on model and model_byok lines.
+
+    """
     sku: NotRequired[str]
     r"""The compute item charged (e.g. \"invocation_second\"). Present on hardware lines.
 
@@ -58,22 +61,24 @@ class SpendLine(BaseModel):
     r"""The UTC midnight starting the day this line covers."""
 
     kind: SpendLineKind
-    r"""What was used: a model, or the compute an invocation ran on.
+    r"""What was used: a model billed to your credits, a model called with your own provider credential, or the compute an invocation ran on.
 
     """
 
     usd: str
-    r"""What this line cost, as a decimal USD string. Zero when the usage was free.
+    r"""What this line cost, as a decimal USD string. Zero when the usage was free. On a model_byok line this is the usage valued at our model prices for reference; you paid the provider directly and no credits were charged.
 
     """
 
     provider_name: Optional[str] = None
-    r"""The provider that served the model. Present on model lines.
+    r"""The provider that served the model. Present on model and model_byok lines.
 
     """
 
     model_name: Optional[str] = None
-    r"""The model that was called. Present on model lines."""
+    r"""The model that was called. Present on model and model_byok lines.
+
+    """
 
     sku: Optional[str] = None
     r"""The compute item charged (e.g. \"invocation_second\"). Present on hardware lines.

@@ -98,6 +98,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrUnauthorized"
+        "409":
+          description: A secret with this name already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrConflict"
 
   /secrets/{name}:
     get:
@@ -1618,8 +1624,9 @@ paths:
       summary: Get your spend breakdown
       description: >
         Returns what your usage cost, split by UTC day and by what was used:
-        each model at each provider, and compute time. Each line carries the
-        quantities it was charged for.
+        each model at each provider, and compute time. Model usage made with
+        your own provider credential is listed separately and not charged to
+        your credits. Each line carries the quantities it was rated from.
       tags:
         - Billing
       security:
@@ -2234,16 +2241,21 @@ components:
           description: The UTC midnight starting the day this line covers.
         kind:
           type: string
-          enum: [model, hardware]
+          enum: [model, model_byok, hardware]
           description: >
-            What was used: a model, or the compute an invocation ran on.
+            What was used: a model billed to your credits, a model called
+            with your own provider credential, or the compute an invocation
+            ran on.
         provider_name:
           type: string
           description: >
-            The provider that served the model. Present on model lines.
+            The provider that served the model. Present on model and
+            model_byok lines.
         model_name:
           type: string
-          description: The model that was called. Present on model lines.
+          description: >
+            The model that was called. Present on model and model_byok
+            lines.
         sku:
           type: string
           description: >
@@ -2253,7 +2265,9 @@ components:
           type: string
           description: >
             What this line cost, as a decimal USD string. Zero when the
-            usage was free.
+            usage was free. On a model_byok line this is the usage valued
+            at our model prices for reference; you paid the provider
+            directly and no credits were charged.
         input_tokens:
           type: integer
           format: int64
@@ -2297,7 +2311,9 @@ components:
             to a whole day.
         total_usd:
           type: string
-          description: The sum of every line, as a decimal USD string.
+          description: >
+            The sum of every line charged to your credits, as a decimal USD
+            string. Excludes model_byok lines.
         lines:
           type: array
           items:

@@ -1,6 +1,6 @@
 # SpendLineKind
 
-What was used: a model, or the compute an invocation ran on.
+What was used: a model billed to your credits, a model called with your own provider credential, or the compute an invocation ran on.
 
 
 ## Example Usage
@@ -18,4 +18,5 @@ value: SpendLineKind = "model"
 This is an open enum. Unrecognized values will not fail type checks.
 
 - `"model"`
+- `"model_byok"`
 - `"hardware"`
