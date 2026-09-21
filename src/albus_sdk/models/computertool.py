@@ -5,9 +5,9 @@ from albus_sdk.types import BaseModel
 from typing_extensions import TypedDict
 
 
-class TerminalToolTypedDict(TypedDict):
+class ComputerToolTypedDict(TypedDict):
     r"""Offers the model a persistent Linux sandbox to run commands in."""
 
 
-class TerminalTool(BaseModel):
+class ComputerTool(BaseModel):
     r"""Offers the model a persistent Linux sandbox to run commands in."""

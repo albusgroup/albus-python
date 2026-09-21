@@ -1,4 +1,4 @@
-# TerminalTool
+# ComputerTool
 
 Offers the model a persistent Linux sandbox to run commands in.
 

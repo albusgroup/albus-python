@@ -30,6 +30,10 @@ class SessionTypedDict(TypedDict):
     r"""Revision of the agent that last ran this session. Invocations with the same configuration share this value.
 
     """
+    deleted_at: NotRequired[datetime]
+    r"""When the session was deleted. A deleted session keeps its audit log but accepts no new invocations. Omitted while the session is live.
+
+    """
 
 
 class Session(BaseModel):
@@ -61,10 +65,15 @@ class Session(BaseModel):
 
     """
 
+    deleted_at: Optional[datetime] = None
+    r"""When the session was deleted. A deleted session keeps its audit log but accepts no new invocations. Omitted while the session is live.
+
+    """
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
         optional_fields = set(
-            ["current_invocation_key", "agent_name", "agent_revision"]
+            ["current_invocation_key", "agent_name", "agent_revision", "deleted_at"]
         )
         serialized = handler(self)
         m = {}

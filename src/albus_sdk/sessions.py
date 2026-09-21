@@ -362,6 +362,9 @@ class Sessions(BaseSDK):
     ):
         r"""Delete a session
 
+        Removes the session's messages, invocations, and external resources, marks it deleted, and keeps its audit log readable.
+
+
         :param id: Client-provided session identifier. Reuse it to continue the session.
 
         """
@@ -418,6 +421,9 @@ class Sessions(BaseSDK):
         if utils.match_response(http_res, "404", "application/json"):
             response_data = unmarshal_json_response(errors.ErrNotFoundData, http_res)
             raise errors.ErrNotFound(response_data, http_res)
+        if utils.match_response(http_res, "409", "application/json"):
+            response_data = unmarshal_json_response(errors.ErrConflictData, http_res)
+            raise errors.ErrConflict(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = utils.stream_to_text(http_res)
             raise errors.AlbusDefaultError(
@@ -955,6 +961,9 @@ class AsyncSessions(AsyncBaseSDK):
     ):
         r"""Delete a session
 
+        Removes the session's messages, invocations, and external resources, marks it deleted, and keeps its audit log readable.
+
+
         :param id: Client-provided session identifier. Reuse it to continue the session.
 
         """
@@ -1011,6 +1020,9 @@ class AsyncSessions(AsyncBaseSDK):
         if utils.match_response(http_res, "404", "application/json"):
             response_data = unmarshal_json_response(errors.ErrNotFoundData, http_res)
             raise errors.ErrNotFound(response_data, http_res)
+        if utils.match_response(http_res, "409", "application/json"):
+            response_data = unmarshal_json_response(errors.ErrConflictData, http_res)
+            raise errors.ErrConflict(response_data, http_res)
         if utils.match_response(http_res, "4XX", "*"):
             http_res_text = await utils.stream_to_text_async(http_res)
             raise errors.AlbusDefaultError(

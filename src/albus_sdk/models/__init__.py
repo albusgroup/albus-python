@@ -17,6 +17,7 @@ if TYPE_CHECKING:
         CancelSessionResponse,
         CancelSessionResponseTypedDict,
     )
+    from .computertool import ComputerTool, ComputerToolTypedDict
     from .createcheckoutrequest import (
         CreateCheckoutRequest,
         CreateCheckoutRequestTypedDict,
@@ -107,7 +108,6 @@ if TYPE_CHECKING:
     )
     from .spendline import SpendLine, SpendLineKind, SpendLineTypedDict
     from .spendresponse import SpendResponse, SpendResponseTypedDict
-    from .terminaltool import TerminalTool, TerminalToolTypedDict
     from .token import Token, TokenTypedDict
     from .tokenusage import TokenUsage, TokenUsageTypedDict
     from .tools import Tools, ToolsTypedDict
@@ -145,6 +145,8 @@ __all__ = [
     "AuthenticatedUserTypedDict",
     "CancelSessionResponse",
     "CancelSessionResponseTypedDict",
+    "ComputerTool",
+    "ComputerToolTypedDict",
     "CreateCheckoutRequest",
     "CreateCheckoutRequestTypedDict",
     "CreateCheckoutResponse",
@@ -239,8 +241,6 @@ __all__ = [
     "SpendLineTypedDict",
     "SpendResponse",
     "SpendResponseTypedDict",
-    "TerminalTool",
-    "TerminalToolTypedDict",
     "Token",
     "TokenTypedDict",
     "TokenUsage",
@@ -290,6 +290,8 @@ _dynamic_imports: dict[str, str] = {
     "AuthenticatedUserTypedDict": ".authenticateduser",
     "CancelSessionResponse": ".cancelsessionresponse",
     "CancelSessionResponseTypedDict": ".cancelsessionresponse",
+    "ComputerTool": ".computertool",
+    "ComputerToolTypedDict": ".computertool",
     "CreateCheckoutRequest": ".createcheckoutrequest",
     "CreateCheckoutRequestTypedDict": ".createcheckoutrequest",
     "CreateCheckoutResponse": ".createcheckoutresponse",
@@ -384,8 +386,6 @@ _dynamic_imports: dict[str, str] = {
     "SpendLineTypedDict": ".spendline",
     "SpendResponse": ".spendresponse",
     "SpendResponseTypedDict": ".spendresponse",
-    "TerminalTool": ".terminaltool",
-    "TerminalToolTypedDict": ".terminaltool",
     "Token": ".token",
     "TokenTypedDict": ".token",
     "TokenUsage": ".tokenusage",
