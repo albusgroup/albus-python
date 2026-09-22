@@ -13,6 +13,8 @@ class OrganizationTypedDict(TypedDict):
     r"""Organization display name"""
     created_at: datetime
     r"""When the organization was created."""
+    issuer: str
+    r"""OpenID issuer of the identity tokens Albus presents to the organization's MCP servers; verifiers use it as the expected `iss` claim and to discover the signing keys."""
 
 
 class Organization(BaseModel):
@@ -24,3 +26,6 @@ class Organization(BaseModel):
 
     created_at: datetime
     r"""When the organization was created."""
+
+    issuer: str
+    r"""OpenID issuer of the identity tokens Albus presents to the organization's MCP servers; verifiers use it as the expected `iss` claim and to discover the signing keys."""

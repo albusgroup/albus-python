@@ -1996,6 +1996,7 @@ components:
         - id
         - name
         - created_at
+        - issuer
       properties:
         id:
           type: string
@@ -2009,6 +2010,11 @@ components:
           type: string
           format: date-time
           description: When the organization was created.
+        issuer:
+          type: string
+          format: uri
+          description: OpenID issuer of the identity tokens Albus presents to the organization's MCP servers; verifiers use it as the expected `iss` claim and to discover the signing keys.
+          example: "https://oidc.albus.sh/organizations/42"
 
     UpdateOrganizationRequest:
       type: object
@@ -2649,6 +2655,7 @@ components:
       properties:
         name:
           type: string
+          maxLength: 64
           description: >
             Unique alias for the server. It prefixes the server's tool names
             (e.g. "github" exposes its search tool as "github__search").
@@ -2660,14 +2667,112 @@ components:
           additionalProperties:
             type: string
           description: >
-            HTTP headers sent to the server. Values are secret references
-            (e.g. "albus.sh/secrets/github-mcp"), not raw secret values.
+            HTTP headers sent to the server, with secret values as secret
+            references (e.g. "albus.sh/secrets/github-mcp"); this is also
+            where to send an API key or other non-Bearer credential.
         allowed_tools:
           type: array
           items:
             type: string
           description: >
             The server tools the model may call. Omit to allow all of them.
+        auth:
+          allOf:
+            - $ref: "#/components/schemas/MCPServerAuth"
+          description: >
+            How Albus authenticates to the server. Omit for the default,
+            AlbusIdentityJWTAuth, which needs no credential from you; see that
+            schema for what the server must verify. Setting
+            "headers.Authorization" instead sends that header verbatim.
+
+    MCPServerAuth:
+      description: >
+        The credential Albus presents to an MCP server, chosen by type.
+      oneOf:
+        - $ref: "#/components/schemas/AlbusIdentityJWTAuth"
+        - $ref: "#/components/schemas/OAuth2ClientCredentialsAuth"
+        - $ref: "#/components/schemas/BearerTokenAuth"
+      discriminator:
+        propertyName: type
+        mapping:
+          albus_identity_jwt: "#/components/schemas/AlbusIdentityJWTAuth"
+          oauth2_client_credentials: "#/components/schemas/OAuth2ClientCredentialsAuth"
+          bearer: "#/components/schemas/BearerTokenAuth"
+
+    AlbusIdentityJWTAuth:
+      type: object
+      additionalProperties: false
+      description: >
+        A short-lived identity token issued by Albus for the calling
+        organization and invocation, sent as "Authorization: Bearer". Your
+        server must trust the organization's issuer (the "issuer" of the
+        Organization resource) and require the server "url" as the audience;
+        the issuer publishes its signing keys at
+        "<issuer>/.well-known/jwks.json".
+      externalDocs:
+        url: https://docs.albus.sh/guides/mcp-server-auth
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum:
+            - albus_identity_jwt
+
+    OAuth2ClientCredentialsAuth:
+      type: object
+      additionalProperties: false
+      description: >
+        An access token obtained from your identity provider with the OAuth
+        2.0 client credentials grant.
+      required:
+        - type
+        - token_url
+        - client_id
+        - client_secret
+      properties:
+        type:
+          type: string
+          enum:
+            - oauth2_client_credentials
+        token_url:
+          type: string
+          description: The identity provider's HTTPS token endpoint.
+        client_id:
+          type: string
+          description: >
+            The client identifier, as a secret reference or a literal.
+        client_secret:
+          type: string
+          description: >
+            The client secret, as a secret reference (e.g.
+            "albus.sh/secrets/idp-client-secret"), never a raw value.
+        audience:
+          type: string
+          description: The audience requested from the identity provider.
+        scopes:
+          type: array
+          items:
+            type: string
+          description: The scopes requested from the identity provider.
+
+    BearerTokenAuth:
+      type: object
+      additionalProperties: false
+      description: A static bearer token sent with every request.
+      required:
+        - type
+        - token
+      properties:
+        type:
+          type: string
+          enum:
+            - bearer
+        token:
+          type: string
+          description: >
+            The token, as a secret reference (e.g.
+            "albus.sh/secrets/mcp-token"), never a raw value.
 
     Tools:
       type: object
@@ -2857,6 +2962,7 @@ components:
             - agent_step
             - model_call
             - tool_call
+            - mcp_auth_rejected
             - harness_exit
             - invocation_failed
             - invocation_succeeded
@@ -2869,8 +2975,10 @@ components:
             started the invocation, "agent_step" for one turn, how it ended,
             and how long it took, "model_call" for a model call and the tool
             calls it requested, "tool_call" for an executed tool call and its
-            output). Events recorded earlier use "llm_call", "tool_result",
-            "run_failed" and "run_succeeded" for four of those kinds.
+            output). "mcp_auth_rejected" records that the named MCP server
+            rejected the credential the agent presented. Events recorded
+            earlier use "llm_call", "tool_result", "run_failed" and
+            "run_succeeded" for four of those kinds.
         payload:
           type: object
           additionalProperties: true

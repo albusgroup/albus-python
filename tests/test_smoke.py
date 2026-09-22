@@ -56,7 +56,7 @@ async def async_sdk_with_handler(
 
 def test_package_exposes_version() -> None:
     assert albus_sdk.VERSION == albus_sdk.__version__
-    assert albus_sdk.VERSION == "0.19.0"
+    assert albus_sdk.VERSION == "0.20.0"
 
 
 def test_default_production_url_and_sync_operation() -> None:
@@ -262,6 +262,101 @@ def test_session_state_accepts_future_values() -> None:
 
     assert session.state == "PAUSED"
     assert isinstance(session.state, UnrecognizedStr)
+
+
+def test_mcp_server_auth_is_sent_by_type_and_omitted_when_unset() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        servers = json.loads(request.content)["agent"]["mcp_servers"]
+        assert "auth" not in servers[0]
+        assert servers[1]["auth"] == {"type": "albus_identity_jwt"}
+        assert servers[2]["auth"] == {
+            "type": "bearer",
+            "token": "albus.sh/secrets/mcp-token",
+        }
+        assert servers[3]["auth"] == {
+            "type": "oauth2_client_credentials",
+            "token_url": "https://idp.example.com/token",
+            "client_id": "albus",
+            "client_secret": "albus.sh/secrets/idp-client-secret",
+        }
+
+        return httpx.Response(504, json={"message": "still running"})
+
+    agent = models.AgentConfig(
+        model=models.Model(name="gpt-4o"),
+        mcp_servers=[
+            models.MCPServer(name="default", url="https://mcp.example.com/a"),
+            models.MCPServer(
+                name="identity",
+                url="https://mcp.example.com/b",
+                auth=models.AlbusIdentityJWTAuth(),
+            ),
+            models.MCPServer(
+                name="bearer",
+                url="https://mcp.example.com/c",
+                auth=models.BearerTokenAuth(token="albus.sh/secrets/mcp-token"),
+            ),
+            models.MCPServer(
+                name="oauth2",
+                url="https://mcp.example.com/d",
+                auth=models.OAuth2ClientCredentialsAuth(
+                    token_url="https://idp.example.com/token",
+                    client_id="albus",
+                    client_secret="albus.sh/secrets/idp-client-secret",
+                ),
+            ),
+        ],
+    )
+
+    with sdk_with_handler(handler) as sdk:
+        with pytest.raises(errors.ErrTimeout):
+            sdk.sessions.run_session(
+                id="session-id",
+                user_prompt="hello",
+                agent_name="test-agent",
+                agent=agent,
+            )
+
+
+def test_mcp_server_auth_discriminates_on_type() -> None:
+    typed: models.MCPServerTypedDict = {
+        "name": "github",
+        "url": "https://mcp.example.com",
+        "auth": {"type": "bearer", "token": "albus.sh/secrets/mcp-token"},
+    }
+    server = models.MCPServer.model_validate(typed)
+
+    assert isinstance(server.auth, models.BearerTokenAuth)
+    assert server.auth.token == "albus.sh/secrets/mcp-token"
+
+    server = models.MCPServer.model_validate(
+        {
+            "name": "github",
+            "url": "https://mcp.example.com",
+            "auth": {"type": "mtls", "certificate": "albus.sh/secrets/cert"},
+        }
+    )
+
+    assert isinstance(server.auth, models.UnknownMCPServerAuth)
+    assert server.auth.raw == {
+        "type": "mtls",
+        "certificate": "albus.sh/secrets/cert",
+    }
+
+
+def test_unknown_mcp_server_auth_serializes_as_the_payload_it_was_read_as() -> None:
+    payload = {
+        "name": "github",
+        "url": "https://mcp.example.com",
+        "auth": {"type": "mtls", "certificate": "albus.sh/secrets/cert"},
+    }
+    server = models.MCPServer.model_validate(payload)
+
+    assert isinstance(server.auth, models.UnknownMCPServerAuth)
+    assert server.model_dump(by_alias=True, exclude_unset=True) == payload
+    assert (
+        json.loads(server.model_dump_json(by_alias=True, exclude_unset=True)) == payload
+    )
 
 
 def test_only_run_session_accepts_a_per_request_retry_configuration() -> None:

@@ -9,6 +9,7 @@ import shutil
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 OPERATION_DIRECTORY = REPOSITORY_ROOT / "src/albus_sdk"
+MODEL_DIRECTORY = OPERATION_DIRECTORY / "models"
 SDK_DOCUMENTATION_DIRECTORY = REPOSITORY_ROOT / "docs/sdks"
 
 PUBLISHING_PROMPT = """> [!TIP]
@@ -127,6 +128,20 @@ GENERATED_RETRY_CONFIGURATION = """        if retries == UNSET:
         if isinstance(retries, utils.RetryConfig):
             retry_config = (retries, [\"429\", \"500\", \"502\", \"503\", \"504\"])
 
+"""
+
+
+UNKNOWN_VARIANT_FIELDS = """    type: Literal["UNKNOWN"] = "UNKNOWN"
+    raw: Any
+    is_unknown: Literal[True] = True
+
+    model_config = ConfigDict(frozen=True)
+"""
+
+UNKNOWN_VARIANT_SERIALIZER = """
+    @model_serializer(mode="plain")
+    def serialize_raw(self) -> Any:
+        return self.raw
 """
 
 
@@ -335,6 +350,36 @@ def normalize_sdk_constructors() -> None:
     path.write_text(content)
 
 
+def normalize_open_unions() -> None:
+    """An unknown union variant serializes as the payload it was parsed from.
+
+    The generated fallback model dumps as its own fields, so a value read from
+    a newer server would reach the API as `{"type": "UNKNOWN", ...}` instead
+    of what the server sent.
+    """
+    for path in MODEL_DIRECTORY.glob("*.py"):
+        content = path.read_text()
+        if "parse_open_union" not in content:
+            continue
+        if UNKNOWN_VARIANT_SERIALIZER in content:
+            continue
+        if UNKNOWN_VARIANT_FIELDS not in content:
+            raise RuntimeError(f"expected generated unknown variant in {path.name}")
+
+        pydantic_import = "from pydantic import ConfigDict\n"
+        if pydantic_import not in content:
+            raise RuntimeError(f"expected pydantic import in {path.name}")
+
+        content = content.replace(
+            pydantic_import, "from pydantic import ConfigDict, model_serializer\n", 1
+        )
+        content = content.replace(
+            UNKNOWN_VARIANT_FIELDS,
+            UNKNOWN_VARIANT_FIELDS + UNKNOWN_VARIANT_SERIALIZER,
+        )
+        path.write_text(content)
+
+
 def normalize_operation_files() -> None:
     for path in OPERATION_DIRECTORY.glob("*.py"):
         if path.name in {
@@ -404,6 +449,7 @@ def main() -> None:
     (REPOSITORY_ROOT / "scripts/publish.sh").unlink(missing_ok=True)
     normalize_lines(REPOSITORY_ROOT / "src/albus_sdk/utils/datetimes.py")
     normalize_operation_files()
+    normalize_open_unions()
     normalize_sdk_constructors()
     normalize_sdk_documentation()
     normalize_lines(REPOSITORY_ROOT / "USAGE.md")

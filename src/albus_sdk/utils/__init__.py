@@ -17,6 +17,7 @@ if TYPE_CHECKING:
     from .annotations import get_discriminator
     from .datetimes import parse_datetime, parse_duration
     from .enums import OpenEnumMeta
+    from .unions import parse_open_union
     from .headers import get_headers, get_response_headers
     from .metadata import (
         FieldMetadata,
@@ -87,6 +88,7 @@ __all__ = [
     "match_response",
     "MultipartFormMetadata",
     "OpenEnumMeta",
+    "parse_open_union",
     "PathParamMetadata",
     "QueryParamMetadata",
     "remove_suffix",
@@ -141,6 +143,7 @@ _dynamic_imports: dict[str, str] = {
     "match_response": ".values",
     "MultipartFormMetadata": ".metadata",
     "OpenEnumMeta": ".enums",
+    "parse_open_union": ".unions",
     "PathParamMetadata": ".metadata",
     "QueryParamMetadata": ".metadata",
     "remove_suffix": ".url",

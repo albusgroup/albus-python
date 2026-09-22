@@ -10,9 +10,14 @@ if TYPE_CHECKING:
     from .agentmeta import AgentMeta, AgentMetaTypedDict
     from .agentrevision import AgentRevision, AgentRevisionTypedDict
     from .agentrevisionmeta import AgentRevisionMeta, AgentRevisionMetaTypedDict
+    from .albusidentityjwtauth import (
+        AlbusIdentityJWTAuth,
+        AlbusIdentityJWTAuthTypedDict,
+    )
     from .auditevent import AuditEvent, AuditEventType, AuditEventTypedDict
     from .authenticatedapikey import AuthenticatedAPIKey, AuthenticatedAPIKeyTypedDict
     from .authenticateduser import AuthenticatedUser, AuthenticatedUserTypedDict
+    from .bearertokenauth import BearerTokenAuth, BearerTokenAuthTypedDict
     from .cancelsessionresponse import (
         CancelSessionResponse,
         CancelSessionResponseTypedDict,
@@ -76,12 +81,21 @@ if TYPE_CHECKING:
     from .listtokensresponse import ListTokensResponse, ListTokensResponseTypedDict
     from .listtracesresponse import ListTracesResponse, ListTracesResponseTypedDict
     from .mcpserver import MCPServer, MCPServerTypedDict
+    from .mcpserverauth import (
+        MCPServerAuth,
+        MCPServerAuthTypedDict,
+        UnknownMCPServerAuth,
+    )
     from .memory import Memory, MemoryStatus, MemoryTypedDict
     from .memoryconfig import Generation, MemoryConfig, MemoryConfigTypedDict
     from .memorygroup import MemoryGroup, MemoryGroupTypedDict
     from .model import Model, ModelTypedDict
     from .modelmeta import ModelMeta, ModelMetaTypedDict
     from .modelpricing import ModelPricing, ModelPricingTypedDict
+    from .oauth2clientcredentialsauth import (
+        OAuth2ClientCredentialsAuth,
+        OAuth2ClientCredentialsAuthTypedDict,
+    )
     from .organization import Organization, OrganizationTypedDict
     from .organizationmember import OrganizationMember, OrganizationMemberTypedDict
     from .organizationmembership import (
@@ -136,6 +150,8 @@ __all__ = [
     "AgentRevisionMetaTypedDict",
     "AgentRevisionTypedDict",
     "AgentTypedDict",
+    "AlbusIdentityJWTAuth",
+    "AlbusIdentityJWTAuthTypedDict",
     "AuditEvent",
     "AuditEventType",
     "AuditEventTypedDict",
@@ -143,6 +159,8 @@ __all__ = [
     "AuthenticatedAPIKeyTypedDict",
     "AuthenticatedUser",
     "AuthenticatedUserTypedDict",
+    "BearerTokenAuth",
+    "BearerTokenAuthTypedDict",
     "CancelSessionResponse",
     "CancelSessionResponseTypedDict",
     "ComputerTool",
@@ -195,6 +213,8 @@ __all__ = [
     "ListTracesResponse",
     "ListTracesResponseTypedDict",
     "MCPServer",
+    "MCPServerAuth",
+    "MCPServerAuthTypedDict",
     "MCPServerTypedDict",
     "Memory",
     "MemoryConfig",
@@ -209,6 +229,8 @@ __all__ = [
     "ModelPricing",
     "ModelPricingTypedDict",
     "ModelTypedDict",
+    "OAuth2ClientCredentialsAuth",
+    "OAuth2ClientCredentialsAuthTypedDict",
     "Organization",
     "OrganizationMember",
     "OrganizationMemberTypedDict",
@@ -260,6 +282,7 @@ __all__ = [
     "TraceStatus",
     "TraceSummary",
     "TraceSummaryTypedDict",
+    "UnknownMCPServerAuth",
     "UpdateOrganizationRequest",
     "UpdateOrganizationRequestTypedDict",
     "UpdateSecretRequest",
@@ -281,6 +304,8 @@ _dynamic_imports: dict[str, str] = {
     "AgentRevisionTypedDict": ".agentrevision",
     "AgentRevisionMeta": ".agentrevisionmeta",
     "AgentRevisionMetaTypedDict": ".agentrevisionmeta",
+    "AlbusIdentityJWTAuth": ".albusidentityjwtauth",
+    "AlbusIdentityJWTAuthTypedDict": ".albusidentityjwtauth",
     "AuditEvent": ".auditevent",
     "AuditEventType": ".auditevent",
     "AuditEventTypedDict": ".auditevent",
@@ -288,6 +313,8 @@ _dynamic_imports: dict[str, str] = {
     "AuthenticatedAPIKeyTypedDict": ".authenticatedapikey",
     "AuthenticatedUser": ".authenticateduser",
     "AuthenticatedUserTypedDict": ".authenticateduser",
+    "BearerTokenAuth": ".bearertokenauth",
+    "BearerTokenAuthTypedDict": ".bearertokenauth",
     "CancelSessionResponse": ".cancelsessionresponse",
     "CancelSessionResponseTypedDict": ".cancelsessionresponse",
     "ComputerTool": ".computertool",
@@ -340,6 +367,9 @@ _dynamic_imports: dict[str, str] = {
     "ListTracesResponseTypedDict": ".listtracesresponse",
     "MCPServer": ".mcpserver",
     "MCPServerTypedDict": ".mcpserver",
+    "MCPServerAuth": ".mcpserverauth",
+    "MCPServerAuthTypedDict": ".mcpserverauth",
+    "UnknownMCPServerAuth": ".mcpserverauth",
     "Memory": ".memory",
     "MemoryStatus": ".memory",
     "MemoryTypedDict": ".memory",
@@ -354,6 +384,8 @@ _dynamic_imports: dict[str, str] = {
     "ModelMetaTypedDict": ".modelmeta",
     "ModelPricing": ".modelpricing",
     "ModelPricingTypedDict": ".modelpricing",
+    "OAuth2ClientCredentialsAuth": ".oauth2clientcredentialsauth",
+    "OAuth2ClientCredentialsAuthTypedDict": ".oauth2clientcredentialsauth",
     "Organization": ".organization",
     "OrganizationTypedDict": ".organization",
     "OrganizationMember": ".organizationmember",
