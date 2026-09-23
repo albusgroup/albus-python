@@ -16,7 +16,7 @@ class MCPServerTypedDict(TypedDict):
     url: str
     r"""The server's Streamable HTTP endpoint."""
     headers: NotRequired[Dict[str, str]]
-    r"""HTTP headers sent to the server, with secret values as secret references (e.g. \"albus.sh/secrets/github-mcp\"); this is also where to send an API key or other non-Bearer credential.
+    r"""HTTP headers sent to the server, with secret values as secret references (e.g. \"albus.sh/secrets/github-mcp\"); this is also where to send an API key or other non-Bearer credential. A literal value is sent as is, is returned as \"<literal>\", and does not change the agent's revision.
 
     """
     allowed_tools: NotRequired[List[str]]
@@ -39,7 +39,7 @@ class MCPServer(BaseModel):
     r"""The server's Streamable HTTP endpoint."""
 
     headers: Optional[Dict[str, str]] = None
-    r"""HTTP headers sent to the server, with secret values as secret references (e.g. \"albus.sh/secrets/github-mcp\"); this is also where to send an API key or other non-Bearer credential.
+    r"""HTTP headers sent to the server, with secret values as secret references (e.g. \"albus.sh/secrets/github-mcp\"); this is also where to send an API key or other non-Bearer credential. A literal value is sent as is, is returned as \"<literal>\", and does not change the agent's revision.
 
     """
 

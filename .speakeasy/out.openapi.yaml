@@ -2430,7 +2430,7 @@ components:
           additionalProperties:
             type: string
           description: >
-            HTTP headers sent to the server, with secret values as secret references (e.g. "albus.sh/secrets/github-mcp"); this is also where to send an API key or other non-Bearer credential.
+            HTTP headers sent to the server, with secret values as secret references (e.g. "albus.sh/secrets/github-mcp"); this is also where to send an API key or other non-Bearer credential. A literal value is sent as is, is returned as "<literal>", and does not change the agent's revision.
 
         allowed_tools:
           type: array

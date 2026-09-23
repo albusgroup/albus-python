@@ -4,13 +4,13 @@ management:
   docVersion: 1.0.0
   speakeasyVersion: 1.791.0
   generationVersion: 2.924.0
-  releaseVersion: 0.20.0
+  releaseVersion: 0.20.1
   repoURL: https://github.com/albusgroup/albus-python
   installationURL: https://github.com/albusgroup/albus-python.git
 persistentEdits:
-  generation_id: 04b00543-86fb-4735-a82c-d7e719c4af05
-  pristine_commit_hash: 007de043c6a8f0e30c39823600bc16b393ba7a8e
-  pristine_tree_hash: 55c0a1c364e01d12686156a18f33ab1e503f944e
+  generation_id: a2620afd-b3d6-41c8-9990-87c1134982bc
+  pristine_commit_hash: 4ce28c2e57fcfea555f0427307aab74c86eb8f44
+  pristine_tree_hash: daa95f844cf69464842873bea0657134acb9873e
 features:
   python:
     additionalDependencies: 1.1.0
@@ -248,8 +248,8 @@ trackedFiles:
     pristine_git_object: 090860245a69023563c506518009e94a5fce9f7c
   docs/models/mcpserver.md:
     id: ff3e5d6d6fef
-    last_write_checksum: sha1:4e5722816434c6805c328477fb386c947d8b6ef6
-    pristine_git_object: 19947a92cdcbe9ddb6cdfea1d2b68abe92d43bc6
+    last_write_checksum: sha1:76527e1db11630f085fb81a0b1e48606a2bb4ead
+    pristine_git_object: 3795505a2b08cba68772ebb85f0c92bf5ac79aea
   docs/models/mcpserverauth.md:
     id: a6e8350c0ca8
     last_write_checksum: sha1:942f0eb42476270bc174dd03135769793c3440a9
@@ -588,8 +588,8 @@ trackedFiles:
     pristine_git_object: c00200cfd072e9febac5d6be783da1925d11dac0
   pyproject.toml:
     id: 5d07e7d72637
-    last_write_checksum: sha1:b7965c5b24ad0e08f1a2501b11e33e28ee0ad9fd
-    pristine_git_object: f43394bff6e66c691ef38b9081d55e661284cf3c
+    last_write_checksum: sha1:7425ab9a30506bc62898cc6e57d6dfa88049aad8
+    pristine_git_object: 3a4b59350735d40bf95e403c0c5c5aa530e11359
   scripts/prepare_readme.py:
     id: e0c5957a6035
     last_write_checksum: sha1:87ae869992e135551fddfe7224d27c36a6e6f6a1
@@ -616,8 +616,8 @@ trackedFiles:
     pristine_git_object: cbf6440ec13211554ee2cecd1ae5c961400cb297
   src/albus_sdk/_version.py:
     id: ce551781b317
-    last_write_checksum: sha1:bbbe28c689e45132b1d7f32058bd3fe8875d0da0
-    pristine_git_object: 95ce2eecd3782f50f6a5702c6e6a99db242bcf96
+    last_write_checksum: sha1:14a8ab013384bd70d72f54ba4a83b98790633505
+    pristine_git_object: 58ba766148b6ea0036d21faa79fcc627f75745d2
   src/albus_sdk/agents.py:
     id: db42fb5fa8b3
     last_write_checksum: sha1:7fd04c81cd63ab3a9cd6dd388366c4ec9fc1e118
@@ -860,8 +860,8 @@ trackedFiles:
     pristine_git_object: f4ab64cd78148f8b809a91a6d0300f3748660542
   src/albus_sdk/models/mcpserver.py:
     id: cea41d629ca5
-    last_write_checksum: sha1:7e0b98f51627f70b83ba274aacd424a52a134271
-    pristine_git_object: 9fca2bd0c3726087f60822c8a73cef4bafbcbfdd
+    last_write_checksum: sha1:27f9a730aa4999ff56c71c451da5add5f88e8696
+    pristine_git_object: 3dd7b62412ccd4968366336bb7c732f32cf627ce
   src/albus_sdk/models/mcpserverauth.py:
     id: 4b22ab16cfda
     last_write_checksum: sha1:98203aff9e05f65ac63d859492d1206a2e202bd1
