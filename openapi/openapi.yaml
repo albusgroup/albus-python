@@ -2419,7 +2419,7 @@ components:
       properties:
         name:
           type: string
-          description: Provider name (e.g. "openai", "google_agent_studio").
+          description: Provider name (e.g. "openai", "google_ai_studio").
         url:
           type: string
           description: Optional base URL override for the provider endpoint.
@@ -2552,7 +2552,7 @@ components:
         provider:
           type: string
           description: >
-            Provider serving this model (e.g. "google_agent_studio", or
+            Provider serving this model (e.g. "google_ai_studio", or
             "open_weight" for open-weight models).
         pricing:
           $ref: "#/components/schemas/ModelPricing"

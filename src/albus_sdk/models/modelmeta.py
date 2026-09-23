@@ -16,7 +16,7 @@ class ModelMetaTypedDict(TypedDict):
 
     """
     provider: str
-    r"""Provider serving this model (e.g. \"google_agent_studio\", or \"open_weight\" for open-weight models).
+    r"""Provider serving this model (e.g. \"google_ai_studio\", or \"open_weight\" for open-weight models).
 
     """
     pricing: NotRequired[ModelPricingTypedDict]
@@ -34,7 +34,7 @@ class ModelMeta(BaseModel):
     """
 
     provider: str
-    r"""Provider serving this model (e.g. \"google_agent_studio\", or \"open_weight\" for open-weight models).
+    r"""Provider serving this model (e.g. \"google_ai_studio\", or \"open_weight\" for open-weight models).
 
     """
 
